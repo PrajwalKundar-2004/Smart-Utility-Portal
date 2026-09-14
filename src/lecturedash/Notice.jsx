@@ -1,80 +1,960 @@
-import React from 'react'
-import Navbar1 from '../components/Navbar1'
-import { useForm } from "react-hook-form";
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import toast, { Toaster } from 'react-hot-toast';
+import Navbar1 from '../components/Navbar1';
 
 const Notice = () => {
-    const { register, handleSubmit, reset } = useForm();
-    const onSubmit = async (data) => {
-        try {
-            const response = await fetch("http://localhost:3000/api/lecture/notice",
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(data)
-                }
-            );
-            const result = await response.json();
-            alert(result.message);
-            reset();
-        }
-        catch (error) {
-            console.log(error);
-        }
+  const navigate = useNavigate();
+  const lecturerName = localStorage.getItem('lectureName') || 'Lecturer';
 
-    };
-    return (
-        <main>
-            <Navbar1/>
-            <div className="h-[85vh] w-full flex items-center justify-center bg-linear-to-br from-sky-100 to-blue-200 p-4">
+  // Composer Form State
+  const [priority, setPriority] = useState('normal'); // 'normal', 'important', 'urgent'
+  const [title, setTitle] = useState('');
+  const [message, setMessage] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-                <div className="bg-white shadow-xl rounded-2xl p-8 w-1/2 border border-blue-100 h-[70vh] flex flex-col gap-6">
+  // Notices List & Feed State
+  const [recentNotices, setRecentNotices] = useState([]);
+  const [loadingNotices, setLoadingNotices] = useState(true);
+  const [filterTab, setFilterTab] = useState('all'); // 'all', 'active', 'withdrawn'
 
-                    <h2 className="text-2xl font-bold text-center text-blue-600 mb-6 h-[5vh]">
-                        Post Notice
-                    </h2>
-                    <form onSubmit={handleSubmit(onSubmit)} className=" flex flex-col gap-10 ">
+  // Delete Alert Modal State
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [noticeToDelete, setNoticeToDelete] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
-                        {/* Title */}
-                        <div className='w-full h-[15vh]'>
-                            <label className="block text-lg font-medium text-gray-700 mb-1">
-                                Notice Title
-                            </label>
+  // Edit Modal State
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editingNotice, setEditingNotice] = useState(null);
+  const [editTitle, setEditTitle] = useState('');
+  const [editMessage, setEditMessage] = useState('');
+  const [editPriority, setEditPriority] = useState('normal');
+  const [isUpdating, setIsUpdating] = useState(false);
 
-                            <input
-                                {...register("title")}
-                                placeholder="Enter notice title"
-                                required
-                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition" />
-                        </div>
-                        {/* Message */}
-                        <div className='w-full h-[20vh]'>
-                            <label className="block text-lg font-medium text-gray-700 mb-1">
-                                Notice Message
-                            </label>
+  // Fetch all notices (both active and withdrawn for lecturer audit)
+  const fetchRecentNotices = async () => {
+    try {
+      setLoadingNotices(true);
+      const res = await fetch('http://localhost:3000/api/lecture/notices');
+      const data = await res.json();
+      if (data.success) {
+        setRecentNotices(data.notices || []);
+      }
+    } catch (err) {
+      console.error('Error loading notices:', err);
+    } finally {
+      setLoadingNotices(false);
+    }
+  };
 
-                            <textarea
-                                {...register("message")}
-                                placeholder="Enter notice message"
-                                required
-                                rows="4"
-                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition resize-none"
-                            />
-                        </div>
-                        {/* Button */}
-                        <div className='w-full h-[18vh]'>
-                        <button
-                            type="submit"
-                            className="w-full h-1/2 bg-blue-500 text-white font-semibold py-2 rounded-lg hover:bg-blue-600 transition duration-300 shadow-md hover:shadow-lg flex items-center justify-center">
-                            Send Notice
-                        </button>
-                        </div>
-                    </form>
-                </div>
+  useEffect(() => {
+    fetchRecentNotices();
+  }, []);
+
+  // Post New Notice
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!title.trim() || !message.trim()) {
+      toast.error('Please enter both a title and message');
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      const payload = {
+        title: title.trim(),
+        message: message.trim(),
+        postedBy: lecturerName,
+        subject: 'General Announcement',
+        priority
+      };
+
+      const response = await fetch('http://localhost:3000/api/lecture/notice', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        toast.success(`Notice published successfully by Prof. ${lecturerName}!`, { position: 'top-center' });
+        setTitle('');
+        setMessage('');
+        fetchRecentNotices();
+      } else {
+        toast.error(result.message || 'Failed to post notice');
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error('Server error posting notice');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Open Delete Alert Modal
+  const promptDeleteNotice = (notice) => {
+    setNoticeToDelete(notice);
+    setDeleteModalOpen(true);
+  };
+
+  // Confirm Delete / Withdraw Notice with Attribution
+  const handleConfirmDelete = async () => {
+    if (!noticeToDelete) return;
+    try {
+      setIsDeleting(true);
+      const res = await fetch(`http://localhost:3000/api/lecture/notice/${noticeToDelete._id}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ deletedBy: lecturerName })
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success(`Notice withdrawn and logged under Prof. ${lecturerName}`, { position: 'top-center' });
+        setDeleteModalOpen(false);
+        setNoticeToDelete(null);
+        fetchRecentNotices();
+      } else {
+        toast.error(data.message || 'Failed to withdraw notice');
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error('Server error withdrawing notice');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  // Open Edit Notice Modal
+  const promptEditNotice = (notice) => {
+    setEditingNotice(notice);
+    setEditTitle(notice.title || '');
+    setEditMessage(notice.message || '');
+    setEditPriority(notice.priority || 'normal');
+    setEditModalOpen(true);
+  };
+
+  // Save Edited Notice
+  const handleSaveEdit = async (e) => {
+    e.preventDefault();
+    if (!editingNotice) return;
+    if (!editTitle.trim() || !editMessage.trim()) {
+      toast.error('Notice title and description cannot be empty');
+      return;
+    }
+
+    try {
+      setIsUpdating(true);
+      const payload = {
+        title: editTitle.trim(),
+        message: editMessage.trim(),
+        priority: editPriority,
+        updatedBy: lecturerName
+      };
+
+      const res = await fetch(`http://localhost:3000/api/lecture/notice/${editingNotice._id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success(`Notice updated successfully by Prof. ${lecturerName}!`, { position: 'top-center' });
+        setEditModalOpen(false);
+        setEditingNotice(null);
+        fetchRecentNotices();
+      } else {
+        toast.error(data.message || 'Failed to update notice');
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error('Server error updating notice');
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  // Restore Withdrawn Notice
+  const handleRestoreNotice = async (notice) => {
+    try {
+      const res = await fetch(`http://localhost:3000/api/lecture/notice/${notice._id}/restore`, {
+        method: 'PUT'
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success('Notice restored to active circulars');
+        fetchRecentNotices();
+      } else {
+        toast.error(data.message || 'Failed to restore notice');
+      }
+    } catch (err) {
+      toast.error('Server error restoring notice');
+    }
+  };
+
+  // Permanent Delete Notice
+  const handlePermanentDelete = async (notice) => {
+    if (!window.confirm(`Permanently erase "${notice.title}" from database records? This cannot be undone.`)) return;
+    try {
+      const res = await fetch(`http://localhost:3000/api/lecture/notice/${notice._id}/permanent`, {
+        method: 'DELETE'
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success('Notice permanently erased');
+        fetchRecentNotices();
+      } else {
+        toast.error('Failed to permanently delete notice');
+      }
+    } catch (err) {
+      toast.error('Server error deleting notice');
+    }
+  };
+
+  // Badge colors based on priority
+  const getPriorityBadge = (p) => {
+    switch (p) {
+      case 'urgent':
+        return {
+          bg: 'bg-rose-50 text-rose-700 border-rose-200',
+          dot: 'bg-rose-500',
+          label: '🚨 Urgent Priority'
+        };
+      case 'important':
+        return {
+          bg: 'bg-amber-50 text-amber-700 border-amber-200',
+          dot: 'bg-amber-500',
+          label: '⚡ Important Alert'
+        };
+      default:
+        return {
+          bg: 'bg-blue-50 text-blue-700 border-blue-200',
+          dot: 'bg-blue-500',
+          label: '📌 Circular Notice'
+        };
+    }
+  };
+
+  const currentBadge = getPriorityBadge(priority);
+
+  // Filtered notices based on tab
+  const activeCount = recentNotices.filter(n => !n.isDeleted).length;
+  const withdrawnCount = recentNotices.filter(n => n.isDeleted).length;
+
+  const filteredNotices = recentNotices.filter(n => {
+    if (filterTab === 'active') return !n.isDeleted;
+    if (filterTab === 'withdrawn') return n.isDeleted;
+    return true; // 'all'
+  });
+
+  return (
+    <main className="min-h-screen w-full max-w-full overflow-x-hidden bg-sky-50 font-sans pb-16">
+      <Toaster />
+
+      {/* ── Sticky Top Navbar ── */}
+      <div className="sticky top-0 z-40 w-full shadow-xs">
+        <Navbar1 />
+      </div>
+
+      {/* ── Outer Page Container with Small Screen Edge Gap on Mobile (px-3 sm:px-6) ── */}
+      <div className="w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-7 flex flex-col gap-4 sm:gap-6">
+
+        {/* ── Header Bar ── */}
+        <div className="bg-white/80 backdrop-blur-md p-4 sm:p-7 rounded-2xl sm:rounded-3xl border border-white shadow-xs">
+          <button
+            onClick={() => navigate('/lecturedash')}
+            className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors mb-2 cursor-pointer"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            <span>Back to Dashboard</span>
+          </button>
+
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex flex-wrap items-center gap-2.5">
+              <h1 className="text-xl sm:text-3xl lg:text-4xl font-black text-slate-900 tracking-tight">
+                Notices
+              </h1>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200 shadow-2xs">
+                📢 Notice Board
+              </span>
             </div>
-       </main>
-    )
-}
 
-export default Notice
+            <div className="flex items-center gap-2 bg-blue-50/70 border border-blue-200 px-3 py-1.5 rounded-2xl">
+              <span className="text-xs font-extrabold text-blue-900">Lecturer:</span>
+              <span className="text-xs font-bold text-blue-700">Prof. {lecturerName.replace(/^Prof\.?\s*/i, '')}</span>
+            </div>
+          </div>
+
+          <p className="text-slate-500 text-xs sm:text-sm lg:text-base mt-1.5 max-w-2xl">
+            Post announcements and updates for students.
+          </p>
+        </div>
+
+        {/* ── 2-Column Responsive Layout (Side-by-side on laptop, stacked on mobile) ── */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 items-start">
+
+          {/* ───────────────────────────────────────────────────────────── */}
+          {/* ──── LEFT COLUMN: Post Notice Composer Container (6 cols) ─── */}
+          {/* ───────────────────────────────────────────────────────────── */}
+          <div className="lg:col-span-6 bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-7 border border-slate-200/90 shadow-xs flex flex-col gap-4 sm:gap-5">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+                  ✍️
+                </div>
+                <h3 className="text-base sm:text-lg font-bold text-slate-900">New Notice</h3>
+              </div>
+              <span className="text-[11px] sm:text-xs font-semibold text-slate-400">All students</span>
+            </div>
+
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+              
+              {/* Priority Selector Pills */}
+              <div>
+                <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-2">
+                  Priority
+                </label>
+                <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setPriority('normal')}
+                    className={`h-10 sm:h-11 rounded-xl text-[11px] sm:text-xs font-extrabold flex items-center justify-center gap-1 border transition-all cursor-pointer ${
+                      priority === 'normal'
+                        ? 'bg-blue-50 border-blue-400 text-blue-700 ring-2 ring-blue-500/20 shadow-xs'
+                        : 'bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-600'
+                    }`}
+                  >
+                    <span>📌 Normal</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setPriority('important')}
+                    className={`h-10 sm:h-11 rounded-xl text-[11px] sm:text-xs font-extrabold flex items-center justify-center gap-1 border transition-all cursor-pointer ${
+                      priority === 'important'
+                        ? 'bg-amber-50 border-amber-400 text-amber-800 ring-2 ring-amber-500/20 shadow-xs'
+                        : 'bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-600'
+                    }`}
+                  >
+                    <span>⚡ Important</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setPriority('urgent')}
+                    className={`h-10 sm:h-11 rounded-xl text-[11px] sm:text-xs font-extrabold flex items-center justify-center gap-1 border transition-all cursor-pointer ${
+                      priority === 'urgent'
+                        ? 'bg-rose-50 border-rose-400 text-rose-700 ring-2 ring-rose-500/20 shadow-xs'
+                        : 'bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-600'
+                    }`}
+                  >
+                    <span>🚨 Urgent</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Notice Title / Subject Line */}
+              <div>
+                <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-1.5">
+                  Title <span className="text-blue-600">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="Title"
+                  required
+                  className="w-full h-10 sm:h-11 px-3 sm:px-4 bg-slate-50 hover:bg-white focus:bg-white border border-slate-200 focus:border-blue-500 focus:ring-3 focus:ring-blue-500/10 rounded-xl outline-none text-slate-900 text-xs sm:text-sm font-bold placeholder-slate-400 transition-all shadow-2xs"
+                />
+              </div>
+
+              {/* Notice Message / Description */}
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider">
+                    Notice Details <span className="text-blue-600">*</span>
+                  </label>
+                  <span className="text-[11px] font-semibold text-slate-400">
+                    {message.length} characters
+                  </span>
+                </div>
+                <textarea
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  placeholder="Add notice details here..."
+                  required
+                  rows={5}
+                  className="w-full p-3 sm:p-4 bg-slate-50 hover:bg-white focus:bg-white border border-slate-200 focus:border-blue-500 focus:ring-3 focus:ring-blue-500/10 rounded-xl outline-none text-slate-800 text-xs sm:text-sm font-medium placeholder-slate-400 transition-all resize-none shadow-2xs leading-relaxed"
+                />
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex items-center gap-3 pt-1">
+                <button
+                  type="submit"
+                  disabled={isSubmitting || !title.trim() || !message.trim()}
+                  className="flex-1 h-11 sm:h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 active:scale-[0.99] text-white font-extrabold rounded-xl shadow-md shadow-blue-500/25 flex items-center justify-center gap-2 text-xs sm:text-sm transition-all cursor-pointer disabled:opacity-50"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      <span>Publishing…</span>
+                    </>
+                  ) : (
+                    <>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                      <span>Publish Notice</span>
+                    </>
+                  )}
+                </button>
+
+                {(title || message) && (
+                  <button
+                    type="button"
+                    onClick={() => { setTitle(''); setMessage(''); }}
+                    className="h-11 sm:h-12 px-3.5 sm:px-4 rounded-xl border border-slate-200 text-slate-500 hover:text-slate-800 hover:bg-slate-100 font-bold text-xs transition-colors cursor-pointer"
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
+            </form>
+          </div>
+
+          {/* ───────────────────────────────────────────────────────────── */}
+          {/* ──── RIGHT COLUMN (In laptop: Right side of screen. ────────── */}
+          {/* ──── In mobile: Stacks directly under post notice container!) ── */}
+          {/* ───────────────────────────────────────────────────────────── */}
+          <div className="lg:col-span-6 flex flex-col gap-4 sm:gap-6 w-full">
+
+            {/* ── 1. LIVE STUDENT PREVIEW CARD (Ultra-Compact & Sleek) ── */}
+            <div className="bg-white rounded-2xl p-3 sm:p-3.5 border border-slate-200/90 shadow-xs flex flex-col gap-2">
+              <div className="flex items-center justify-between pb-1 border-b border-slate-100">
+                <span className="text-[10px] font-black text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                  <span>👁️</span> Student Live Preview
+                </span>
+                <span className="text-[9px] font-extrabold bg-blue-50 text-blue-700 px-1.5 py-0.2 rounded-full border border-blue-200">
+                  Live
+                </span>
+              </div>
+
+              {/* The Ultra-Compact Live Preview Container */}
+              <div className="bg-gradient-to-br from-white to-slate-50/90 rounded-xl p-2.5 border border-slate-200 shadow-2xs flex flex-col gap-1.5">
+                
+                {/* Priority & Scope Badges */}
+                <div className="flex flex-wrap items-center justify-between gap-1">
+                  <span className={`inline-flex items-center gap-1 text-[9px] font-extrabold px-2 py-0.2 rounded-full border ${currentBadge.bg}`}>
+                    <span className={`w-1.5 h-1.5 rounded-full ${currentBadge.dot}`}></span>
+                    {currentBadge.label}
+                  </span>
+
+                  <span className="text-[9px] font-bold text-slate-500 bg-slate-100 px-2 py-0.2 rounded border border-slate-200">
+                    📢 All Students
+                  </span>
+                </div>
+
+                {/* Ultra-Compact Subject Box with Invisible Scrolling */}
+                <div 
+                  className="max-h-7 overflow-y-auto no-scrollbar flex items-center px-0.5"
+                  style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                >
+                  <h4 className="text-xs font-extrabold text-slate-900 leading-snug break-words">
+                    {title.trim() || 'Title'}
+                  </h4>
+                </div>
+
+                {/* Ultra-Compact Description Box with Invisible Scrolling */}
+                <div 
+                  className="h-14 sm:h-16 overflow-y-auto no-scrollbar p-2 bg-white/80 rounded-lg border border-slate-200/70 shadow-2xs"
+                  style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                >
+                  <p className="text-slate-700 text-xs leading-relaxed whitespace-pre-line break-words font-medium">
+                    {message.trim() || 'Notice details will appear here.'}
+                  </p>
+                </div>
+
+                {/* Ultra-Compact Author Footer */}
+                <div className="flex items-center justify-between pt-1.5 border-t border-slate-200/70">
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-4 h-4 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center font-black text-[8px] shadow-2xs">
+                      {lecturerName ? lecturerName[0].toUpperCase() : 'L'}
+                    </div>
+                    <span className="text-[10px] font-extrabold text-slate-800">
+                      Prof. {lecturerName.replace(/^Prof\.?\s*/i, '')}
+                    </span>
+                  </div>
+
+                  <span className="text-[9px] font-bold text-slate-400 bg-slate-100 px-1.5 py-0.2 rounded">
+                    Student View
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* ── 2. PUBLISHED NOTICES FEED & CIRCULARS LOG (Fixed Size Block Box with Scrollbar) ── */}
+            <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-5 border border-slate-200/90 shadow-xs flex flex-col h-[380px] sm:h-[400px]">
+              
+              <div className="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-slate-100 shrink-0">
+                <div>
+                  <h3 className="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-2">
+                    <span>📋</span> Posted Notices
+                  </h3>
+                  <p className="text-[11px] text-slate-500 mt-0.5">
+                    View and manage posted notices.
+                  </p>
+                </div>
+
+                <button
+                  onClick={fetchRecentNotices}
+                  className="px-2.5 py-1 text-[11px] font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-xl border border-blue-200 transition-colors cursor-pointer flex items-center gap-1 shrink-0"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                  <span>Refresh</span>
+                </button>
+              </div>
+
+              {/* Filter Tabs */}
+              <div className="flex items-center gap-1.5 overflow-x-auto py-2 shrink-0 no-scrollbar" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                <button
+                  onClick={() => setFilterTab('all')}
+                  className={`px-3 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+                    filterTab === 'all'
+                      ? 'bg-blue-600 text-white shadow-xs'
+                      : 'bg-slate-100 hover:bg-slate-200 text-slate-600'
+                  }`}
+                >
+                  All ({recentNotices.length})
+                </button>
+
+                <button
+                  onClick={() => setFilterTab('active')}
+                  className={`px-3 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+                    filterTab === 'active'
+                      ? 'bg-emerald-600 text-white shadow-xs'
+                      : 'bg-slate-100 hover:bg-slate-200 text-slate-600'
+                  }`}
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-300"></span>
+                  <span>Active ({activeCount})</span>
+                </button>
+
+                <button
+                  onClick={() => setFilterTab('withdrawn')}
+                  className={`px-3 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+                    filterTab === 'withdrawn'
+                      ? 'bg-rose-600 text-white shadow-xs'
+                      : 'bg-slate-100 hover:bg-slate-200 text-slate-600'
+                  }`}
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-rose-300"></span>
+                  <span>Withdrawn ({withdrawnCount})</span>
+                </button>
+              </div>
+
+              {/* Notices Feed List with Scrollbar */}
+              {loadingNotices ? (
+                <div className="flex-1 flex flex-col items-center justify-center py-8 text-slate-400 text-xs gap-2">
+                  <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                  <span>Loading notices…</span>
+                </div>
+              ) : filteredNotices.length === 0 ? (
+                <div className="flex-1 flex flex-col items-center justify-center py-8 text-center text-slate-400 text-xs border border-dashed border-slate-200 rounded-2xl p-4 my-auto">
+                  <span className="text-2xl block mb-1">📭</span>
+                  <p className="font-bold text-slate-600">No notices found</p>
+                  <p className="text-slate-400 mt-0.5 text-[11px]">
+                    {filterTab === 'withdrawn'
+                      ? 'No withdrawn notices.'
+                      : filterTab === 'active'
+                      ? 'No active notices.'
+                      : 'Create a notice to get started.'}
+                  </p>
+                </div>
+              ) : (
+                <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar pr-1.5 space-y-2.5">
+                  {filteredNotices.map((n) => {
+                    const b = getPriorityBadge(n.priority || 'normal');
+                    const isWithdrawn = !!n.isDeleted;
+
+                    return (
+                      <div
+                        key={n._id}
+                        className={`rounded-2xl p-3.5 sm:p-4 border transition-all flex flex-col gap-2.5 relative ${
+                          isWithdrawn
+                            ? 'bg-rose-50/40 border-rose-200/90 shadow-2xs'
+                            : 'bg-white hover:border-blue-300 border-slate-200 shadow-2xs'
+                        }`}
+                      >
+                        {/* Top Row: Badges & Action Buttons */}
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex flex-wrap items-center gap-1.5">
+                            {isWithdrawn ? (
+                              <span className="inline-flex items-center gap-1 text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-rose-100 text-rose-800 border border-rose-300">
+                                🚫 WITHDRAWN
+                              </span>
+                            ) : (
+                              <span className={`inline-flex items-center gap-1 text-[10px] font-extrabold px-2 py-0.5 rounded-full border ${b.bg}`}>
+                                <span className={`w-1.5 h-1.5 rounded-full ${b.dot}`}></span>
+                                {b.label}
+                              </span>
+                            )}
+
+                            <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200">
+                              📢 General
+                            </span>
+                          </div>
+
+                          {/* Action Buttons */}
+                          <div className="flex items-center gap-1 shrink-0">
+                            {!isWithdrawn ? (
+                              <>
+                                {/* Edit Button */}
+                                <button
+                                  type="button"
+                                  onClick={() => promptEditNotice(n)}
+                                  className="px-2 py-1 text-xs font-bold text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 rounded-lg border border-blue-200 transition-colors cursor-pointer flex items-center gap-1"
+                                  title="Edit this notice"
+                                >
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                  <span>Edit</span>
+                                </button>
+
+                                {/* Delete / Withdraw Button */}
+                                <button
+                                  type="button"
+                                  onClick={() => promptDeleteNotice(n)}
+                                  className="px-2 py-1 text-xs font-bold text-rose-600 hover:text-rose-800 bg-rose-50 hover:bg-rose-100 rounded-lg border border-rose-200 transition-colors cursor-pointer flex items-center gap-1"
+                                  title="Withdraw this notice"
+                                >
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                                  <span>Delete</span>
+                                </button>
+                              </>
+                            ) : (
+                              <>
+                                {/* Restore Button */}
+                                <button
+                                  type="button"
+                                  onClick={() => handleRestoreNotice(n)}
+                                  className="px-2 py-1 text-xs font-bold text-emerald-700 hover:text-emerald-900 bg-emerald-50 hover:bg-emerald-100 rounded-lg border border-emerald-200 transition-colors cursor-pointer flex items-center gap-1"
+                                  title="Restore notice back to active students view"
+                                >
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                                  <span>Restore</span>
+                                </button>
+
+                                {/* Permanent Delete Button */}
+                                <button
+                                  type="button"
+                                  onClick={() => handlePermanentDelete(n)}
+                                  className="p-1 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                                  title="Permanently remove from database"
+                                >
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                                </button>
+                              </>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Notice Title with Fixed Max-Height & Invisible Scroll */}
+                        <div 
+                          className="max-h-12 overflow-y-auto no-scrollbar"
+                          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                        >
+                          <h4 className={`text-xs sm:text-sm font-extrabold leading-snug break-words ${isWithdrawn ? 'text-slate-600 line-through' : 'text-slate-900'}`}>
+                            {n.title}
+                          </h4>
+                        </div>
+
+                        {/* Notice Content with Fixed Max-Height & Invisible Scroll */}
+                        <div 
+                          className="max-h-24 overflow-y-auto no-scrollbar"
+                          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                        >
+                          <p className={`text-xs leading-relaxed whitespace-pre-line break-words ${isWithdrawn ? 'text-slate-500' : 'text-slate-700 font-medium'}`}>
+                            {n.message}
+                          </p>
+                        </div>
+
+                        {/* WITHDRAWN AUDIT BANNER: Shown if notice was deleted */}
+                        {isWithdrawn && (
+                          <div className="bg-rose-100/70 border border-rose-200 rounded-xl p-2.5 flex items-center justify-between gap-2 text-rose-900">
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm">🗑️</span>
+                              <div className="text-[11px] leading-tight">
+                                <span className="font-semibold text-rose-700">Deleted by: </span>
+                                <span className="font-extrabold text-rose-950">
+                                  Prof. {(n.deletedBy || 'Lecturer').replace(/^Prof\.?\s*/i, '')}
+                                </span>
+                              </div>
+                            </div>
+                            <span className="text-[10px] font-bold text-rose-600 shrink-0">
+                              {n.deletedAt ? new Date(n.deletedAt).toLocaleString(undefined, { dateStyle: 'short', timeStyle: 'short' }) : 'Deleted'}
+                            </span>
+                          </div>
+                        )}
+
+                        {/* Bottom Attribution Footer */}
+                        <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-100 text-[11px] font-semibold text-slate-500">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="flex items-center gap-1 text-slate-700">
+                              <span className="w-4 h-4 rounded-full bg-slate-200 text-slate-700 text-[9px] font-black flex items-center justify-center">
+                                {(n.postedBy || 'L')[0].toUpperCase()}
+                              </span>
+                              <span>By Prof. {(n.postedBy || 'Lecturer').replace(/^Prof\.?\s*/i, '')}</span>
+                            </span>
+
+                            {/* EDITED ATTRIBUTION: Shown if notice was edited */}
+                            {n.updatedBy && (
+                              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-amber-50 text-amber-800 border border-amber-200 text-[10px] font-bold">
+                                <span>✏️ Edited</span>
+                              </span>
+                            )}
+                          </div>
+
+                          <span className="text-[10px] text-slate-400">
+                            {new Date(n.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      {/* ───────────────────────────────────────────────────────────── */}
+      {/* ── CUSTOM DELETE CONFIRMATION ALERT MODAL ─────────────────── */}
+      {/* ───────────────────────────────────────────────────────────── */}
+      {deleteModalOpen && noticeToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3.5 sm:p-4 bg-slate-900/60 backdrop-blur-xs transition-opacity animate-in fade-in duration-150">
+          <div className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-7 shadow-2xl border border-slate-100 max-w-md w-full relative flex flex-col gap-4 transform transition-all">
+            
+            {/* Warning Icon Badge */}
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-rose-100 border border-rose-200 text-rose-600 flex items-center justify-center text-xl sm:text-2xl mx-auto shadow-inner">
+              ⚠️
+            </div>
+
+            {/* Modal Title & Explanation */}
+            <div className="text-center">
+              <h3 className="text-lg sm:text-xl font-black text-slate-900 tracking-tight">
+                Delete Notice?
+              </h3>
+              <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                This notice will be removed from student view.
+              </p>
+            </div>
+
+            {/* Notice Snippet Card with Hidden Scrollbar */}
+            <div className="bg-slate-50 rounded-xl sm:rounded-2xl p-3 sm:p-4 border border-slate-200 flex flex-col gap-1.5 text-left">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] uppercase tracking-wider font-extrabold text-slate-400">Notice</span>
+                <span className="text-[10px] font-bold text-slate-600 bg-white px-2 py-0.5 rounded-md border border-slate-200">
+                  {noticeToDelete.priority ? noticeToDelete.priority.toUpperCase() : 'NORMAL'}
+                </span>
+              </div>
+
+              <h4 className="text-xs sm:text-sm font-extrabold text-slate-900 line-clamp-1">
+                {noticeToDelete.title}
+              </h4>
+              <p className="text-xs text-slate-600 line-clamp-2">
+                {noticeToDelete.message}
+              </p>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="grid grid-cols-2 gap-2.5 pt-1">
+              <button
+                type="button"
+                onClick={() => { setDeleteModalOpen(false); setNoticeToDelete(null); }}
+                disabled={isDeleting}
+                className="h-10 sm:h-11 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-700 font-extrabold text-xs transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                onClick={handleConfirmDelete}
+                disabled={isDeleting}
+                className="h-10 sm:h-11 rounded-xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-700 hover:to-red-700 text-white font-extrabold text-xs shadow-md shadow-rose-500/25 flex items-center justify-center gap-1.5 transition-all cursor-pointer disabled:opacity-50"
+              >
+                {isDeleting ? (
+                  <>
+                    <svg className="animate-spin h-3.5 w-3.5 text-white" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>Deleting…</span>
+                  </>
+                ) : (
+                  <span>Delete</span>
+                )}
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
+
+      {/* ───────────────────────────────────────────────────────────── */}
+      {/* ── EDIT NOTICE MODAL ───────────────────────────────────────── */}
+      {/* ───────────────────────────────────────────────────────────── */}
+      {editModalOpen && editingNotice && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3.5 sm:p-4 bg-slate-900/60 backdrop-blur-xs transition-opacity animate-in fade-in duration-150">
+          <div className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-7 shadow-2xl border border-slate-100 max-w-lg w-full relative flex flex-col gap-4 transform transition-all max-h-[92vh] overflow-y-auto no-scrollbar" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+            
+            {/* Header with Close */}
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-sm">
+                  ✏️
+                </div>
+                <div>
+                  <h3 className="text-base sm:text-lg font-black text-slate-900">
+                    Edit Notice
+                  </h3>
+                  <p className="text-[11px] text-slate-400 font-semibold">
+                    Prof. {lecturerName.replace(/^Prof\.?\s*/i, '')}
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => { setEditModalOpen(false); setEditingNotice(null); }}
+                className="w-7 h-7 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-700 flex items-center justify-center transition-colors cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveEdit} className="flex flex-col gap-3.5">
+              
+              {/* Priority Selector Pills */}
+              <div>
+                <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-1.5">
+                  Priority
+                </label>
+                <div className="grid grid-cols-3 gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => setEditPriority('normal')}
+                    className={`h-9 sm:h-10 rounded-xl text-xs font-extrabold flex items-center justify-center gap-1 border transition-all cursor-pointer ${
+                      editPriority === 'normal'
+                        ? 'bg-blue-50 border-blue-400 text-blue-700 ring-2 ring-blue-500/20'
+                        : 'bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-600'
+                    }`}
+                  >
+                    <span>📌 Normal</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setEditPriority('important')}
+                    className={`h-9 sm:h-10 rounded-xl text-xs font-extrabold flex items-center justify-center gap-1 border transition-all cursor-pointer ${
+                      editPriority === 'important'
+                        ? 'bg-amber-50 border-amber-400 text-amber-800 ring-2 ring-amber-500/20'
+                        : 'bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-600'
+                    }`}
+                  >
+                    <span>⚡ Important</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setEditPriority('urgent')}
+                    className={`h-9 sm:h-10 rounded-xl text-xs font-extrabold flex items-center justify-center gap-1 border transition-all cursor-pointer ${
+                      editPriority === 'urgent'
+                        ? 'bg-rose-50 border-rose-400 text-rose-700 ring-2 ring-rose-500/20'
+                        : 'bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-600'
+                    }`}
+                  >
+                    <span>🚨 Urgent</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Edit Title */}
+              <div>
+                <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-1">
+                  Title <span className="text-blue-600">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={editTitle}
+                  onChange={(e) => setEditTitle(e.target.value)}
+                  placeholder="Title"
+                  required
+                  className="w-full h-10 px-3.5 bg-slate-50 hover:bg-white focus:bg-white border border-slate-200 focus:border-blue-500 focus:ring-3 focus:ring-blue-500/10 rounded-xl outline-none text-slate-900 text-xs sm:text-sm font-bold transition-all"
+                />
+              </div>
+
+              {/* Edit Message */}
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider">
+                    Description <span className="text-blue-600">*</span>
+                  </label>
+                  <span className="text-[11px] font-semibold text-slate-400">
+                    {editMessage.length} characters
+                  </span>
+                </div>
+                <textarea
+                  value={editMessage}
+                  onChange={(e) => setEditMessage(e.target.value)}
+                  placeholder="Notice details..."
+                  required
+                  rows={5}
+                  className="w-full p-3 bg-slate-50 hover:bg-white focus:bg-white border border-slate-200 focus:border-blue-500 focus:ring-3 focus:ring-blue-500/10 rounded-xl outline-none text-slate-800 text-xs sm:text-sm font-medium transition-all resize-none leading-relaxed"
+                />
+              </div>
+
+              {/* Action Buttons */}
+              <div className="grid grid-cols-2 gap-2.5 pt-1">
+                <button
+                  type="button"
+                  onClick={() => { setEditModalOpen(false); setEditingNotice(null); }}
+                  disabled={isUpdating}
+                  className="h-10 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-700 font-extrabold text-xs transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="submit"
+                  disabled={isUpdating || !editTitle.trim() || !editMessage.trim()}
+                  className="h-10 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-extrabold text-xs shadow-md shadow-blue-500/25 flex items-center justify-center gap-1.5 transition-all cursor-pointer disabled:opacity-50"
+                >
+                  {isUpdating ? (
+                    <>
+                      <svg className="animate-spin h-3.5 w-3.5 text-white" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      <span>Saving…</span>
+                    </>
+                  ) : (
+                    <span>Save Changes</span>
+                  )}
+                </button>
+              </div>
+
+            </form>
+          </div>
+        </div>
+      )}
+
+    </main>
+  );
+};
+
+export default Notice;

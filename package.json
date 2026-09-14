@@ -8,16 +8,20 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "backend": "nodemon D:\\web-project\\src\\backend\\main.js"
+    "backend": "nodemon src/backend/main.js",
+    "seed:lecture": "node src/backend/seedLecture.js"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.18",
     "bcryptjs": "^3.0.3",
+    "cloudinary": "^2.11.0",
     "cors": "^2.8.6",
     "dotenv": "^17.2.4",
     "express": "^4.22.1",
+    "framer-motion": "^13.2.0",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.2.1",
+    "multer": "^2.3.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-hook-form": "^7.71.1",
