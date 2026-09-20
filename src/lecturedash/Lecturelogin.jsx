@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useForm } from "react-hook-form";
 import { motion } from 'framer-motion';
 import { API_BASE_URL } from '../config/api';
+import collegeBg from '../assets/college.jpg';
 
 // Icons
 const UserIcon = () => (
@@ -130,7 +131,6 @@ const Lecturelogin = () => {
                     100% { background-position: 100% 50%; }
                 }
                 .animate-pan {
-                    background-image: url('./src/assets/college.jpg');
                     background-size: 130% auto;
                     background-repeat: no-repeat;
                     animation: panBackground 40s linear infinite alternate;
@@ -145,7 +145,10 @@ const Lecturelogin = () => {
                 .animate-float { animation: float 6s ease-in-out infinite; }
             `}</style>
 
-            <main className="fixed inset-0 flex flex-col justify-center items-center animate-pan font-sans px-4 sm:px-6 overflow-y-auto">
+            <main 
+                style={{ backgroundImage: `url(${collegeBg})` }}
+                className="fixed inset-0 flex flex-col justify-center items-center animate-pan font-sans px-4 sm:px-6 overflow-y-auto"
+            >
 
                 {/* Dark overlay for readability */}
                 <div className="absolute inset-0 bg-black/40 pointer-events-none"></div>
