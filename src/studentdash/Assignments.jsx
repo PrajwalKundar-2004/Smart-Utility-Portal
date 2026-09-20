@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar2 from '../components/Navbar2';
+import { API_BASE_URL } from '../config/api';
 
 // ─── Inline SVG Icons ────────────────────────────────────────────────────────
 const ExternalLinkIcon = () => (
@@ -51,7 +52,7 @@ const Assignments = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:3000/api/student/assignments', {
+      const res = await fetch(`${API_BASE_URL}/api/student/assignments`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -88,7 +89,7 @@ const Assignments = () => {
     const fileName = att.fileName || att.name || 'document.pdf';
     const isPdf = att.fileType === 'pdf' || att.type === 'pdf' || fileName.toLowerCase().endsWith('.pdf');
     if (isPdf && att.filePublicId) {
-      return `http://localhost:3000/api/attachment/view?publicId=${encodeURIComponent(att.filePublicId)}&format=pdf&fileName=${encodeURIComponent(fileName)}`;
+      return `${API_BASE_URL}/api/attachment/view?publicId=${encodeURIComponent(att.filePublicId)}&format=pdf&fileName=${encodeURIComponent(fileName)}`;
     }
     return att.fileUrl || att.url || '';
   };

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';
 import Navbar1 from '../components/Navbar1';
+import { API_BASE_URL } from '../config/api';
 
 const Notice = () => {
   const navigate = useNavigate();
@@ -35,7 +36,7 @@ const Notice = () => {
   const fetchRecentNotices = async () => {
     try {
       setLoadingNotices(true);
-      const res = await fetch('http://localhost:3000/api/lecture/notices');
+      const res = await fetch(`${API_BASE_URL}/api/lecture/notices`);
       const data = await res.json();
       if (data.success) {
         setRecentNotices(data.notices || []);
@@ -69,7 +70,7 @@ const Notice = () => {
         priority
       };
 
-      const response = await fetch('http://localhost:3000/api/lecture/notice', {
+      const response = await fetch(`${API_BASE_URL}/api/lecture/notice`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -103,7 +104,7 @@ const Notice = () => {
     if (!noticeToDelete) return;
     try {
       setIsDeleting(true);
-      const res = await fetch(`http://localhost:3000/api/lecture/notice/${noticeToDelete._id}`, {
+      const res = await fetch(`${API_BASE_URL}/api/lecture/notice/${noticeToDelete._id}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ deletedBy: lecturerName })
@@ -152,7 +153,7 @@ const Notice = () => {
         updatedBy: lecturerName
       };
 
-      const res = await fetch(`http://localhost:3000/api/lecture/notice/${editingNotice._id}`, {
+      const res = await fetch(`${API_BASE_URL}/api/lecture/notice/${editingNotice._id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -177,7 +178,7 @@ const Notice = () => {
   // Restore Withdrawn Notice
   const handleRestoreNotice = async (notice) => {
     try {
-      const res = await fetch(`http://localhost:3000/api/lecture/notice/${notice._id}/restore`, {
+      const res = await fetch(`${API_BASE_URL}/api/lecture/notice/${notice._id}/restore`, {
         method: 'PUT'
       });
       const data = await res.json();
@@ -196,7 +197,7 @@ const Notice = () => {
   const handlePermanentDelete = async (notice) => {
     if (!window.confirm(`Permanently erase "${notice.title}" from database records? This cannot be undone.`)) return;
     try {
-      const res = await fetch(`http://localhost:3000/api/lecture/notice/${notice._id}/permanent`, {
+      const res = await fetch(`${API_BASE_URL}/api/lecture/notice/${notice._id}/permanent`, {
         method: 'DELETE'
       });
       const data = await res.json();

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';
 import Navbar1 from '../components/Navbar1';
+import { API_BASE_URL } from '../config/api';
 
 const TrashIcon = ({ className = "w-3.5 h-3.5" }) => (
   <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -28,7 +29,7 @@ const StudentList = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const res = await fetch('http://localhost:3000/api/lecture/students-overview');
+      const res = await fetch(`${API_BASE_URL}/api/lecture/students-overview`);
       const data = await res.json();
       if (data.success) {
         setStudents(data.students || []);
@@ -61,7 +62,7 @@ const StudentList = () => {
     if (!studentToDelete) return;
     try {
       setIsDeleting(true);
-      const res = await fetch(`http://localhost:3000/api/lecture/student/${encodeURIComponent(studentToDelete.usn)}`, {
+      const res = await fetch(`${API_BASE_URL}/api/lecture/student/${encodeURIComponent(studentToDelete.usn)}`, {
         method: 'DELETE',
       });
       const data = await res.json();

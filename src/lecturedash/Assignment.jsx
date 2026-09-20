@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';
 import Navbar1 from '../components/Navbar1';
+import { API_BASE_URL } from '../config/api';
 
 // ─── Inline SVG Icons ────────────────────────────────────────────────────────
 const TextIcon = () => (
@@ -150,7 +151,7 @@ const Assignment = () => {
     const fileName = att.fileName || att.name || 'document.pdf';
     const isPdf = att.fileType === 'pdf' || att.type === 'pdf' || fileName.toLowerCase().endsWith('.pdf');
     if (isPdf && att.filePublicId) {
-      return `http://localhost:3000/api/attachment/view?publicId=${encodeURIComponent(att.filePublicId)}&format=pdf&fileName=${encodeURIComponent(fileName)}`;
+      return `${API_BASE_URL}/api/attachment/view?publicId=${encodeURIComponent(att.filePublicId)}&format=pdf&fileName=${encodeURIComponent(fileName)}`;
     }
     return att.fileUrl || att.url || '';
   };
@@ -244,7 +245,7 @@ const Assignment = () => {
         setActiveSubject(saved);
         return;
       }
-      const res = await fetch('http://localhost:3000/api/lecture/subjects');
+      const res = await fetch(`${API_BASE_URL}/api/lecture/subjects`);
       const data = await res.json();
       if (data.success && data.subjects?.length > 0) {
         setSubjects(data.subjects);
@@ -262,7 +263,7 @@ const Assignment = () => {
   const fetchStudents = async () => {
     try {
       setLoadingStudents(true);
-      const res = await fetch('http://localhost:3000/api/student/all');
+      const res = await fetch(`${API_BASE_URL}/api/student/all`);
       const data = await res.json();
       if (data.success) {
         setStudents(data.students || []);
@@ -282,7 +283,7 @@ const Assignment = () => {
       if (activeSubject) params.append('subject', activeSubject);
       if (lecturerName) params.append('createdBy', lecturerName);
 
-      const url = `http://localhost:3000/api/lecture/assignments?${params.toString()}`;
+      const url = `${API_BASE_URL}/api/lecture/assignments?${params.toString()}`;
       const res = await fetch(url);
       const data = await res.json();
       if (data.success) {
@@ -488,7 +489,7 @@ const Assignment = () => {
         formData.append('files', item.file);
       });
 
-      const res = await fetch('http://localhost:3000/api/lecture/assignment', {
+      const res = await fetch(`${API_BASE_URL}/api/lecture/assignment`, {
         method: 'POST',
         body: formData,
       });
@@ -531,7 +532,7 @@ const Assignment = () => {
 
     try {
       const res = await fetch(
-        `http://localhost:3000/api/lecture/assignment/${assignmentToDelete._id}`,
+        `${API_BASE_URL}/api/lecture/assignment/${assignmentToDelete._id}`,
         {
           method: 'DELETE',
           headers: { 'Content-Type': 'application/json' },
@@ -726,7 +727,7 @@ const Assignment = () => {
         formData.append('files', item.file);
       });
 
-      const res = await fetch(`http://localhost:3000/api/lecture/assignment/${editingAssignment._id}`, {
+      const res = await fetch(`${API_BASE_URL}/api/lecture/assignment/${editingAssignment._id}`, {
         method: 'PUT',
         body: formData,
       });

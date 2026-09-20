@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar1 from '../components/Navbar1';
+import { API_BASE_URL } from '../config/api';
 
 const Attendance = () => {
   const navigate = useNavigate();
@@ -25,7 +26,7 @@ const Attendance = () => {
   useEffect(() => {
     const fetchSubjects = async () => {
       try {
-        const res = await fetch('http://localhost:3000/api/lecture/subjects');
+        const res = await fetch(`${API_BASE_URL}/api/lecture/subjects`);
         const data = await res.json();
         if (data.success && data.subjects && data.subjects.length > 0) {
           setSubjects(data.subjects);
@@ -52,7 +53,7 @@ const Attendance = () => {
     const fetchSheet = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`http://localhost:3000/api/lecture/attendance-sheet/${encodeURIComponent(activeSubject)}`);
+        const res = await fetch(`${API_BASE_URL}/api/lecture/attendance-sheet/${encodeURIComponent(activeSubject)}`);
         const data = await res.json();
         if (data.success) {
           setColumns(data.columns || ['Internal', 'External', 'Total']);
@@ -166,7 +167,7 @@ const Attendance = () => {
         })),
       };
 
-      const res = await fetch('http://localhost:3000/api/lecture/attendance/save-sheet', {
+      const res = await fetch(`${API_BASE_URL}/api/lecture/attendance/save-sheet`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

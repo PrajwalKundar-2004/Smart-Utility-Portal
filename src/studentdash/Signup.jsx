@@ -6,6 +6,7 @@ import padlock from '../assets/padlock.png';
 import user from '../assets/user.png';
 import toast, { Toaster } from 'react-hot-toast';
 import { Link, useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from '../config/api';
 
 const Signup = () => {
     const { register, handleSubmit, watch, formState: { errors, isSubmitting } } = useForm();
@@ -16,7 +17,7 @@ const Signup = () => {
 
     const onSubmit = async (data) => {
         try {
-            const response = await fetch('http://localhost:3000/api/student/signup', {
+            const response = await fetch(`${API_BASE_URL}/api/student/signup`, {
                 method: 'POST',
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

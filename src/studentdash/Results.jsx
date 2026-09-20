@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';
 import Navbar2 from '../components/Navbar2';
+import { API_BASE_URL } from '../config/api';
 
 const Results = () => {
   const navigate = useNavigate();
@@ -22,7 +23,7 @@ const Results = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:3000/api/student/studentresult', {
+      const res = await fetch(`${API_BASE_URL}/api/student/studentresult`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

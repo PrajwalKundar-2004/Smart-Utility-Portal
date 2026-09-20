@@ -1,0 +1,64 @@
+services:
+  mongo:
+    image: mongo:7.0
+    container_name: smart_utility_mongo
+    restart: unless-stopped
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - portal_network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: smart_utility_backend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    env_file:
+      - path: src/backend/.env
+        required: false
+    environment:
+      - MONGO_URI=${MONGO_URI:-mongodb://mongo:27017/webProject}
+      - port=3000
+      - jwt_secret=${jwt_secret:-lecture-login-key}
+      - jwt_student_key=${jwt_student_key:-student-login-key}
+      - CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME}
+      - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}
+      - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
+    depends_on:
+      mongo:
+        condition: service_healthy
+    networks:
+      - portal_network
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: smart_utility_frontend
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    networks:
+      - portal_network
+
+volumes:
+  mongo_data:
+    name: smart_utility_mongo_data
+
+networks:
+  portal_network:
+    name: smart_utility_network
+    driver: bridge

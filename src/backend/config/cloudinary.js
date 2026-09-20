@@ -18,35 +18,49 @@ cloudinary.config({
  * @param {string} folder - Destination folder in Cloudinary
  * @returns {Promise<{ url: string, public_id: string, bytes: number, format: string }>}
  */
-export const uploadToCloudinary = (buffer, originalname, folder = 'assignments') => {
+export const uploadToCloudinary = (buffer, originalname, folder = 'assignments', customResourceType = null) => {
   return new Promise((resolve, reject) => {
     // Detect extension/format
     const ext = path.extname(originalname).toLowerCase();
-    const isPdf = ext === '.pdf';
-    // Use the exact same name as the file
-    const cleanBaseName = path.basename(originalname, ext).replace(/[^a-zA-Z0-9_-]/g, '_');
-    
-    // In Cloudinary, uploading with resource_type: 'auto' (or 'image') allows PDFs
-    // to be indexed in the main Media Library, generate visual page thumbnails, and be delivered as PDF documents.
+    const isImage = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg'].includes(ext);
+    const isVideo = ['.mp4', '.mov', '.webm', '.avi', '.mkv'].includes(ext);
+
+    // Select optimal resource_type for Cloudinary
+    let resource_type = customResourceType;
+    if (!resource_type) {
+      if (isImage) {
+        resource_type = 'image';
+      } else if (isVideo) {
+        resource_type = 'video';
+      } else {
+        // PDFs and documents upload reliably as 'raw' without hitting capacity limits
+        resource_type = 'raw';
+      }
+    }
+
+    const cleanBaseName = path.basename(originalname, ext).replace(/[^a-zA-Z0-9_-]/g, '_') || 'file';
+    const uniquePublicId = `${cleanBaseName}_${Date.now()}${resource_type === 'raw' ? ext : ''}`;
+
     const uploadStream = cloudinary.uploader.upload_stream(
       {
-        folder: folder,
-        resource_type: 'auto',
-        public_id: cleanBaseName,
+        folder,
+        resource_type,
+        public_id: uniquePublicId,
         use_filename: true,
-        unique_filename: false,
-        format: isPdf ? 'pdf' : undefined,
+        unique_filename: true,
       },
       (error, result) => {
         if (error) {
           console.error('Cloudinary Upload Error:', error);
           return reject(error);
         }
+        const finalUrl = result.secure_url || result.url;
         resolve({
-          url: result.secure_url || result.url,
+          url: finalUrl,
+          secure_url: finalUrl,
           public_id: result.public_id,
           bytes: result.bytes,
-          format: result.format || (isPdf ? 'pdf' : ext.replace('.', '')),
+          format: result.format || ext.replace('.', ''),
           resource_type: result.resource_type,
         });
       }
@@ -73,9 +87,19 @@ export const deleteFromCloudinary = async (publicId, resourceType = 'image') => 
   }
 };
 
-export const getSignedDownloadUrl = (publicId, format = 'pdf', resourceType = 'image') => {
-  return cloudinary.utils.private_download_url(publicId, format, {
-    resource_type: resourceType,
+export const getSignedDownloadUrl = (publicId, format = '', resourceType = 'auto') => {
+  let rType = resourceType;
+  if (!rType || rType === 'auto') {
+    const isDoc = publicId.toLowerCase().endsWith('.pdf') ||
+      publicId.toLowerCase().includes('.doc') ||
+      publicId.toLowerCase().includes('.xls') ||
+      publicId.toLowerCase().includes('.ppt') ||
+      publicId.toLowerCase().includes('.txt');
+    rType = isDoc ? 'raw' : 'image';
+  }
+  const fmt = rType === 'raw' ? '' : (format || '');
+  return cloudinary.utils.private_download_url(publicId, fmt, {
+    resource_type: rType,
     type: 'upload',
   });
 };

@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import toast, { Toaster } from 'react-hot-toast';
 import logo1 from '../assets/logo1.png';
 import Navbar1 from '../components/Navbar1';
+import { API_BASE_URL } from '../config/api';
 
 // ─── Animation Variants ───────────────────────────────────────────────────────
 const navbarVariants = {
@@ -89,7 +90,7 @@ const Lectdash = () => {
 
   const fetchSubjects = async () => {
     try {
-      const res = await fetch('http://localhost:3000/api/lecture/subjects');
+      const res = await fetch(`${API_BASE_URL}/api/lecture/subjects`);
       const data = await res.json();
       if (data.success) setSubjects(data.subjects);
     } catch (e) { /* silent */ }
@@ -113,7 +114,7 @@ const Lectdash = () => {
   const handleAddSubject = async () => {
     if (!newSubject.trim()) return;
     try {
-      const res = await fetch('http://localhost:3000/api/lecture/subjects', {
+      const res = await fetch(`${API_BASE_URL}/api/lecture/subjects`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: newSubject }),
@@ -126,7 +127,7 @@ const Lectdash = () => {
   const handleEditSave = async (id) => {
     if (!editingName.trim()) return;
     try {
-      const res = await fetch(`http://localhost:3000/api/lecture/subjects/${id}`, {
+      const res = await fetch(`${API_BASE_URL}/api/lecture/subjects/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: editingName }),
@@ -138,7 +139,7 @@ const Lectdash = () => {
 
   const handleDelete = async (id, name) => {
     try {
-      const res = await fetch(`http://localhost:3000/api/lecture/subjects/${id}`, { method: 'DELETE' });
+      const res = await fetch(`${API_BASE_URL}/api/lecture/subjects/${id}`, { method: 'DELETE' });
       const data = await res.json();
       if (data.success) {
         setSubjects(data.subjects);

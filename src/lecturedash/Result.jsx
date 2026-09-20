@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar1 from '../components/Navbar1';
+import { API_BASE_URL } from '../config/api';
 
 const Result = () => {
   const navigate = useNavigate();
@@ -23,7 +24,7 @@ const Result = () => {
   useEffect(() => {
     const fetchSubjects = async () => {
       try {
-        const res = await fetch('http://localhost:3000/api/lecture/subjects');
+        const res = await fetch(`${API_BASE_URL}/api/lecture/subjects`);
         const data = await res.json();
         if (data.success && data.subjects && data.subjects.length > 0) {
           setSubjects(data.subjects);
@@ -50,7 +51,7 @@ const Result = () => {
     const fetchSheet = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`http://localhost:3000/api/lecture/results-sheet/${encodeURIComponent(activeSubject)}`);
+        const res = await fetch(`${API_BASE_URL}/api/lecture/results-sheet/${encodeURIComponent(activeSubject)}`);
         const data = await res.json();
         if (data.success) {
           setColumns(data.columns || []);
@@ -183,7 +184,7 @@ const Result = () => {
         })),
       };
 
-      const res = await fetch('http://localhost:3000/api/lecture/result/save-sheet', {
+      const res = await fetch(`${API_BASE_URL}/api/lecture/result/save-sheet`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

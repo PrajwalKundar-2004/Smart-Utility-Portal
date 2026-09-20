@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar2 from '../components/Navbar2';
+import { API_BASE_URL } from '../config/api';
 
 const Notices = () => {
   const navigate = useNavigate();
@@ -12,7 +13,7 @@ const Notices = () => {
   const fetchNotices = async () => {
     try {
       setLoading(true);
-      const res = await fetch('http://localhost:3000/api/student/notices');
+      const res = await fetch(`${API_BASE_URL}/api/student/notices`);
       const data = await res.json();
       if (Array.isArray(data)) {
         setNotices(data);

@@ -1,0 +1,18 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Copy dependency manifests
+COPY package*.json ./
+
+# Install backend dependencies
+RUN npm install --omit=dev
+
+# Copy backend source code
+COPY src/backend ./src/backend
+
+# Expose backend port
+EXPOSE 3000
+
+# Start server
+CMD ["node", "src/backend/main.js"]
