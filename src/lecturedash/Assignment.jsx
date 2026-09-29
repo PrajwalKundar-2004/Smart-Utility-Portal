@@ -777,65 +777,66 @@ const Assignment = () => {
         <Navbar1 />
       </div>
 
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3.5 sm:py-8 flex flex-col gap-4 sm:gap-6">
+      {/* ── Outer Page Container: max-w-7xl on laptop, neat & scaled on mobile ── */}
+      <div className="w-full max-w-lg sm:max-w-7xl mx-auto px-2.5 sm:px-6 lg:px-8 py-3 sm:py-8 flex flex-col gap-2.5 sm:gap-6">
         {/* ── Header Bar ── */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3.5 sm:gap-6 bg-white p-3.5 sm:p-6 lg:p-7 rounded-xl border border-slate-200/80 shadow-xs">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-6 bg-white p-3 sm:p-6 lg:p-7 rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-2xs">
           <div className="flex-1 min-w-0 w-full">
             <button
               onClick={() => navigate('/lecturedash')}
-              className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors mb-2 sm:mb-3 cursor-pointer"
+              className="inline-flex items-center gap-1.5 text-[11px] sm:text-sm font-semibold text-slate-500 hover:text-blue-600 transition-colors mb-1 sm:mb-2.5 cursor-pointer"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" className="sm:w-4 sm:h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
               <span>Back to Dashboard</span>
             </button>
 
-            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-              <h1 className="text-lg sm:text-2xl lg:text-3xl font-bold text-slate-900 tracking-tight">
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-3">
+              <h1 className="text-base sm:text-2xl lg:text-3xl font-bold text-slate-900 tracking-tight">
                 Assignments
               </h1>
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-50 text-purple-700 border border-purple-200 shadow-2xs">
+              <span className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 rounded-md sm:rounded-full text-[10px] sm:text-xs font-semibold bg-purple-50 text-purple-700 border border-purple-200 shadow-2xs">
                 {assignments.length} Total
               </span>
             </div>
 
-            <p className="text-slate-500 text-xs sm:text-sm mt-1">
+            <p className="text-slate-500 text-[11px] sm:text-sm mt-0.5 sm:mt-1">
               Create and manage assignments for your class.
             </p>
           </div>
 
           {/* Active Subject Display (Fixed / Non-editable) */}
-          <div className="w-full sm:w-auto flex items-center justify-between sm:justify-start gap-2 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100 shrink-0">
-            <span className="text-2xs sm:text-xs font-bold text-slate-400 uppercase tracking-wider">Subject:</span>
-            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 border border-blue-200 text-blue-800 text-xs sm:text-sm font-bold shadow-2xs max-w-[200px] sm:max-w-none">
-              <span className="w-2 h-2 rounded-full bg-blue-600 shrink-0"></span>
+          <div className="w-full sm:w-auto flex items-center justify-between sm:justify-start gap-1.5 sm:gap-2 pt-1.5 sm:pt-0 border-t sm:border-t-0 border-slate-100 shrink-0">
+            <span className="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider">Subject:</span>
+            <div className="inline-flex items-center gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-md sm:rounded-lg bg-blue-50 border border-blue-200 text-blue-800 text-[11px] sm:text-sm font-bold shadow-2xs max-w-[220px] sm:max-w-none">
+              <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-blue-600 shrink-0"></span>
               <span className="truncate">{activeSubject || 'No subject'}</span>
             </div>
           </div>
         </div>
 
         {/* ── Main Workspace Grid (Left: Composer, Right: Live Preview & Feed) ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-6 items-start">
           {/* ── Left Column: Assignment Composer Form (7 cols) ── */}
-          <div className="lg:col-span-7 flex flex-col gap-5 sm:gap-6">
-            <div className="bg-white rounded-xl p-3.5 sm:p-6 border border-slate-200/80 shadow-xs">
-              <div className="flex flex-wrap items-center justify-between gap-2 mb-4 sm:mb-5 border-b border-slate-100 pb-3 sm:pb-4">
+          <div className="lg:col-span-7 flex flex-col gap-3 sm:gap-6">
+            <div className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-6 border border-slate-200/90 shadow-2xs">
+              <div className="flex flex-wrap items-center justify-between gap-1.5 mb-2.5 sm:mb-5 border-b border-slate-100 pb-2 sm:pb-4">
                 <div>
-                  <h2 className="text-base sm:text-lg font-bold text-slate-800">
+                  <h2 className="text-xs sm:text-lg font-bold text-slate-800">
                     New Assignment
                   </h2>
-                  <p className="text-2xs sm:text-xs text-slate-400 mt-0.5">
+                  <p className="text-[10px] sm:text-xs text-slate-400 mt-0.5">
                     For <strong className="text-blue-600">{activeSubject || 'selected subject'}</strong>
                   </p>
                 </div>
-                <span className="text-2xs sm:text-xs font-semibold bg-blue-50 text-blue-700 px-2.5 py-1 rounded-md border border-blue-200">
+                <span className="text-[10px] sm:text-xs font-semibold bg-blue-50 text-blue-700 px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded-md border border-blue-200">
                   By {lecturerName}
                 </span>
               </div>
 
-              <form onSubmit={handlePostAssignment} className="flex flex-col gap-4 sm:gap-5">
+              <form onSubmit={handlePostAssignment} className="flex flex-col gap-2.5 sm:gap-5">
                 {/* 1. Assignment Title */}
                 <div>
-                  <label className="block text-xs sm:text-sm font-bold text-slate-700 mb-1.5">
+                  <label className="block text-[11px] sm:text-sm font-bold text-slate-700 mb-1 sm:mb-1.5">
                     Title <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -844,13 +845,13 @@ const Assignment = () => {
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder="Title"
-                    className="w-full px-3.5 py-2.5 rounded-lg text-base sm:text-sm font-medium border border-slate-300 bg-white text-slate-800 placeholder:text-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none transition-all hover:border-slate-400 min-h-[44px]"
+                    className="w-full h-8 sm:h-11 px-2.5 sm:px-3.5 rounded-md sm:rounded-lg text-xs sm:text-sm font-medium border border-slate-300 bg-white text-slate-800 placeholder:text-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none transition-all hover:border-slate-400 shadow-2xs"
                   />
                 </div>
 
                 {/* 2. Instructions & File Attachment */}
-                <div className="flex flex-col gap-1.5">
-                  <label className="block text-xs sm:text-sm font-bold text-slate-700">
+                <div className="flex flex-col gap-1 sm:gap-1.5">
+                  <label className="block text-[11px] sm:text-sm font-bold text-slate-700">
                     Instructions & Files <span className="text-red-500">*</span>
                   </label>
 
@@ -868,89 +869,89 @@ const Assignment = () => {
                         addFiles(dropped);
                       }
                     }}
-                    className={`rounded-lg border transition-all flex flex-col bg-white overflow-hidden ${
+                    className={`rounded-md sm:rounded-lg border transition-all flex flex-col bg-white overflow-hidden ${
                       isDragging
                         ? 'border-blue-500 ring-2 ring-blue-100 bg-blue-50/20'
                         : 'border-slate-300 hover:border-slate-400 focus-within:border-blue-600 focus-within:ring-2 focus-within:ring-blue-100'
                     }`}
                   >
                     {/* Top Bar */}
-                    <div className="px-3 sm:px-3.5 py-2 bg-slate-50 border-b border-slate-200 flex flex-wrap items-center justify-between gap-1.5">
-                      <span className="text-xs font-semibold text-slate-600 flex items-center gap-1.5">
+                    <div className="px-2 sm:px-3.5 py-1 sm:py-2 bg-slate-50 border-b border-slate-200 flex flex-wrap items-center justify-between gap-1">
+                      <span className="text-[10px] sm:text-xs font-semibold text-slate-600 flex items-center gap-1.5">
                         <span>Details & Media</span>
                       </span>
                       {files.length > 0 ? (
-                        <span className="text-2xs font-semibold text-blue-700 bg-blue-100/80 px-2 py-0.5 rounded border border-blue-200 whitespace-nowrap">
+                        <span className="text-[9px] sm:text-2xs font-semibold text-blue-700 bg-blue-100/80 px-1.5 sm:px-2 py-0.5 rounded border border-blue-200 whitespace-nowrap">
                           {files.length}/5 files ({totalFilesSizeMB} MB)
                         </span>
                       ) : (
-                        <span className="text-2xs text-slate-400 font-medium whitespace-nowrap">
+                        <span className="text-[9px] sm:text-2xs text-slate-400 font-medium whitespace-nowrap">
                           Max 5 files (up to 25MB)
                         </span>
                       )}
                     </div>
 
-                    <div className="p-3 sm:p-3.5 flex flex-col gap-2.5 sm:gap-3">
+                    <div className="p-2 sm:p-3.5 flex flex-col gap-1.5 sm:gap-3">
                       {/* Attached Files Chips Grid */}
                       {files.length > 0 && (
-                        <div className="flex flex-col gap-2 p-2.5 rounded-lg bg-slate-50 border border-slate-200">
+                        <div className="flex flex-col gap-1 p-1.5 sm:p-2 rounded-md sm:rounded-lg bg-slate-50 border border-slate-200">
                           <div className="flex items-center justify-between">
-                            <span className="text-2xs font-bold text-slate-600 uppercase tracking-wide">
+                            <span className="text-[9px] sm:text-2xs font-bold text-slate-600 uppercase tracking-wide">
                               Attached ({files.length}/5)
                             </span>
                             {files.length > 1 && (
                               <button
                                 type="button"
                                 onClick={clearAllFiles}
-                                className="text-2xs text-red-600 hover:text-red-700 font-semibold hover:underline cursor-pointer"
+                                className="text-[9px] sm:text-2xs text-red-600 hover:text-red-700 font-semibold hover:underline cursor-pointer"
                               >
                                 Remove All
                               </button>
                             )}
                           </div>
 
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 sm:gap-2">
                             {files.map((item) => (
                               <div
                                 key={item.id}
-                                className="flex items-center justify-between gap-2 p-2 rounded-lg bg-white border border-slate-200 shadow-2xs group hover:border-blue-300 transition-all"
+                                className="flex items-center justify-between gap-1.5 p-1 sm:p-2 rounded-md sm:rounded-lg bg-white border border-slate-200 shadow-2xs group hover:border-blue-300 transition-all"
                               >
                                 <button
                                   type="button"
                                   onClick={() => openAttachmentPreview(item)}
-                                  className="flex items-center gap-2 min-w-0 flex-1 text-left cursor-pointer"
+                                  className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1 text-left cursor-pointer"
                                   title={`Click to preview ${item.name}`}
                                 >
                                   {item.type === 'photo' && item.preview ? (
                                     <img
                                       src={item.preview}
                                       alt={item.name}
-                                      className="w-10 h-10 shrink-0 object-cover rounded-md border border-slate-200 group-hover:opacity-90 shadow-2xs"
+                                      className="w-7 h-7 sm:w-10 sm:h-10 shrink-0 object-cover rounded border border-slate-200 group-hover:opacity-90 shadow-2xs"
                                     />
                                   ) : (
-                                    <div className="w-10 h-10 shrink-0 rounded-md bg-red-100 border border-red-200 text-red-600 flex flex-col items-center justify-center font-bold text-2xs">
+                                    <div className="w-7 h-7 sm:w-10 sm:h-10 shrink-0 rounded bg-red-100 border border-red-200 text-red-600 flex flex-col items-center justify-center font-bold text-[8px] sm:text-2xs">
                                       <span>📄</span>
-                                      <span className="text-[9px]">PDF</span>
+                                      <span className="text-[7px] sm:text-[9px]">PDF</span>
                                     </div>
                                   )}
                                   <div className="min-w-0 flex-1">
-                                    <p className="text-xs font-semibold text-slate-800 group-hover:text-blue-600 transition-colors truncate" title={item.name}>
+                                    <p className="text-[10px] sm:text-xs font-semibold text-slate-800 group-hover:text-blue-600 transition-colors truncate" title={item.name}>
                                       {item.name}
                                     </p>
-                                    <p className="text-2xs text-slate-400 truncate">
+                                    <p className="text-[8px] sm:text-2xs text-slate-400 truncate">
                                       {formatFileSize(item.size)} • {item.type === 'pdf' ? 'PDF' : 'Photo'}
                                     </p>
                                   </div>
                                 </button>
 
-                                <div className="flex items-center gap-1 shrink-0">
+                                <div className="flex items-center gap-0.5 sm:gap-1 shrink-0">
                                   <button
                                     type="button"
                                     onClick={() => openAttachmentPreview(item)}
-                                    className="p-1.5 text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors cursor-pointer flex items-center gap-1 text-2xs font-bold"
+                                    className="p-0.5 sm:p-1 text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors cursor-pointer flex items-center gap-0.5 text-[9px] sm:text-2xs font-bold"
                                     title="View attachment in modal"
                                   >
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                                       <circle cx="12" cy="12" r="3"></circle>
                                     </svg>
@@ -961,7 +962,7 @@ const Assignment = () => {
                                     href={item.blobUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="p-1.5 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-md transition-colors cursor-pointer flex items-center gap-1 text-2xs font-bold"
+                                    className="p-0.5 sm:p-1 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded transition-colors cursor-pointer flex items-center gap-0.5 text-[9px] sm:text-2xs font-bold"
                                     title="Open in new window"
                                   >
                                     <ExternalLinkIcon />
@@ -971,10 +972,10 @@ const Assignment = () => {
                                   <button
                                     type="button"
                                     onClick={() => removeFile(item.id)}
-                                    className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-slate-100 rounded-md transition-colors cursor-pointer"
+                                    className="p-0.5 sm:p-1 text-slate-400 hover:text-red-600 hover:bg-slate-100 rounded transition-colors cursor-pointer"
                                     title="Remove attachment"
                                   >
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                       <line x1="18" y1="6" x2="6" y2="18"></line>
                                       <line x1="6" y1="6" x2="18" y2="18"></line>
                                     </svg>
@@ -989,16 +990,16 @@ const Assignment = () => {
                       {/* Textarea for instructions */}
                       <textarea
                         ref={descInputRef}
-                        rows={4}
+                        rows={3}
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                         placeholder="Add instructions or details here..."
-                        className="w-full text-base sm:text-sm font-medium text-slate-800 placeholder:text-slate-400 focus:outline-none resize-none bg-transparent min-h-[96px]"
+                        className="w-full text-xs sm:text-sm font-medium text-slate-800 placeholder:text-slate-400 focus:outline-none resize-none bg-transparent min-h-[58px] sm:min-h-[96px] sm:rows-4"
                       />
                     </div>
 
                     {/* Docked bottom action toolbar */}
-                    <div className="px-3 sm:px-3.5 py-2.5 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div className="px-2 sm:px-3.5 py-1.5 sm:py-2.5 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-2">
                       <input
                         type="file"
                         ref={fileInputRef}
@@ -1012,13 +1013,13 @@ const Assignment = () => {
                         type="button"
                         disabled={files.length >= 5}
                         onClick={() => fileInputRef.current?.click()}
-                        className={`w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold transition-all min-h-[40px] ${
+                        className={`w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-2 rounded-md sm:rounded-lg text-[10px] sm:text-xs font-semibold transition-all min-h-[28px] sm:min-h-[40px] ${
                           files.length >= 5
                             ? 'bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed'
                             : 'text-blue-700 bg-white hover:bg-blue-600 hover:text-white border border-blue-200 shadow-2xs cursor-pointer active:scale-[0.98]'
                         }`}
                       >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
                         </svg>
                         <span>
@@ -1030,7 +1031,7 @@ const Assignment = () => {
                         </span>
                       </button>
 
-                      <span className="text-2xs text-slate-400 font-medium text-center sm:text-right leading-tight">
+                      <span className="text-[9px] sm:text-2xs text-slate-400 font-medium text-center sm:text-right leading-tight">
                         Up to 5 files (max 25MB total)
                       </span>
                     </div>
@@ -1039,22 +1040,22 @@ const Assignment = () => {
 
                 {/* 3. Target Audience: ALL vs SELECTED STUDENTS */}
                 <div>
-                  <div className="flex flex-wrap items-center justify-between gap-1 mb-2">
-                    <label className="block text-xs sm:text-sm font-bold text-slate-700">
+                  <div className="flex flex-wrap items-center justify-between gap-1 mb-1 sm:mb-2">
+                    <label className="block text-[11px] sm:text-sm font-bold text-slate-700">
                       Assign to <span className="text-red-500">*</span>
                     </label>
-                    <span className="text-2xs font-semibold text-slate-400">
+                    <span className="text-[9px] sm:text-2xs font-semibold text-slate-400">
                       {targetAudience === 'all'
                         ? 'All students'
                         : `${selectedStudents.length} of ${students.length} students selected`}
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2.5">
+                  <div className="grid grid-cols-2 gap-1.5 sm:gap-2.5">
                     <button
                       type="button"
                       onClick={() => setTargetAudience('all')}
-                      className={`flex items-center justify-center gap-2 p-2.5 sm:p-3 rounded-lg border text-xs sm:text-sm font-semibold transition-all cursor-pointer min-h-[42px] ${
+                      className={`flex items-center justify-center gap-1 sm:gap-2 p-1.5 sm:p-3 rounded-md sm:rounded-lg border text-xs sm:text-sm font-semibold transition-all cursor-pointer min-h-[32px] sm:min-h-[42px] ${
                         targetAudience === 'all'
                           ? 'bg-blue-50 border-blue-500 text-blue-700 shadow-2xs'
                           : 'border-slate-200 text-slate-600 hover:bg-slate-50'
@@ -1067,7 +1068,7 @@ const Assignment = () => {
                     <button
                       type="button"
                       onClick={() => setTargetAudience('selected')}
-                      className={`flex items-center justify-center gap-2 p-2.5 sm:p-3 rounded-lg border text-xs sm:text-sm font-semibold transition-all cursor-pointer min-h-[42px] ${
+                      className={`flex items-center justify-center gap-1 sm:gap-2 p-1.5 sm:p-3 rounded-md sm:rounded-lg border text-xs sm:text-sm font-semibold transition-all cursor-pointer min-h-[32px] sm:min-h-[42px] ${
                         targetAudience === 'selected'
                           ? 'bg-indigo-50 border-indigo-500 text-indigo-700 shadow-2xs'
                           : 'border-slate-200 text-slate-600 hover:bg-slate-50'
@@ -1080,26 +1081,26 @@ const Assignment = () => {
 
                   {/* Student Picker Accordion / Card */}
                   {targetAudience === 'selected' && (
-                    <div className="mt-3 p-3 sm:p-3.5 bg-slate-50/70 rounded-lg border border-slate-200 flex flex-col gap-2.5">
-                      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2">
-                        <div className="flex items-center gap-2 flex-1">
+                    <div className="mt-2 p-2 sm:p-3.5 bg-slate-50/70 rounded-md sm:rounded-lg border border-slate-200 flex flex-col gap-1.5 sm:gap-2">
+                      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-1 sm:gap-1.5">
+                        <div className="flex items-center gap-1 sm:gap-1.5 flex-1">
                           <input
                             type="text"
                             value={studentSearch}
                             onChange={(e) => setStudentSearch(e.target.value)}
                             placeholder="Search student or USN..."
-                            className="flex-1 min-w-0 px-3 py-2 text-xs sm:text-sm rounded-md border border-slate-300 bg-white text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-300 min-h-[36px]"
+                            className="flex-1 min-w-0 px-2 sm:px-2.5 py-1 sm:py-1.5 text-xs sm:text-sm rounded border border-slate-300 bg-white text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-300 min-h-[28px] sm:min-h-[36px]"
                           />
-                          <span className="text-2xs font-semibold text-indigo-700 bg-indigo-50 border border-indigo-200 px-2 py-1.5 rounded-md shrink-0 whitespace-nowrap">
+                          <span className="text-[9px] sm:text-2xs font-semibold text-indigo-700 bg-indigo-50 border border-indigo-200 px-1.5 py-0.5 sm:py-1 rounded shrink-0 whitespace-nowrap">
                             {selectedStudents.length} Selected
                           </span>
                         </div>
 
-                        <div className="flex items-center justify-end gap-2 shrink-0 pt-1 sm:pt-0">
+                        <div className="flex items-center justify-end gap-1.5 shrink-0 pt-0.5 sm:pt-0">
                           <button
                             type="button"
                             onClick={selectAllStudents}
-                            className="text-xs font-bold text-indigo-600 hover:text-indigo-800 hover:underline cursor-pointer py-1 px-1.5"
+                            className="text-[10px] sm:text-xs font-bold text-indigo-600 hover:text-indigo-800 hover:underline cursor-pointer py-0.5 px-1"
                           >
                             Select All
                           </button>
@@ -1107,7 +1108,7 @@ const Assignment = () => {
                           <button
                             type="button"
                             onClick={clearSelectedStudents}
-                            className="text-xs font-bold text-slate-500 hover:text-slate-700 hover:underline cursor-pointer py-1 px-1.5"
+                            className="text-[10px] sm:text-xs font-bold text-slate-500 hover:text-slate-700 hover:underline cursor-pointer py-0.5 px-1"
                           >
                             Clear All
                           </button>
@@ -1115,11 +1116,11 @@ const Assignment = () => {
                       </div>
 
                       {/* Student Chips / List */}
-                      <div className="max-h-52 overflow-y-auto pr-1 flex flex-col gap-1.5 custom-scrollbar">
+                      <div className="max-h-36 sm:max-h-52 overflow-y-auto pr-1 flex flex-col gap-1 custom-scrollbar">
                         {loadingStudents ? (
-                          <p className="text-xs text-slate-400 py-3 text-center">Loading roster…</p>
+                          <p className="text-[10px] sm:text-xs text-slate-400 py-2 sm:py-3 text-center">Loading roster…</p>
                         ) : filteredStudents.length === 0 ? (
-                          <p className="text-xs text-slate-400 py-3 text-center">No students matched search</p>
+                          <p className="text-[10px] sm:text-xs text-slate-400 py-2 sm:py-3 text-center">No students matched search</p>
                         ) : (
                           filteredStudents.map((st) => {
                             const isSelected = selectedStudents.includes(st.usn);
@@ -1127,23 +1128,23 @@ const Assignment = () => {
                               <div
                                 key={st.usn}
                                 onClick={() => toggleStudent(st.usn)}
-                                className={`flex items-center justify-between gap-2 px-3 py-2.5 rounded-md border text-xs cursor-pointer transition-all active:scale-[0.99] min-h-[40px] ${
+                                className={`flex items-center justify-between gap-1.5 sm:gap-2 px-2 sm:px-2.5 py-1 sm:py-2.5 rounded border text-[10px] sm:text-xs cursor-pointer transition-all active:scale-[0.99] min-h-[28px] sm:min-h-[40px] ${
                                   isSelected
                                     ? 'bg-indigo-600 text-white border-indigo-600'
                                     : 'bg-white text-slate-700 border-slate-200 hover:bg-indigo-50/50'
                                 }`}
                               >
-                                <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                                <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1">
                                   <input
                                     type="checkbox"
                                     checked={isSelected}
                                     onChange={() => {}} // handled by parent div
-                                    className="w-4 h-4 rounded-sm border-slate-300 text-indigo-600 pointer-events-none shrink-0"
+                                    className="w-3 h-3 sm:w-4 sm:h-4 rounded-xs border-slate-300 text-indigo-600 pointer-events-none shrink-0"
                                   />
                                   <span className="font-semibold truncate">{st.username}</span>
                                 </div>
                                 <span
-                                  className={`text-2xs font-mono font-bold px-2 py-0.5 rounded shrink-0 ${
+                                  className={`text-[8px] sm:text-2xs font-mono font-bold px-1.5 sm:px-2 py-0.5 rounded shrink-0 ${
                                     isSelected
                                       ? 'bg-indigo-500 text-white'
                                       : 'bg-blue-50 text-blue-700 border border-blue-100'
@@ -1158,7 +1159,7 @@ const Assignment = () => {
                       </div>
 
                       {selectedStudents.length === 0 && (
-                        <p className="text-2xs text-amber-700 font-medium bg-amber-50 p-2 rounded-md border border-amber-200">
+                        <p className="text-[9px] sm:text-2xs text-amber-700 font-medium bg-amber-50 p-1 sm:p-2 rounded border border-amber-200">
                           ⚠️ Please select at least one student.
                         </p>
                       )}
@@ -1167,9 +1168,9 @@ const Assignment = () => {
                 </div>
 
                 {/* 4. Due Date & Marks (2 columns) */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
                   <div>
-                    <label className="block text-xs sm:text-sm font-bold text-slate-700 mb-1.5">
+                    <label className="block text-[11px] sm:text-sm font-bold text-slate-700 mb-1 sm:mb-1.5">
                       Due Date
                     </label>
                     <input
@@ -1177,12 +1178,12 @@ const Assignment = () => {
                       value={dueDate}
                       min={getCurrentMinDateTime()}
                       onChange={(e) => setDueDate(e.target.value)}
-                      className="w-full px-3.5 py-2.5 rounded-lg text-base sm:text-sm font-medium border border-slate-300 bg-white text-slate-800 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none transition-all hover:border-slate-400 cursor-pointer min-h-[44px]"
+                      className="w-full h-8 sm:h-11 px-2.5 sm:px-3.5 rounded-md sm:rounded-lg text-xs sm:text-sm font-medium border border-slate-300 bg-white text-slate-800 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none transition-all hover:border-slate-400 cursor-pointer shadow-2xs"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs sm:text-sm font-bold text-slate-700 mb-1.5">
+                    <label className="block text-[11px] sm:text-sm font-bold text-slate-700 mb-1 sm:mb-1.5">
                       Total Marks
                     </label>
                     <input
@@ -1192,7 +1193,7 @@ const Assignment = () => {
                       placeholder="20"
                       min="0"
                       max="1000"
-                      className="w-full px-3.5 py-2.5 rounded-lg text-base sm:text-sm font-medium border border-slate-300 bg-white text-slate-800 placeholder:text-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none transition-all hover:border-slate-400 min-h-[44px]"
+                      className="w-full h-8 sm:h-11 px-2.5 sm:px-3.5 rounded-md sm:rounded-lg text-xs sm:text-sm font-medium border border-slate-300 bg-white text-slate-800 placeholder:text-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none transition-all hover:border-slate-400 shadow-2xs"
                     />
                   </div>
                 </div>
@@ -1201,17 +1202,17 @@ const Assignment = () => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full py-3 px-4 rounded-lg bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold text-sm sm:text-base shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer flex items-center justify-center gap-2 min-h-[48px] active:scale-[0.99]"
+                  className="w-full h-8.5 sm:h-12 py-1.5 sm:py-3 px-3 sm:px-4 rounded-md sm:rounded-lg bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold text-xs sm:text-base shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2 active:scale-[0.99]"
                 >
                   {isSubmitting ? (
                     <>
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <div className="w-3.5 h-3.5 sm:w-4 sm:h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                       <span>Posting…</span>
                     </>
                   ) : (
                     <>
                       <span>Post Assignment</span>
-                      <span className="text-xs bg-white/20 px-2 py-0.5 rounded">
+                      <span className="text-[9px] sm:text-xs bg-white/20 px-1.5 sm:px-2 py-0.5 rounded">
                         {targetAudience === 'all'
                           ? 'All Students'
                           : `${selectedStudents.length} Students`}
@@ -1223,27 +1224,27 @@ const Assignment = () => {
             </div>
           </div>
           {/* ── Right Column: Live Student Preview & Active Assignments (5 cols) ── */}
-          <div className="lg:col-span-5 flex flex-col gap-4 sm:gap-6">
+          <div className="lg:col-span-5 flex flex-col gap-3 sm:gap-6">
             {/* Mobile View Toggle: Segmented control for small screens */}
-            <div className="lg:hidden flex items-center p-1 bg-slate-200/80 rounded-xl shadow-2xs">
+            <div className="lg:hidden flex items-center p-0.5 bg-slate-200/80 rounded-lg shadow-2xs">
               <button
                 type="button"
                 onClick={() => setMobileTab('feed')}
-                className={`flex-1 py-2.5 px-3 rounded-lg text-xs font-bold transition-all text-center flex items-center justify-center gap-1.5 cursor-pointer min-h-[42px] active:scale-[0.98] ${
+                className={`flex-1 py-1 px-2 rounded-md text-xs font-bold transition-all text-center flex items-center justify-center gap-1.5 cursor-pointer min-h-[30px] active:scale-[0.98] ${
                   mobileTab === 'feed'
                     ? 'bg-white text-blue-700 shadow-xs'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
                 <span>📋 Posted</span>
-                <span className="px-1.5 py-0.5 rounded-full text-2xs bg-blue-100 text-blue-700 font-bold">
+                <span className="px-1.5 py-0.5 rounded-full text-[9px] bg-blue-100 text-blue-700 font-bold">
                   {filteredAssignments.length}
                 </span>
               </button>
               <button
                 type="button"
                 onClick={() => setMobileTab('preview')}
-                className={`flex-1 py-2.5 px-3 rounded-lg text-xs font-bold transition-all text-center flex items-center justify-center gap-1.5 cursor-pointer min-h-[42px] active:scale-[0.98] ${
+                className={`flex-1 py-1 px-2 rounded-md text-xs font-bold transition-all text-center flex items-center justify-center gap-1.5 cursor-pointer min-h-[30px] active:scale-[0.98] ${
                   mobileTab === 'preview'
                     ? 'bg-white text-blue-700 shadow-xs'
                     : 'text-slate-600 hover:text-slate-900'
@@ -1251,80 +1252,80 @@ const Assignment = () => {
               >
                 <span>📱 Preview</span>
                 {files.length > 0 && (
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></span>
                 )}
               </button>
             </div>
 
             {/* Live Preview Card */}
-            <div className={`${mobileTab === 'preview' ? 'flex' : 'hidden lg:flex'} flex-col bg-white rounded-xl p-3.5 sm:p-6 border border-slate-200/80 shadow-xs`}>
-              <div className="flex items-center justify-between mb-3 border-b border-slate-100 pb-2.5">
-                <span className="text-2xs sm:text-xs font-bold uppercase tracking-wider text-slate-400">
+            <div className={`${mobileTab === 'preview' ? 'flex' : 'hidden lg:flex'} flex-col bg-white rounded-xl sm:rounded-2xl p-2.5 sm:p-6 border border-slate-200/90 shadow-2xs`}>
+              <div className="flex items-center justify-between mb-2 sm:mb-3 border-b border-slate-100 pb-1.5 sm:pb-2.5">
+                <span className="text-[9px] sm:text-xs font-bold uppercase tracking-wider text-slate-400">
                   Student Preview
                 </span>
-                <span className="text-2xs font-semibold text-emerald-700 bg-emerald-50 px-2 sm:px-2.5 py-0.5 rounded-full border border-emerald-200">
+                <span className="text-[9px] sm:text-2xs font-semibold text-emerald-700 bg-emerald-50 px-1.5 sm:px-2.5 py-0.5 rounded-full border border-emerald-200">
                   Audience: {targetAudience === 'all' ? 'All Students' : `${selectedStudents.length} Selected`}
                 </span>
               </div>
 
               {/* Mock Student Card */}
-              <div className="rounded-lg border border-slate-200 bg-slate-50/50 p-3.5 sm:p-4">
-                <div className="flex items-start justify-between gap-2">
-                  <span className="text-2xs font-bold uppercase px-2 py-0.5 rounded bg-purple-100 text-purple-700 truncate max-w-[150px]">
+              <div className="rounded-lg border border-slate-200 bg-slate-50/50 p-2 sm:p-4">
+                <div className="flex items-start justify-between gap-1.5">
+                  <span className="text-[9px] sm:text-2xs font-bold uppercase px-1.5 sm:px-2 py-0.5 rounded bg-purple-100 text-purple-700 truncate max-w-[140px] sm:max-w-[150px]">
                     {activeSubject || 'Subject'}
                   </span>
-                  <span className="text-2xs font-bold px-2 py-0.5 rounded bg-slate-200 text-slate-700 shrink-0">
+                  <span className="text-[9px] sm:text-2xs font-bold px-1.5 sm:px-2 py-0.5 rounded bg-slate-200 text-slate-700 shrink-0">
                     🎯 {totalMarks || 0} Marks
                   </span>
                 </div>
 
-                <h3 className="text-sm sm:text-base font-bold text-slate-800 mt-2.5 line-clamp-1">
+                <h3 className="text-xs sm:text-base font-bold text-slate-800 mt-1.5 sm:mt-2.5 line-clamp-1">
                   {title.trim() || 'Title'}
                 </h3>
 
-                <p className="text-xs text-slate-500 mt-1 line-clamp-2">
+                <p className="text-[10px] sm:text-xs text-slate-500 mt-0.5 sm:mt-1 line-clamp-2">
                   {description.trim() || 'Instructions will appear here.'}
                 </p>
 
                 {/* Attachments list in preview */}
                 {files.length > 0 && (
-                  <div className="mt-3 flex flex-col gap-1.5">
-                    <span className="text-2xs font-bold text-slate-400 uppercase tracking-wider">
+                  <div className="mt-2 sm:mt-3 flex flex-col gap-1 sm:gap-1.5">
+                    <span className="text-[9px] sm:text-2xs font-bold text-slate-400 uppercase tracking-wider">
                       Attachments ({files.length}):
                     </span>
-                    <div className="flex flex-col gap-1.5">
+                    <div className="flex flex-col gap-1 sm:gap-1.5">
                       {files.map((f) => (
                         <div
                           key={f.id}
-                          className="p-2 rounded-lg bg-white border border-slate-200 flex items-center justify-between gap-2 text-xs hover:border-blue-300 transition-colors"
+                          className="p-1 sm:p-2 rounded-md sm:rounded-lg bg-white border border-slate-200 flex items-center justify-between gap-1.5 text-xs hover:border-blue-300 transition-colors"
                         >
                           <button
                             type="button"
                             onClick={() => openAttachmentPreview(f)}
-                            className="flex items-center gap-2 min-w-0 flex-1 text-left cursor-pointer group/prev"
+                            className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1 text-left cursor-pointer group/prev"
                           >
                             {f.type === 'pdf' ? (
-                              <span className="text-red-600 font-bold text-xs shrink-0 bg-red-50 border border-red-200 px-1.5 py-0.5 rounded">
+                              <span className="text-red-600 font-bold text-[9px] sm:text-xs shrink-0 bg-red-50 border border-red-200 px-1 sm:px-1.5 py-0.5 rounded">
                                 📄 PDF
                               </span>
                             ) : (
-                              <span className="text-emerald-600 font-bold text-xs shrink-0 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded">
+                              <span className="text-emerald-600 font-bold text-[9px] sm:text-xs shrink-0 bg-emerald-50 border border-emerald-200 px-1 sm:px-1.5 py-0.5 rounded">
                                 🖼️ Photo
                               </span>
                             )}
-                            <span className="text-2xs text-slate-700 font-medium truncate flex-1 min-w-0 group-hover/prev:text-blue-600">
+                            <span className="text-[9px] sm:text-2xs text-slate-700 font-medium truncate flex-1 min-w-0 group-hover/prev:text-blue-600">
                               {f.name}
                             </span>
                           </button>
 
-                          <div className="flex items-center gap-1.5 shrink-0">
-                            <span className="text-2xs text-slate-400">
+                          <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
+                            <span className="text-[8px] sm:text-2xs text-slate-400">
                               {formatFileSize(f.size)}
                             </span>
                             <button
                               type="button"
                               onClick={() => openAttachmentPreview(f)}
-                              className="text-2xs font-bold text-blue-600 hover:text-blue-800 p-1 rounded hover:bg-blue-50 cursor-pointer"
+                              className="text-[9px] sm:text-2xs font-bold text-blue-600 hover:text-blue-800 p-0.5 sm:p-1 rounded hover:bg-blue-50 cursor-pointer"
                               title="Preview file"
                             >
                               View
@@ -1333,7 +1334,7 @@ const Assignment = () => {
                               href={f.blobUrl}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-2xs font-bold text-slate-500 hover:text-blue-600 p-1 rounded hover:bg-blue-50 cursor-pointer"
+                              className="text-[9px] sm:text-2xs font-bold text-slate-500 hover:text-blue-600 p-0.5 sm:p-1 rounded hover:bg-blue-50 cursor-pointer"
                               title="Open in new window"
                             >
                               <ExternalLinkIcon />
@@ -1345,7 +1346,7 @@ const Assignment = () => {
                   </div>
                 )}
 
-                <div className="mt-4 pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-1 text-2xs text-slate-400 font-medium">
+                <div className="mt-2.5 sm:mt-4 pt-2 sm:pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-1 text-[9px] sm:text-2xs text-slate-400 font-medium">
                   <span>📅 Due: {formatDateTime(dueDate)}</span>
                   <span>By {lecturerName}</span>
                 </div>
@@ -1353,31 +1354,31 @@ const Assignment = () => {
             </div>
 
             {/* Active Assignments Feed */}
-            <div className={`${mobileTab === 'feed' ? 'flex' : 'hidden lg:flex'} flex-col bg-white rounded-xl p-3.5 sm:p-6 border border-slate-200/80 shadow-xs`}>
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3 sm:mb-4 border-b border-slate-100 pb-3">
+            <div className={`${mobileTab === 'feed' ? 'flex' : 'hidden lg:flex'} flex-col bg-white rounded-xl sm:rounded-2xl p-2.5 sm:p-6 border border-slate-200/90 shadow-2xs`}>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-2 mb-2 sm:mb-4 border-b border-slate-100 pb-1.5 sm:pb-3">
                 <div>
-                  <h3 className="text-base font-bold text-slate-800">
+                  <h3 className="text-xs sm:text-base font-bold text-slate-800">
                     Posted Assignments
                   </h3>
-                  <p className="text-2xs text-slate-400 mt-0.5">
+                  <p className="text-[9px] sm:text-2xs text-slate-400 mt-0.5">
                     {filteredAssignments.length} assignments {activeSubject ? `• ${activeSubject}` : ''}
                   </p>
                 </div>
 
-                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-blue-50 border border-blue-200 text-blue-700 text-2xs font-semibold self-start sm:self-auto shrink-0">
+                <div className="inline-flex items-center gap-1.5 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-md bg-blue-50 border border-blue-200 text-blue-700 text-[9px] sm:text-2xs font-semibold self-start sm:self-auto shrink-0">
                   <span>Your Posts</span>
                 </div>
               </div>
 
               {/* List of assignments */}
-              <div className="flex flex-col gap-3 max-h-[480px] overflow-y-auto pr-1 custom-scrollbar">
+              <div className="flex flex-col gap-2 sm:gap-3 max-h-[380px] sm:max-h-[480px] overflow-y-auto pr-1 custom-scrollbar">
                 {loadingAssignments ? (
                   <p className="text-xs text-slate-400 py-6 text-center">Loading assignments…</p>
                 ) : filteredAssignments.length === 0 ? (
-                  <div className="text-center py-8">
-                    <span className="text-3xl block mb-2">📭</span>
+                  <div className="text-center py-6 sm:py-8">
+                    <span className="text-xl sm:text-3xl block mb-1 sm:mb-2">📭</span>
                     <p className="text-xs font-bold text-slate-600">No assignments yet</p>
-                    <p className="text-2xs text-slate-400 mt-1">
+                    <p className="text-[10px] sm:text-2xs text-slate-400 mt-0.5">
                       Assignments you post for this subject will appear here.
                     </p>
                   </div>
@@ -1387,15 +1388,15 @@ const Assignment = () => {
                     return (
                       <div
                         key={asgn._id}
-                        className="p-3 sm:p-3.5 rounded-lg border border-slate-200 bg-white hover:border-slate-300 transition-all shadow-2xs flex flex-col gap-2"
+                        className="p-2 sm:p-3.5 rounded-lg border border-slate-200 bg-white hover:border-slate-300 transition-all shadow-2xs flex flex-col gap-1.5 sm:gap-2"
                       >
-                        <div className="flex items-start justify-between gap-2">
-                          <div className="flex items-center gap-1.5 flex-wrap">
-                            <span className="text-2xs font-bold px-2 py-0.5 rounded bg-purple-50 text-purple-700 border border-purple-200">
+                        <div className="flex items-start justify-between gap-1.5">
+                          <div className="flex items-center gap-1 sm:gap-1.5 flex-wrap">
+                            <span className="text-[8px] sm:text-2xs font-bold px-1.5 sm:px-2 py-0.5 rounded bg-purple-50 text-purple-700 border border-purple-200">
                               {asgn.subject}
                             </span>
                             <span
-                              className={`text-2xs font-bold px-2 py-0.5 rounded ${
+                              className={`text-[8px] sm:text-2xs font-bold px-1.5 sm:px-2 py-0.5 rounded ${
                                 asgn.type === 'pdf'
                                   ? 'bg-red-50 text-red-700 border border-red-200'
                                   : asgn.type === 'photo'
@@ -1406,23 +1407,23 @@ const Assignment = () => {
                               {asgn.type === 'pdf' ? '📄 PDF' : asgn.type === 'photo' ? '🖼️ Photo' : '📝 Text'}
                             </span>
                             <span
-                              className={`text-2xs font-bold px-2 py-0.5 rounded ${
+                              className={`text-[8px] sm:text-2xs font-bold px-1.5 sm:px-2 py-0.5 rounded ${
                                 isAll
                                   ? 'bg-sky-50 text-sky-700 border border-sky-200'
                                   : 'bg-indigo-50 text-indigo-700 border border-indigo-200'
                               }`}
                             >
                               {isAll
-                                ? '🌐 All Students'
-                                : `🎯 ${asgn.selectedStudents?.length || 0} Students`}
+                                ? '🌐 All'
+                                : `🎯 ${asgn.selectedStudents?.length || 0}`}
                             </span>
                           </div>
 
-                          <div className="flex items-center gap-1.5 shrink-0">
+                          <div className="flex items-center gap-0.5 sm:gap-1 shrink-0">
                             <button
                               onClick={() => openEditModal(asgn)}
                               title="Edit Assignment"
-                              className="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 active:bg-blue-100 rounded-lg transition-colors cursor-pointer flex items-center justify-center min-w-[36px] min-h-[36px]"
+                              className="p-1 sm:p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 active:bg-blue-100 rounded-md transition-colors cursor-pointer flex items-center justify-center min-w-[26px] sm:min-w-[36px] min-h-[26px] sm:min-h-[36px]"
                             >
                               <EditIcon />
                             </button>
@@ -1432,30 +1433,30 @@ const Assignment = () => {
                                 setDeleteModalOpen(true);
                               }}
                               title="Delete Assignment"
-                              className="p-2 text-slate-500 hover:text-red-600 hover:bg-red-50 active:bg-red-100 rounded-lg transition-colors cursor-pointer flex items-center justify-center min-w-[36px] min-h-[36px]"
+                              className="p-1 sm:p-2 text-slate-500 hover:text-red-600 hover:bg-red-50 active:bg-red-100 rounded-md transition-colors cursor-pointer flex items-center justify-center min-w-[26px] sm:min-w-[36px] min-h-[26px] sm:min-h-[36px]"
                             >
                               <TrashIcon />
                             </button>
                           </div>
                         </div>
 
-                        <h4 className="text-sm font-bold text-slate-800 line-clamp-1">
+                        <h4 className="text-[11px] sm:text-sm font-bold text-slate-800 line-clamp-1">
                           {asgn.title}
                         </h4>
 
                         {asgn.description && (
-                          <p className="text-xs text-slate-500 line-clamp-2">
+                          <p className="text-[10px] sm:text-xs text-slate-500 line-clamp-2">
                             {asgn.description}
                           </p>
                         )}
 
                         {/* Attachments (multi or legacy fallback) */}
                         {asgn.attachments && asgn.attachments.length > 0 ? (
-                          <div className="flex flex-col gap-1.5 mt-1">
-                            <span className="text-2xs font-bold text-slate-400 uppercase tracking-wider">
+                          <div className="flex flex-col gap-1 mt-0.5 sm:mt-1">
+                            <span className="text-[9px] sm:text-2xs font-bold text-slate-400 uppercase tracking-wider">
                               Attachments ({asgn.attachments.length}):
                             </span>
-                            <div className="flex flex-col gap-1.5">
+                            <div className="flex flex-col gap-1 sm:gap-1.5">
                               {asgn.attachments.map((att, idx) => {
                                 const attName = att.fileName || `Attachment ${idx + 1}`;
                                 const isPdf = att.fileType === 'pdf' || attName.toLowerCase().endsWith('.pdf');
@@ -1465,17 +1466,17 @@ const Assignment = () => {
                                 return (
                                   <div
                                     key={idx}
-                                    className="flex items-center justify-between gap-2.5 p-2 rounded-lg bg-slate-50/80 border border-slate-200/90 hover:border-blue-300 hover:bg-blue-50/30 transition-all shadow-2xs"
+                                    className="flex items-center justify-between gap-1.5 sm:gap-2.5 p-1 sm:p-2 rounded-md sm:rounded-lg bg-slate-50/80 border border-slate-200/90 hover:border-blue-300 hover:bg-blue-50/30 transition-all shadow-2xs"
                                   >
                                     {/* Thumbnail + Name (Click to preview in modal) */}
                                     <button
                                       type="button"
                                       onClick={() => openAttachmentPreview(att)}
-                                      className="flex items-center gap-2.5 min-w-0 flex-1 text-left cursor-pointer group/att"
+                                      className="flex items-center gap-1.5 sm:gap-2.5 min-w-0 flex-1 text-left cursor-pointer group/att"
                                       title={`View ${attName}`}
                                     >
                                       {thumbUrl ? (
-                                        <div className="relative w-11 h-11 shrink-0 rounded-lg overflow-hidden border border-slate-200 bg-white shadow-2xs group-hover/att:scale-105 transition-transform">
+                                        <div className="relative w-7 h-7 sm:w-11 sm:h-11 shrink-0 rounded sm:rounded-lg overflow-hidden border border-slate-200 bg-white shadow-2xs group-hover/att:scale-105 transition-transform">
                                           <img
                                             src={thumbUrl}
                                             alt={attName}
@@ -1492,23 +1493,23 @@ const Assignment = () => {
                                             PDF
                                           </div>
                                           {isPdf && (
-                                            <span className="absolute bottom-0 inset-x-0 bg-red-600 text-white text-[8px] font-bold text-center leading-tight py-0.5">
+                                            <span className="absolute bottom-0 inset-x-0 bg-red-600 text-white text-[6px] sm:text-[8px] font-bold text-center leading-tight py-0.5">
                                               PDF
                                             </span>
                                           )}
                                         </div>
                                       ) : (
-                                        <div className="w-11 h-11 shrink-0 rounded-lg bg-red-100 border border-red-200 text-red-600 flex flex-col items-center justify-center font-bold text-xs shadow-2xs">
+                                        <div className="w-7 h-7 sm:w-11 sm:h-11 shrink-0 rounded sm:rounded-lg bg-red-100 border border-red-200 text-red-600 flex flex-col items-center justify-center font-bold text-[8px] sm:text-xs shadow-2xs">
                                           <span>📄</span>
-                                          <span className="text-[8px] uppercase font-mono">PDF</span>
+                                          <span className="text-[6px] sm:text-[8px] uppercase font-mono">PDF</span>
                                         </div>
                                       )}
 
                                       <div className="min-w-0 flex-1">
-                                        <p className="text-xs font-bold text-slate-800 group-hover/att:text-blue-600 truncate" title={attName}>
+                                        <p className="text-[10px] sm:text-xs font-bold text-slate-800 group-hover/att:text-blue-600 truncate" title={attName}>
                                           {attName}
                                         </p>
-                                        <div className="flex items-center gap-2 text-2xs text-slate-400 mt-0.5">
+                                        <div className="flex items-center gap-1.5 text-[8px] sm:text-2xs text-slate-400 mt-0.5">
                                           {att.fileSize && <span>{att.fileSize}</span>}
                                           <span className="text-blue-600 font-medium">Click to view</span>
                                         </div>
@@ -1516,14 +1517,14 @@ const Assignment = () => {
                                     </button>
 
                                     {/* Actions: View in Modal and Open in New Window */}
-                                    <div className="flex items-center gap-1.5 shrink-0">
+                                    <div className="flex items-center gap-0.5 sm:gap-1.5 shrink-0">
                                       <button
                                         type="button"
                                         onClick={() => openAttachmentPreview(att)}
-                                        className="px-2.5 py-1.5 rounded-md bg-white border border-slate-200 text-slate-700 hover:text-blue-600 hover:border-blue-200 hover:bg-blue-50 text-2xs font-bold transition-all flex items-center gap-1 cursor-pointer min-h-[30px]"
+                                        className="px-1.5 sm:px-2.5 py-0.5 sm:py-1.5 rounded bg-white border border-slate-200 text-slate-700 hover:text-blue-600 hover:border-blue-200 hover:bg-blue-50 text-[9px] sm:text-2xs font-bold transition-all flex items-center gap-0.5 cursor-pointer min-h-[22px] sm:min-h-[30px]"
                                         title={`View ${isPdf ? 'PDF' : 'image'} preview`}
                                       >
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                           <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                                           <circle cx="12" cy="12" r="3"></circle>
                                         </svg>
@@ -1534,7 +1535,7 @@ const Assignment = () => {
                                         href={viewUrl}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="px-2.5 py-1.5 rounded-md bg-blue-600 hover:bg-blue-700 text-white text-2xs font-bold transition-all flex items-center gap-1 cursor-pointer min-h-[30px] shadow-2xs"
+                                        className="px-1.5 sm:px-2.5 py-0.5 sm:py-1.5 rounded bg-blue-600 hover:bg-blue-700 text-white text-[9px] sm:text-2xs font-bold transition-all flex items-center gap-0.5 cursor-pointer min-h-[22px] sm:min-h-[30px] shadow-2xs"
                                         title="Open file in new tab"
                                       >
                                         <ExternalLinkIcon />
@@ -1547,7 +1548,7 @@ const Assignment = () => {
                             </div>
                           </div>
                         ) : asgn.fileUrl ? (
-                          <div className="flex items-center justify-between gap-2.5 p-2 rounded-lg bg-slate-50/80 border border-slate-200/90 hover:border-blue-300 hover:bg-blue-50/30 transition-all shadow-2xs mt-1">
+                          <div className="flex items-center justify-between gap-1.5 sm:gap-2.5 p-1 sm:p-2 rounded-md sm:rounded-lg bg-slate-50/80 border border-slate-200/90 hover:border-blue-300 hover:bg-blue-50/30 transition-all shadow-2xs mt-1">
                             <button
                               type="button"
                               onClick={() => openAttachmentPreview({
@@ -1555,25 +1556,25 @@ const Assignment = () => {
                                 filePublicId: asgn.filePublicId,
                                 fileName: asgn.fileName || 'Attachment',
                                 fileSize: asgn.fileSize,
-                                fileType: asgn.type || 'pdf'
+                                type: asgn.type || 'pdf'
                               })}
-                              className="flex items-center gap-2.5 min-w-0 flex-1 text-left cursor-pointer group/att"
+                              className="flex items-center gap-1.5 sm:gap-2.5 min-w-0 flex-1 text-left cursor-pointer group/att"
                             >
-                              <div className="w-11 h-11 shrink-0 rounded-lg bg-blue-100 border border-blue-200 text-blue-700 flex flex-col items-center justify-center font-bold text-xs shadow-2xs">
+                              <div className="w-7 h-7 sm:w-11 sm:h-11 shrink-0 rounded sm:rounded-lg bg-blue-100 border border-blue-200 text-blue-700 flex flex-col items-center justify-center font-bold text-[8px] sm:text-xs shadow-2xs">
                                 <span>{asgn.type === 'pdf' ? '📄' : '🖼️'}</span>
-                                <span className="text-[8px] uppercase font-mono">{asgn.type || 'FILE'}</span>
+                                <span className="text-[6px] sm:text-[8px] uppercase font-mono">{asgn.type || 'FILE'}</span>
                               </div>
                               <div className="min-w-0 flex-1">
-                                <p className="text-xs font-bold text-slate-800 group-hover/att:text-blue-600 truncate">
+                                <p className="text-[10px] sm:text-xs font-bold text-slate-800 group-hover/att:text-blue-600 truncate">
                                   {asgn.fileName || 'View / Download Attachment'}
                                 </p>
                                 {asgn.fileSize && (
-                                  <p className="text-2xs text-slate-400 mt-0.5">{asgn.fileSize}</p>
+                                  <p className="text-[8px] sm:text-2xs text-slate-400 mt-0.5">{asgn.fileSize}</p>
                                 )}
                               </div>
                             </button>
 
-                            <div className="flex items-center gap-1.5 shrink-0">
+                            <div className="flex items-center gap-0.5 sm:gap-1.5 shrink-0">
                               <button
                                 type="button"
                                 onClick={() => openAttachmentPreview({
@@ -1581,11 +1582,11 @@ const Assignment = () => {
                                   filePublicId: asgn.filePublicId,
                                   fileName: asgn.fileName || 'Attachment',
                                   fileSize: asgn.fileSize,
-                                  fileType: asgn.type || 'pdf'
+                                  type: asgn.type || 'pdf'
                                 })}
-                                className="px-2.5 py-1.5 rounded-md bg-white border border-slate-200 text-slate-700 hover:text-blue-600 hover:border-blue-200 hover:bg-blue-50 text-2xs font-bold transition-all flex items-center gap-1 cursor-pointer min-h-[30px]"
+                                className="px-1.5 sm:px-2.5 py-0.5 sm:py-1.5 rounded bg-white border border-slate-200 text-slate-700 hover:text-blue-600 hover:border-blue-200 hover:bg-blue-50 text-[9px] sm:text-2xs font-bold transition-all flex items-center gap-0.5 cursor-pointer min-h-[22px] sm:min-h-[30px]"
                               >
-                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                   <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                                   <circle cx="12" cy="12" r="3"></circle>
                                 </svg>
@@ -1597,11 +1598,11 @@ const Assignment = () => {
                                   fileUrl: asgn.fileUrl,
                                   filePublicId: asgn.filePublicId,
                                   fileName: asgn.fileName || 'Attachment',
-                                  fileType: asgn.type || 'pdf'
+                                  type: asgn.type || 'pdf'
                                 })}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="px-2.5 py-1.5 rounded-md bg-blue-600 hover:bg-blue-700 text-white text-2xs font-bold transition-all flex items-center gap-1 cursor-pointer min-h-[30px] shadow-2xs"
+                                className="px-1.5 sm:px-2.5 py-0.5 sm:py-1.5 rounded bg-blue-600 hover:bg-blue-700 text-white text-[9px] sm:text-2xs font-bold transition-all flex items-center gap-0.5 cursor-pointer min-h-[22px] sm:min-h-[30px] shadow-2xs"
                               >
                                 <ExternalLinkIcon />
                                 <span>Open</span>
@@ -1612,7 +1613,7 @@ const Assignment = () => {
 
                         {/* Audience details if selected */}
                         {!isAll && asgn.selectedStudents?.length > 0 && (
-                          <div className="flex items-center gap-1 flex-wrap text-2xs">
+                          <div className="flex items-center gap-1 flex-wrap text-[9px] sm:text-2xs">
                             <span className="text-slate-400 font-semibold">Targeted:</span>
                             {asgn.selectedStudents.slice(0, 3).map((usn) => (
                               <span key={usn} className="bg-indigo-50 text-indigo-700 px-1.5 py-0.5 rounded font-mono font-semibold">
@@ -1627,7 +1628,7 @@ const Assignment = () => {
                           </div>
                         )}
 
-                        <div className="pt-2 border-t border-slate-100 flex flex-col sm:flex-row gap-1 sm:gap-2 items-start sm:items-center justify-between text-2xs text-slate-400">
+                        <div className="pt-1.5 sm:pt-2 border-t border-slate-100 flex flex-col sm:flex-row gap-0.5 sm:gap-2 items-start sm:items-center justify-between text-[9px] sm:text-2xs text-slate-400">
                           <span>
                             Due: {formatDateTime(asgn.dueDate)} • {asgn.totalMarks || 0} Marks
                           </span>
@@ -1645,27 +1646,27 @@ const Assignment = () => {
 
       {/* ── Delete Confirmation Modal ── */}
       {deleteModalOpen && assignmentToDelete && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-          <div className="bg-white rounded-xl p-5 sm:p-6 max-w-sm sm:max-w-md w-full border border-slate-200 shadow-xl flex flex-col gap-4 animate-in fade-in duration-150">
-            <div className="w-10 h-10 rounded-lg bg-red-100 text-red-600 flex items-center justify-center font-bold text-lg">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs">
+          <div className="bg-white rounded-xl p-3.5 sm:p-6 max-w-xs sm:max-w-md w-full border border-slate-200 shadow-xl flex flex-col gap-2.5 sm:gap-4 animate-in fade-in duration-150">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-red-100 text-red-600 flex items-center justify-center font-bold text-sm sm:text-lg">
               🗑️
             </div>
             <div>
-              <h3 className="text-base font-bold text-slate-800">
+              <h3 className="text-xs sm:text-base font-bold text-slate-800">
                 Delete Assignment?
               </h3>
-              <p className="text-xs text-slate-500 mt-1">
+              <p className="text-[10px] sm:text-xs text-slate-500 mt-0.5 sm:mt-1">
                 Are you sure you want to delete{' '}
                 <strong className="text-slate-700">"{assignmentToDelete.title}"</strong>?
               </p>
             </div>
 
-            <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-slate-100">
+            <div className="flex items-center justify-end gap-1.5 sm:gap-2 pt-2 border-t border-slate-100">
               <button
                 type="button"
                 onClick={() => setDeleteModalOpen(false)}
                 disabled={isDeleting}
-                className="px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer min-h-[40px] flex-1 sm:flex-none justify-center flex items-center"
+                className="px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer min-h-[30px] sm:min-h-[40px] flex-1 sm:flex-none justify-center flex items-center"
               >
                 Cancel
               </button>
@@ -1673,7 +1674,7 @@ const Assignment = () => {
                 type="button"
                 onClick={handleDeleteAssignment}
                 disabled={isDeleting}
-                className="px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold bg-red-600 hover:bg-red-700 text-white shadow-xs transition-all cursor-pointer flex items-center justify-center gap-1.5 min-h-[40px] flex-1 sm:flex-none"
+                className="px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold bg-red-600 hover:bg-red-700 text-white shadow-xs transition-all cursor-pointer flex items-center justify-center gap-1.5 min-h-[30px] sm:min-h-[40px] flex-1 sm:flex-none"
               >
                 {isDeleting ? 'Deleting…' : 'Yes, Delete'}
               </button>
@@ -1685,21 +1686,21 @@ const Assignment = () => {
       {/* ── Edit Assignment Modal (Responsive Bottom Sheet on Mobile / Centered on Desktop) ── */}
       {editModalOpen && editingAssignment && (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/60 backdrop-blur-xs overflow-hidden">
-          <div className="bg-white rounded-t-2xl sm:rounded-xl max-w-2xl w-full border border-slate-200 shadow-2xl flex flex-col max-h-[92vh] sm:max-h-[88vh] overflow-hidden animate-in slide-in-from-bottom-6 sm:slide-in-from-bottom-0 sm:zoom-in-95 duration-200">
+          <div className="bg-white rounded-t-xl sm:rounded-xl max-w-2xl w-full border border-slate-200 shadow-2xl flex flex-col max-h-[92vh] sm:max-h-[88vh] overflow-hidden animate-in slide-in-from-bottom-6 sm:slide-in-from-bottom-0 sm:zoom-in-95 duration-200">
             {/* Mobile Sheet Grab Handle */}
-            <div className="sm:hidden w-12 h-1.5 bg-slate-300 rounded-full mx-auto mt-2.5 mb-1 shrink-0"></div>
+            <div className="sm:hidden w-8 h-1 bg-slate-300 rounded-full mx-auto mt-2 mb-1 shrink-0"></div>
 
             {/* Sticky Modal Header */}
-            <div className="p-3.5 sm:p-5 border-b border-slate-100 flex items-center justify-between bg-white shrink-0">
-              <div className="flex items-center gap-2 min-w-0 flex-1">
-                <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-sm shrink-0">
+            <div className="p-2.5 sm:p-5 border-b border-slate-100 flex items-center justify-between bg-white shrink-0">
+              <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1">
+                <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-md sm:rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs sm:text-sm shrink-0">
                   ✏️
                 </div>
                 <div className="min-w-0 flex-1">
-                  <h3 className="text-sm sm:text-base font-bold text-slate-800 truncate">
+                  <h3 className="text-xs sm:text-base font-bold text-slate-800 truncate">
                     Edit Assignment
                   </h3>
-                  <p className="text-2xs text-slate-400 truncate">
+                  <p className="text-[9px] sm:text-2xs text-slate-400 truncate">
                     Subject: <span className="font-semibold text-blue-600">{editingAssignment.subject}</span>
                   </p>
                 </div>
@@ -1708,9 +1709,9 @@ const Assignment = () => {
               <button
                 type="button"
                 onClick={() => setEditModalOpen(false)}
-                className="p-2 text-slate-400 hover:text-slate-600 rounded-md hover:bg-slate-100 cursor-pointer shrink-0 min-w-[36px] min-h-[36px] flex items-center justify-center"
+                className="p-1 text-slate-400 hover:text-slate-600 rounded-md hover:bg-slate-100 cursor-pointer shrink-0 min-w-[26px] sm:min-w-[30px] min-h-[26px] sm:min-h-[30px] flex items-center justify-center"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="18" y1="6" x2="6" y2="18"></line>
                   <line x1="6" y1="6" x2="18" y2="18"></line>
                 </svg>
@@ -1719,10 +1720,10 @@ const Assignment = () => {
 
             <form onSubmit={handleUpdateAssignment} className="flex flex-col flex-1 overflow-hidden">
               {/* Scrollable Form Body */}
-              <div className="p-3.5 sm:p-6 overflow-y-auto flex flex-col gap-3.5 sm:gap-4 custom-scrollbar flex-1">
+              <div className="p-2.5 sm:p-6 overflow-y-auto flex flex-col gap-2 sm:gap-4 custom-scrollbar flex-1">
                 {/* Title */}
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                  <label className="block text-[10px] sm:text-xs font-bold text-slate-700 mb-1">
                     Title <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -1730,63 +1731,63 @@ const Assignment = () => {
                     value={editTitle}
                     onChange={(e) => setEditTitle(e.target.value)}
                     placeholder="Title"
-                    className="w-full px-3 py-2 rounded-lg text-base sm:text-sm font-medium border border-slate-300 bg-white text-slate-800 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none min-h-[42px]"
+                    className="w-full h-8 sm:h-10 px-2.5 sm:px-3 py-1 rounded-md sm:rounded-lg text-xs sm:text-sm font-medium border border-slate-300 bg-white text-slate-800 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none"
                   />
                 </div>
 
                 {/* Instructions */}
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                  <label className="block text-[10px] sm:text-xs font-bold text-slate-700 mb-1">
                     Instructions
                   </label>
                   <textarea
-                    rows={3}
+                    rows={2}
                     value={editDescription}
                     onChange={(e) => setEditDescription(e.target.value)}
                     placeholder="Instructions..."
-                    className="w-full px-3 py-2 rounded-lg text-base sm:text-sm font-medium border border-slate-300 bg-white text-slate-800 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none resize-none min-h-[80px]"
+                    className="w-full px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-md sm:rounded-lg text-xs sm:text-sm font-medium border border-slate-300 bg-white text-slate-800 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none resize-none min-h-[50px] sm:min-h-[80px]"
                   />
                 </div>
 
                 {/* Attachments Management */}
-                <div className="flex flex-col gap-2 p-3 rounded-lg bg-slate-50 border border-slate-200">
+                <div className="flex flex-col gap-1.5 sm:gap-2 p-2 sm:p-3 rounded-md sm:rounded-lg bg-slate-50 border border-slate-200">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-slate-700">
+                    <span className="text-[10px] sm:text-xs font-bold text-slate-700">
                       Attachments ({editKeptAttachments.length + editNewFiles.length}/5)
                     </span>
-                    <span className="text-2xs text-slate-400">
+                    <span className="text-[9px] sm:text-2xs text-slate-400">
                       Max 5 files (up to 25MB)
                     </span>
                   </div>
 
                   {/* Existing Kept Attachments */}
                   {editKeptAttachments.length > 0 && (
-                    <div className="flex flex-col gap-1.5">
-                      <span className="text-2xs font-semibold text-slate-500 uppercase tracking-wide">
+                    <div className="flex flex-col gap-1 sm:gap-1.5">
+                      <span className="text-[9px] sm:text-2xs font-semibold text-slate-500 uppercase tracking-wide">
                         Existing attachments:
                       </span>
                       <div className="flex flex-col gap-1">
                         {editKeptAttachments.map((att, idx) => (
                           <div
                             key={idx}
-                            className="flex items-center justify-between gap-2 p-2 rounded-md bg-white border border-slate-200 text-xs min-h-[38px]"
+                            className="flex items-center justify-between gap-1.5 p-1 sm:p-2 rounded bg-white border border-slate-200 text-xs min-h-[28px] sm:min-h-[38px]"
                           >
                             <div className="flex items-center gap-1.5 min-w-0 flex-1">
-                              <span className="shrink-0">{att.fileType === 'pdf' ? '📄' : '🖼️'}</span>
-                              <span className="truncate font-semibold text-slate-700">
+                              <span className="shrink-0 text-xs">{att.fileType === 'pdf' ? '📄' : '🖼️'}</span>
+                              <span className="truncate font-semibold text-slate-700 text-[10px] sm:text-xs">
                                 {att.fileName || `Attachment ${idx + 1}`}
                               </span>
                               {att.fileSize && (
-                                <span className="text-2xs text-slate-400 shrink-0">({att.fileSize})</span>
+                                <span className="text-[8px] sm:text-2xs text-slate-400 shrink-0">({att.fileSize})</span>
                               )}
                             </div>
                             <button
                               type="button"
                               onClick={() => removeKeptAttachment(idx)}
-                              className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-slate-100 rounded cursor-pointer shrink-0 min-w-[28px] min-h-[28px] flex items-center justify-center"
+                              className="p-1 text-slate-400 hover:text-red-600 hover:bg-slate-100 rounded cursor-pointer shrink-0 min-w-[22px] min-h-[22px] flex items-center justify-center"
                               title="Remove attachment"
                             >
-                              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                 <line x1="18" y1="6" x2="6" y2="18"></line>
                                 <line x1="6" y1="6" x2="18" y2="18"></line>
                               </svg>
@@ -1799,28 +1800,28 @@ const Assignment = () => {
 
                   {/* New Attachments Added in Edit */}
                   {editNewFiles.length > 0 && (
-                    <div className="flex flex-col gap-1.5">
-                      <span className="text-2xs font-semibold text-blue-600 uppercase tracking-wide">
+                    <div className="flex flex-col gap-1 sm:gap-1.5">
+                      <span className="text-[9px] sm:text-2xs font-semibold text-blue-600 uppercase tracking-wide">
                         New attachments:
                       </span>
                       <div className="flex flex-col gap-1">
                         {editNewFiles.map((nf) => (
                           <div
                             key={nf.id}
-                            className="flex items-center justify-between gap-2 p-2 rounded-md bg-blue-50/60 border border-blue-200 text-xs min-h-[38px]"
+                            className="flex items-center justify-between gap-1.5 p-1 sm:p-2 rounded bg-blue-50/60 border border-blue-200 text-xs min-h-[28px] sm:min-h-[38px]"
                           >
                             <div className="flex items-center gap-1.5 min-w-0 flex-1">
-                              <span className="shrink-0">{nf.type === 'pdf' ? '📄' : '🖼️'}</span>
-                              <span className="truncate font-semibold text-blue-800">
+                              <span className="shrink-0 text-xs">{nf.type === 'pdf' ? '📄' : '🖼️'}</span>
+                              <span className="truncate font-semibold text-blue-800 text-[10px] sm:text-xs">
                                 {nf.name}
                               </span>
-                              <span className="text-2xs text-blue-600 shrink-0">({formatFileSize(nf.size)})</span>
+                              <span className="text-[8px] sm:text-2xs text-blue-600 shrink-0">({formatFileSize(nf.size)})</span>
                             </div>
                             <div className="flex items-center gap-1 shrink-0">
                               <button
                                 type="button"
                                 onClick={() => openAttachmentPreview(nf)}
-                                className="px-2 py-1 text-2xs font-bold text-blue-700 bg-white border border-blue-200 rounded hover:bg-blue-100 cursor-pointer"
+                                className="px-1.5 py-0.5 sm:px-2 sm:py-1 text-[9px] sm:text-2xs font-bold text-blue-700 bg-white border border-blue-200 rounded hover:bg-blue-100 cursor-pointer"
                               >
                                 View
                               </button>
@@ -1828,7 +1829,7 @@ const Assignment = () => {
                                 href={nf.blobUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="p-1 text-blue-600 hover:text-blue-800 rounded hover:bg-white cursor-pointer"
+                                className="p-0.5 text-blue-600 hover:text-blue-800 rounded hover:bg-white cursor-pointer"
                                 title="Open in new window"
                               >
                                 <ExternalLinkIcon />
@@ -1836,10 +1837,10 @@ const Assignment = () => {
                               <button
                                 type="button"
                                 onClick={() => removeEditNewFile(nf.id)}
-                                className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-white rounded cursor-pointer shrink-0 min-w-[28px] min-h-[28px] flex items-center justify-center"
+                                className="p-1 text-slate-400 hover:text-red-600 hover:bg-white rounded cursor-pointer shrink-0 min-w-[22px] min-h-[22px] flex items-center justify-center"
                                 title="Remove"
                               >
-                                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                   <line x1="18" y1="6" x2="6" y2="18"></line>
                                   <line x1="6" y1="6" x2="18" y2="18"></line>
                                 </svg>
@@ -1865,13 +1866,13 @@ const Assignment = () => {
                     type="button"
                     disabled={editKeptAttachments.length + editNewFiles.length >= 5}
                     onClick={() => editFileInputRef.current?.click()}
-                    className={`w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-md text-xs font-semibold border transition-all min-h-[38px] ${
+                    className={`w-full sm:w-auto inline-flex items-center justify-center gap-1 px-2.5 sm:px-3 py-1 sm:py-2 rounded text-[10px] sm:text-xs font-semibold border transition-all min-h-[28px] sm:min-h-[38px] ${
                       editKeptAttachments.length + editNewFiles.length >= 5
                         ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed'
                         : 'bg-white text-blue-700 hover:bg-blue-600 hover:text-white border-blue-200 cursor-pointer shadow-2xs'
                     }`}
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
                     </svg>
                     <span>
@@ -1884,14 +1885,14 @@ const Assignment = () => {
 
                 {/* Target Audience */}
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                  <label className="block text-[10px] sm:text-xs font-bold text-slate-700 mb-1">
                     Assign to
                   </label>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  <div className="grid grid-cols-2 gap-1.5 sm:gap-2">
                     <button
                       type="button"
                       onClick={() => setEditTargetAudience('all')}
-                      className={`p-2.5 rounded-lg border text-xs sm:text-sm font-semibold transition-all cursor-pointer min-h-[44px] ${
+                      className={`p-1.5 sm:p-2.5 rounded-md sm:rounded-lg border text-xs sm:text-sm font-semibold transition-all cursor-pointer min-h-[30px] sm:min-h-[44px] ${
                         editTargetAudience === 'all'
                           ? 'bg-blue-50 border-blue-500 text-blue-700'
                           : 'border-slate-200 text-slate-600 hover:bg-slate-50'
@@ -1902,7 +1903,7 @@ const Assignment = () => {
                     <button
                       type="button"
                       onClick={() => setEditTargetAudience('selected')}
-                      className={`p-2.5 rounded-lg border text-xs sm:text-sm font-semibold transition-all cursor-pointer min-h-[44px] ${
+                      className={`p-1.5 sm:p-2.5 rounded-md sm:rounded-lg border text-xs sm:text-sm font-semibold transition-all cursor-pointer min-h-[30px] sm:min-h-[44px] ${
                         editTargetAudience === 'selected'
                           ? 'bg-indigo-50 border-indigo-500 text-indigo-700'
                           : 'border-slate-200 text-slate-600 hover:bg-slate-50'
@@ -1913,35 +1914,35 @@ const Assignment = () => {
                   </div>
 
                   {editTargetAudience === 'selected' && (
-                    <div className="mt-2.5 p-2.5 bg-slate-50 rounded-lg border border-slate-200 flex flex-col gap-2">
-                      <div className="flex items-center justify-between gap-2">
+                    <div className="mt-1.5 p-2 sm:p-2.5 bg-slate-50 rounded-md sm:rounded-lg border border-slate-200 flex flex-col gap-1.5">
+                      <div className="flex items-center justify-between gap-1.5">
                         <input
                           type="text"
                           value={editStudentSearch}
                           onChange={(e) => setEditStudentSearch(e.target.value)}
                           placeholder="Search student or USN..."
-                          className="flex-1 px-3 py-2 text-base sm:text-sm rounded border border-slate-300 bg-white min-h-[40px]"
+                          className="flex-1 px-2 py-1 text-xs sm:text-sm rounded border border-slate-300 bg-white min-h-[28px] sm:min-h-[40px]"
                         />
-                        <span className="text-2xs font-semibold text-indigo-700 bg-indigo-50 border border-indigo-200 px-2 py-1.5 rounded shrink-0 whitespace-nowrap">
+                        <span className="text-[9px] sm:text-2xs font-semibold text-indigo-700 bg-indigo-50 border border-indigo-200 px-1.5 py-0.5 rounded shrink-0 whitespace-nowrap">
                           {editSelectedStudents.length} Selected
                         </span>
                       </div>
 
-                      <div className="max-h-36 overflow-y-auto flex flex-col gap-1 pr-1 custom-scrollbar">
+                      <div className="max-h-28 sm:max-h-36 overflow-y-auto flex flex-col gap-1 pr-1 custom-scrollbar">
                         {filteredEditStudents.map((st) => {
                           const isSel = editSelectedStudents.includes(st.usn);
                           return (
                             <div
                               key={st.usn}
                               onClick={() => toggleEditStudent(st.usn)}
-                              className={`flex items-center justify-between px-3 py-2 rounded border text-xs cursor-pointer min-h-[40px] ${
+                              className={`flex items-center justify-between px-2 py-1 rounded border text-[10px] sm:text-xs cursor-pointer min-h-[26px] sm:min-h-[40px] ${
                                 isSel
                                   ? 'bg-indigo-600 text-white border-indigo-600'
                                   : 'bg-white text-slate-700 border-slate-200 hover:bg-indigo-50/40'
                               }`}
                             >
                               <span className="truncate font-semibold">{st.username}</span>
-                              <span className={`text-2xs font-mono px-1.5 py-0.5 rounded shrink-0 ${
+                              <span className={`text-[8px] sm:text-2xs font-mono px-1.5 py-0.5 rounded shrink-0 ${
                                 isSel ? 'bg-indigo-500 text-white' : 'bg-slate-100 text-slate-600'
                               }`}>
                                 {st.usn}
@@ -1955,9 +1956,9 @@ const Assignment = () => {
                 </div>
 
                 {/* Due date & marks */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                    <label className="block text-[10px] sm:text-xs font-bold text-slate-700 mb-1">
                       Due Date
                     </label>
                     <input
@@ -1965,12 +1966,12 @@ const Assignment = () => {
                       value={editDueDate}
                       min={getCurrentMinDateTime()}
                       onChange={(e) => setEditDueDate(e.target.value)}
-                      className="w-full px-3 py-2.5 rounded-lg text-base sm:text-sm font-medium border border-slate-300 bg-white text-slate-800 focus:border-blue-600 min-h-[44px]"
+                      className="w-full h-8 sm:h-11 px-2 sm:px-3 rounded-md sm:rounded-lg text-xs sm:text-sm font-medium border border-slate-300 bg-white text-slate-800 focus:border-blue-600 shadow-2xs"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                    <label className="block text-[10px] sm:text-xs font-bold text-slate-700 mb-1">
                       Total Marks
                     </label>
                     <input
@@ -1980,26 +1981,26 @@ const Assignment = () => {
                       placeholder="20"
                       min="0"
                       max="1000"
-                      className="w-full px-3 py-2.5 rounded-lg text-base sm:text-sm font-medium border border-slate-300 bg-white text-slate-800 focus:border-blue-600 min-h-[44px]"
+                      className="w-full h-8 sm:h-11 px-2 sm:px-3 rounded-md sm:rounded-lg text-xs sm:text-sm font-medium border border-slate-300 bg-white text-slate-800 focus:border-blue-600 shadow-2xs"
                     />
                   </div>
                 </div>
               </div>
 
               {/* Sticky Modal Footer */}
-              <div className="p-3 sm:p-4 border-t border-slate-100 bg-slate-50/90 flex items-center justify-end gap-2.5 shrink-0">
+              <div className="p-2 sm:p-4 border-t border-slate-100 bg-slate-50/90 flex items-center justify-end gap-1.5 sm:gap-2 shrink-0">
                 <button
                   type="button"
                   onClick={() => setEditModalOpen(false)}
                   disabled={isUpdating}
-                  className="px-4 py-2.5 rounded-lg text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-200/70 cursor-pointer min-h-[44px] flex-1 sm:flex-none justify-center flex items-center"
+                  className="px-3 sm:px-4 py-1.5 sm:py-2.5 rounded-lg text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-200/70 cursor-pointer min-h-[32px] sm:min-h-[44px] flex-1 sm:flex-none justify-center flex items-center"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isUpdating}
-                  className="px-5 py-2.5 rounded-lg text-xs sm:text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-xs cursor-pointer flex items-center justify-center gap-1.5 min-h-[44px] flex-1 sm:flex-none"
+                  className="px-3.5 sm:px-5 py-1.5 sm:py-2.5 rounded-lg text-xs sm:text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-xs cursor-pointer flex items-center justify-center gap-1.5 min-h-[32px] sm:min-h-[44px] flex-1 sm:flex-none"
                 >
                   {isUpdating ? 'Saving Changes…' : 'Save Changes'}
                 </button>
@@ -2011,32 +2012,32 @@ const Assignment = () => {
       {/* ── Attachment Preview Modal (Viewer for PDF and Images) ─────────────── */}
       {previewModal.isOpen && (
         <div
-          className="fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-sm flex items-center justify-center p-2.5 sm:p-5"
+          className="fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-xs flex items-center justify-center p-2 sm:p-5"
           onClick={closeAttachmentPreview}
         >
           <div
-            className="relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh] border border-slate-200/80"
+            className="relative w-full max-w-4xl bg-white rounded-xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh] border border-slate-200/80"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
-            <div className="flex items-center justify-between gap-3 px-4 py-3 sm:px-5 sm:py-3.5 bg-slate-50 border-b border-slate-200">
-              <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                <span className={`px-2 py-0.5 rounded text-xs font-bold ${
+            <div className="flex items-center justify-between gap-2 px-3 py-2 sm:px-5 sm:py-3.5 bg-slate-50 border-b border-slate-200">
+              <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0 flex-1">
+                <span className={`px-1.5 sm:px-2 py-0.5 rounded text-[10px] sm:text-xs font-bold ${
                   previewModal.type === 'pdf' ? 'bg-red-100 text-red-700' : 'bg-emerald-100 text-emerald-700'
                 }`}>
                   {previewModal.type === 'pdf' ? '📄 PDF' : '🖼️ Photo'}
                 </span>
-                <h3 className="text-sm sm:text-base font-bold text-slate-800 truncate" title={previewModal.title}>
+                <h3 className="text-xs sm:text-base font-bold text-slate-800 truncate" title={previewModal.title}>
                   {previewModal.title}
                 </h3>
               </div>
 
-              <div className="flex items-center gap-2 shrink-0">
+              <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
                 <a
                   href={previewModal.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-1 px-2 sm:px-3 py-1 sm:py-1.5 rounded-md sm:rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-[11px] sm:text-xs font-bold shadow-xs transition-colors cursor-pointer"
                   title="Open in full browser window"
                 >
                   <ExternalLinkIcon />
@@ -2046,10 +2047,10 @@ const Assignment = () => {
                 <button
                   type="button"
                   onClick={closeAttachmentPreview}
-                  className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 rounded-lg transition-colors cursor-pointer min-w-[36px] min-h-[36px] flex items-center justify-center"
+                  className="p-1 sm:p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 rounded-md sm:rounded-lg transition-colors cursor-pointer min-w-[28px] sm:min-w-[36px] min-h-[28px] sm:min-h-[36px] flex items-center justify-center"
                   title="Close preview"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <line x1="18" y1="6" x2="6" y2="18"></line>
                     <line x1="6" y1="6" x2="18" y2="18"></line>
                   </svg>
@@ -2058,19 +2059,19 @@ const Assignment = () => {
             </div>
 
             {/* Modal Body */}
-            <div className="flex-1 overflow-auto bg-slate-900/95 flex items-center justify-center min-h-[320px] max-h-[calc(92vh-60px)] p-2 sm:p-4">
+            <div className="flex-1 overflow-auto bg-slate-900/95 flex items-center justify-center min-h-[250px] sm:min-h-[320px] max-h-[calc(92vh-50px)] p-1.5 sm:p-4">
               {previewModal.type === 'photo' ? (
                 <img
                   src={previewModal.url}
                   alt={previewModal.title}
-                  className="max-w-full max-h-[78vh] object-contain rounded-lg shadow-xl"
+                  className="max-w-full max-h-[75vh] object-contain rounded-md sm:rounded-lg shadow-xl"
                 />
               ) : (
-                <div className="w-full h-full flex flex-col items-stretch min-h-[500px] sm:min-h-[620px] bg-white rounded-lg overflow-hidden">
+                <div className="w-full h-full flex flex-col items-stretch min-h-[380px] sm:min-h-[620px] bg-white rounded-md sm:rounded-lg overflow-hidden">
                   <iframe
                     src={previewModal.url}
                     title={previewModal.title}
-                    className="w-full flex-1 border-0 min-h-[500px] sm:min-h-[620px]"
+                    className="w-full flex-1 border-0 min-h-[380px] sm:min-h-[620px]"
                   />
                 </div>
               )}

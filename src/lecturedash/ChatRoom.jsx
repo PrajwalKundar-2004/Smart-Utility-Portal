@@ -110,20 +110,31 @@ const EyeIcon = ({ className = 'w-4 h-4' }) => (
   </svg>
 );
 
-const ClockIcon = ({ className = 'w-3 h-3 text-[#8696a0]' }) => (
+const ClockIcon = ({ className = 'w-3 h-3 text-slate-400' }) => (
   <svg className={className} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6">
     <circle cx="8" cy="8" r="6.2" />
     <polyline points="8 4.2 8 8 10.5 9.5" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
 
-// ─── WhatsApp-style Status / Ticks Component ─────────────────────────────────
-const MessageTicks = ({ message, currentUsn }) => {
-  // 1. Sending in flight / optimistic temporary state -> WhatsApp Clock Icon 🕒
+const ArrowLeftIcon = ({ className = 'w-5 h-5' }) => (
+  <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="19" y1="12" x2="5" y2="12" />
+    <polyline points="12 19 5 12 12 5" />
+  </svg>
+);
+
+// ─── Status / Delivery Ticks Component ─────────────────────────────────
+const MessageTicks = ({ message, currentUsn, isMe = false }) => {
+  const tickColor = isMe ? 'text-blue-200' : 'text-slate-400';
+  const seenColor = isMe ? 'text-sky-200' : 'text-blue-500';
+
+  // 1. Sending in flight / optimistic temporary state -> Clock Icon
   if (message.status === 'sending' || (message._id && String(message._id).startsWith('temp_'))) {
     return (
-      <span className="inline-flex items-center text-[#8696a0] ml-1 select-none" title="Sending...">
-        <ClockIcon className="w-3.5 h-3.5 text-[#8696a0]" />
+      <span className={`inline-flex items-center ${tickColor} ml-1 select-none`} title="Sending...">
+        <ClockIcon className={`w-3 h-3 ${tickColor}`} />
       </span>
     );
   }
@@ -131,7 +142,7 @@ const MessageTicks = ({ message, currentUsn }) => {
   // 2. Failed state
   if (message.status === 'error') {
     return (
-      <span className="inline-flex items-center text-red-500 ml-1 select-none" title="Failed to send">
+      <span className="inline-flex items-center text-rose-300 ml-1 select-none" title="Failed to send">
         <svg viewBox="0 0 16 16" width="13" height="13" fill="currentColor">
           <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0-1A6 6 0 1 0 8 2a6 6 0 0 0 0 12zM7.25 4.5h1.5v5h-1.5v-5zm0 6.5h1.5v1.5h-1.5V11z" />
         </svg>
@@ -142,11 +153,11 @@ const MessageTicks = ({ message, currentUsn }) => {
   const readCount = message.readBy?.filter((r) => r.usn !== currentUsn)?.length || 0;
   const deliveredCount = message.deliveredTo?.filter((d) => d.usn !== currentUsn)?.length || 0;
 
-  // 3. Double Blue Tick (Seen / Read)
+  // 3. Double Tick (Seen / Read)
   if (readCount > 0) {
     return (
-      <span className="inline-flex items-center text-[#53bdeb] ml-1 select-none" title="Seen">
-        <svg viewBox="0 0 16 15" width="16" height="15" fill="none">
+      <span className={`inline-flex items-center ${seenColor} ml-1 select-none`} title="Seen">
+        <svg viewBox="0 0 16 15" width="15" height="14" fill="none">
           <path d="M15.01 3.316l-7.9 7.9-3.13-3.13a.75.75 0 1 0-1.06 1.06l3.66 3.66a.75.75 0 0 0 1.06 0l8.43-8.43a.75.75 0 1 0-1.06-1.06z" fill="currentColor" />
           <path d="M11.01 3.316l-7.9 7.9-1.13-1.13a.75.75 0 1 0-1.06 1.06l1.66 1.66a.75.75 0 0 0 1.06 0l8.43-8.43a.75.75 0 1 0-1.06-1.06z" fill="currentColor" />
         </svg>
@@ -154,11 +165,11 @@ const MessageTicks = ({ message, currentUsn }) => {
     );
   }
 
-  // 4. Double Gray Tick (Delivered)
+  // 4. Double Tick (Delivered)
   if (deliveredCount > 0) {
     return (
-      <span className="inline-flex items-center text-[#8696a0] ml-1 select-none" title="Delivered">
-        <svg viewBox="0 0 16 15" width="16" height="15" fill="none">
+      <span className={`inline-flex items-center ${tickColor} ml-1 select-none`} title="Delivered">
+        <svg viewBox="0 0 16 15" width="15" height="14" fill="none">
           <path d="M15.01 3.316l-7.9 7.9-3.13-3.13a.75.75 0 1 0-1.06 1.06l3.66 3.66a.75.75 0 0 0 1.06 0l8.43-8.43a.75.75 0 1 0-1.06-1.06z" fill="currentColor" />
           <path d="M11.01 3.316l-7.9 7.9-1.13-1.13a.75.75 0 1 0-1.06 1.06l1.66 1.66a.75.75 0 0 0 1.06 0l8.43-8.43a.75.75 0 1 0-1.06-1.06z" fill="currentColor" opacity="0.8" />
         </svg>
@@ -166,10 +177,10 @@ const MessageTicks = ({ message, currentUsn }) => {
     );
   }
 
-  // 5. Single Gray Tick (Sent to server)
+  // 5. Single Tick (Sent to server)
   return (
-    <span className="inline-flex items-center text-[#8696a0] ml-1 select-none" title="Sent">
-      <svg viewBox="0 0 16 15" width="14" height="14" fill="none">
+    <span className={`inline-flex items-center ${tickColor} ml-1 select-none`} title="Sent">
+      <svg viewBox="0 0 16 15" width="13" height="13" fill="none">
         <path d="M13.5 3.5l-7.5 7.5-3.5-3.5a.75.75 0 1 0-1.06 1.06l4.03 4.03a.75.75 0 0 0 1.06 0l8.03-8.03a.75.75 0 1 0-1.06-1.06z" fill="currentColor" />
       </svg>
     </span>
@@ -854,7 +865,7 @@ const ChatRoom = () => {
   };
 
   return (
-    <main className="h-screen w-full bg-gradient-to-br from-sky-50 via-white to-[rgba(112,177,230,0.18)] font-sans flex flex-col overflow-hidden">
+    <main className="h-[100dvh] w-full bg-slate-100 font-sans flex flex-col overflow-hidden">
       <Toaster position="top-right" />
 
       {/* ── Sticky College Top Navbar ── */}
@@ -862,71 +873,71 @@ const ChatRoom = () => {
         {isStudent ? <Navbar2 /> : <Navbar1 />}
       </div>
 
-      {/* ── Main WhatsApp-Style Container ── */}
-      <div className="flex-1 flex overflow-hidden w-full relative">
+      {/* ── Main Container: Full width edge-to-edge on mobile and desktop for optimal layout ── */}
+      <div className="flex-1 w-full flex overflow-hidden relative min-w-0 bg-white">
 
-        {/* ── Left Sidebar (WhatsApp Web Chat List) ── */}
+        {/* ── Left Sidebar (Conversations List) ── */}
         <aside
           className={`${
             showSidebar ? 'flex' : 'hidden'
-          } md:flex flex-col w-full md:w-80 lg:w-96 flex-shrink-0 bg-white border-r border-[#e9edef] z-20 h-full shadow-xs`}
+          } md:flex flex-col w-full md:w-80 lg:w-96 flex-shrink-0 bg-white border-r border-slate-200 z-20 h-full min-w-0`}
         >
-          {/* WhatsApp-Style Sidebar Header */}
-          <div className="px-4 py-3 bg-[#f0f2f5] border-b border-[#e9edef] flex items-center justify-between">
-            <div className="flex items-center gap-3">
+          {/* Professional Sidebar Header */}
+          <div className="px-3.5 sm:px-4 py-2.5 sm:py-3 bg-white border-b border-slate-200 flex items-center justify-between shrink-0">
+            <div className="flex items-center gap-2.5 sm:gap-3">
               {/* User Profile Avatar with Online Status */}
               <div className="relative">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#00a884] to-teal-600 text-white flex items-center justify-center font-bold text-sm shadow-2xs">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold text-xs sm:text-sm shadow-xs">
                   {currentUserName[0]?.toUpperCase()}
                 </div>
                 <span
-                  className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white ${
-                    socketConnected ? 'bg-[#25d366]' : 'bg-amber-400'
+                  className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full border-2 border-white ${
+                    socketConnected ? 'bg-emerald-500' : 'bg-amber-400'
                   }`}
                   title={socketConnected ? 'Connected' : 'Reconnecting...'}
                 />
               </div>
 
               <div>
-                <h2 className="text-[#111b21] font-bold text-base tracking-tight leading-tight">
-                  Chats
+                <h2 className="text-slate-900 font-bold text-sm sm:text-base tracking-tight leading-tight">
+                  Discussions
                 </h2>
-                <p className="text-[11px] text-[#667781] leading-none">
-                  {isStudent ? 'Student Portal' : 'Lecturer Portal'}
+                <p className="text-[10px] sm:text-[11px] text-slate-500 leading-none mt-0.5">
+                  {isStudent ? 'Student Portal' : 'Faculty Portal'}
                 </p>
               </div>
             </div>
 
-            {/* Lecturer "+ New Group" WhatsApp emerald button */}
+            {/* Lecturer "+ New Group" Button */}
             {!isStudent && (
               <button
                 type="button"
                 onClick={openCreateModal}
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold text-white bg-[#00a884] hover:bg-[#008f72] active:scale-95 shadow-sm transition-all cursor-pointer"
+                className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 active:scale-95 shadow-xs transition-all cursor-pointer"
                 title="Create a new chat room"
               >
-                <PlusIcon className="w-4 h-4" />
+                <PlusIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 <span>New Group</span>
               </button>
             )}
           </div>
 
-          {/* WhatsApp Search Bar (Zero overlap between icon and input text) */}
-          <div className="p-2.5 bg-white border-b border-[#e9edef]">
-            <div className="flex items-center gap-2.5 bg-[#f0f2f5] border border-transparent focus-within:border-slate-300 focus-within:bg-white rounded-lg px-3 py-2 transition-all">
-              <SearchIcon className="w-4 h-4 text-[#54656f] shrink-0" />
+          {/* Search Bar */}
+          <div className="p-2 sm:p-2.5 bg-white border-b border-slate-200 shrink-0">
+            <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-2.5 sm:px-3 py-1.5 sm:py-2 focus-within:bg-white focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/10 transition-all">
+              <SearchIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-400 shrink-0" />
               <input
                 type="text"
                 value={groupSearch}
                 onChange={(e) => setGroupSearch(e.target.value)}
-                placeholder="Search or start new chat"
-                className="w-full bg-transparent text-sm text-[#111b21] placeholder:text-[#8696a0] outline-none border-none p-0"
+                placeholder="Search conversations..."
+                className="w-full bg-transparent text-xs sm:text-sm text-slate-800 placeholder:text-slate-400 outline-none border-none p-0"
               />
               {groupSearch && (
                 <button
                   type="button"
                   onClick={() => setGroupSearch('')}
-                  className="text-[#54656f] hover:text-[#111b21] shrink-0 p-0.5 cursor-pointer"
+                  className="text-slate-400 hover:text-slate-600 shrink-0 p-0.5 cursor-pointer"
                   title="Clear search"
                 >
                   <CloseIcon className="w-3.5 h-3.5" />
@@ -936,14 +947,14 @@ const ChatRoom = () => {
           </div>
 
           {/* Groups List */}
-          <div className="flex-1 overflow-y-auto divide-y divide-[#e9edef]/60">
+          <div className="flex-1 overflow-y-auto divide-y divide-slate-100">
             {loadingGroups ? (
-              <div className="p-8 text-center text-[#667781] text-sm">
-                <div className="w-6 h-6 border-2 border-[#00a884] border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+              <div className="p-6 sm:p-8 text-center text-slate-500 text-xs sm:text-sm">
+                <div className="w-5 h-5 sm:w-6 sm:h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
                 Loading conversations...
               </div>
             ) : filteredGroups.length === 0 ? (
-              <div className="p-8 text-center text-[#667781] text-sm">
+              <div className="p-6 sm:p-8 text-center text-slate-500 text-xs sm:text-sm">
                 {groupSearch ? 'No matching chats found' : 'No chats yet. Click "+ New Group" to get started.'}
               </div>
             ) : (
@@ -960,18 +971,18 @@ const ChatRoom = () => {
                       setActiveGroup(group);
                       if (window.innerWidth < 768) setShowSidebar(false);
                     }}
-                    className={`w-full flex items-center gap-3.5 px-3.5 py-3 text-left transition-all cursor-pointer ${
+                    className={`w-full flex items-center gap-2.5 sm:gap-3 px-3 py-2.5 sm:px-3.5 sm:py-3 text-left transition-all cursor-pointer border-l-3 ${
                       isActive
-                        ? 'bg-[#f0f2f5] border-l-4 border-[#00a884]'
-                        : 'hover:bg-[#f5f6f6] border-l-4 border-transparent'
+                        ? 'bg-blue-50/70 border-blue-600'
+                        : 'hover:bg-slate-50 border-transparent'
                     }`}
                   >
-                    {/* WhatsApp Channel Avatar */}
+                    {/* Channel Avatar */}
                     <div
-                      className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-base shrink-0 shadow-2xs ${
+                      className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center font-bold text-xs sm:text-sm shrink-0 shadow-2xs transition-colors ${
                         isActive
-                          ? 'bg-gradient-to-tr from-[#00a884] to-teal-500 text-white'
-                          : 'bg-[#dfe5e7] text-[#54656f]'
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-slate-100 text-slate-600 border border-slate-200'
                       }`}
                     >
                       {group.name[0]?.toUpperCase()}
@@ -980,21 +991,21 @@ const ChatRoom = () => {
                     {/* Channel Info */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-1 mb-0.5">
-                        <h3 className="text-sm font-semibold truncate text-[#111b21]">
+                        <h3 className={`text-xs sm:text-sm truncate font-semibold ${isActive ? 'text-blue-950 font-bold' : 'text-slate-900'}`}>
                           {group.name}
                         </h3>
                         {group.lastMessage?.time && (
-                          <span className="text-[11px] text-[#667781] shrink-0 font-medium">
+                          <span className="text-[10px] sm:text-[11px] text-slate-400 shrink-0 font-medium">
                             {formatTime(group.lastMessage.time)}
                           </span>
                         )}
                       </div>
 
-                      {/* WhatsApp Last Message Snippet with Sent Tick Indicator */}
-                      <div className="flex items-center text-xs text-[#667781] truncate mb-1">
+                      {/* Last Message Snippet */}
+                      <div className="flex items-center text-[11px] sm:text-xs text-slate-500 truncate mb-1">
                         {isLastMsgMine && (
-                          <span className="inline-flex items-center mr-1 text-[#8696a0]" title="Sent by you">
-                            <svg viewBox="0 0 16 15" width="13" height="13" fill="none">
+                          <span className="inline-flex items-center mr-1 text-slate-400 shrink-0" title="Sent by you">
+                            <svg viewBox="0 0 16 15" width="12" height="12" fill="none">
                               <path d="M13.5 3.5l-7.5 7.5-3.5-3.5a.75.75 0 1 0-1.06 1.06l4.03 4.03a.75.75 0 0 0 1.06 0l8.03-8.03a.75.75 0 1 0-1.06-1.06z" fill="currentColor" />
                             </svg>
                           </span>
@@ -1003,22 +1014,22 @@ const ChatRoom = () => {
                           {group.lastMessage?.content ? (
                             <>
                               {!isLastMsgMine && group.lastMessage.senderName && (
-                                <span className="font-medium text-[#111b21]">
+                                <span className="font-medium text-slate-700">
                                   {group.lastMessage.senderName}:{' '}
                                 </span>
                               )}
                               {group.lastMessage.content}
                             </>
                           ) : (
-                            group.description || 'Tap to open chat'
+                            group.description || 'Tap to join discussion'
                           )}
                         </p>
                       </div>
 
-                      {/* Clean Group Audience / Members Indicator */}
+                      {/* Clean Group Audience Pill */}
                       <div className="flex items-center gap-1.5">
-                        <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
-                          {group.targetAudience === 'all' ? 'All Students' : `${group.members?.length || 0} members`}
+                        <span className="text-[9px] sm:text-[10px] font-medium px-1.5 py-0.2 sm:px-2 sm:py-0.5 rounded-md bg-slate-100 text-slate-600 border border-slate-200/80">
+                          {group.targetAudience === 'all' ? 'All Students' : `${group.members?.length || 0} participants`}
                         </span>
                       </div>
                     </div>
@@ -1029,51 +1040,54 @@ const ChatRoom = () => {
           </div>
         </aside>
 
-        {/* ── Right Panel (WhatsApp Chat Conversation Area) ── */}
+        {/* ── Right Panel (Chat Conversation Area) ── */}
         <section
-          className="flex-1 flex flex-col overflow-hidden relative"
+          className={`${
+            !showSidebar ? 'flex' : 'hidden'
+          } md:flex flex-1 flex-col overflow-hidden relative bg-slate-50/70 min-w-0 w-full h-full`}
           style={{
-            backgroundColor: '#efeae2',
-            backgroundImage: `radial-gradient(#cfd6db 1.2px, transparent 1.2px)`,
+            backgroundImage: `radial-gradient(#cbd5e1 1px, transparent 1px)`,
             backgroundSize: '24px 24px',
           }}
         >
           {activeGroup ? (
             <>
-              {/* WhatsApp Web Chat Header */}
-              <div className="px-4 py-2.5 bg-[#f0f2f5] border-b border-[#e9edef] flex items-center justify-between shadow-2xs z-20">
-                <div className="flex items-center gap-3 min-w-0">
+              {/* Chat Header */}
+              <div className="px-3 sm:px-4 py-2 sm:py-2.5 bg-white border-b border-slate-200 flex items-center justify-between shadow-2xs z-20 min-w-0 shrink-0">
+                <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
                   <button
+                    type="button"
                     onClick={() => setShowSidebar(true)}
-                    className="md:hidden p-2 rounded-full text-[#54656f] hover:bg-slate-200 transition-colors"
-                    title="View Chats"
+                    className="md:hidden p-1.5 -ml-1 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors shrink-0 flex items-center cursor-pointer"
+                    title="Back to conversations"
+                    aria-label="Back to conversations"
                   >
-                    <UsersIcon className="w-5 h-5" />
+                    <ArrowLeftIcon className="w-5 h-5 text-slate-700" />
                   </button>
 
                   {/* Channel Avatar */}
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#00a884] to-teal-600 text-white flex items-center justify-center font-bold text-sm shadow-2xs shrink-0">
+                  <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold text-xs sm:text-sm shadow-xs shrink-0">
                     {activeGroup.name[0]?.toUpperCase()}
                   </div>
 
-                  <div className="min-w-0">
-                    <h2 className="text-[#111b21] font-semibold text-base truncate leading-tight">
+                  <div className="min-w-0 flex-1">
+                    <h2 className="text-slate-900 font-bold text-sm sm:text-base truncate leading-tight">
                       {activeGroup.name}
                     </h2>
-                    {/* WhatsApp-Style Member Subtitle: Clean list of participants */}
-                    <p className="text-xs truncate leading-none mt-0.5">
+                    {/* Participant Subtitle */}
+                    <p className="text-[11px] sm:text-xs truncate leading-none mt-0.5 text-slate-500">
                       {typingUsers.length > 0 ? (
-                        <span className="text-[#00a884] font-medium animate-pulse">
+                        <span className="text-blue-600 font-medium animate-pulse">
                           {typingUsers.join(', ')} typing...
                         </span>
                       ) : (
-                        <span className="text-[#667781]">
+                        <span>
                           {activeGroup.members && activeGroup.members.length > 0
                             ? activeGroup.members
                                 .map((m) => (m.usn === currentUsn || m.name === currentUserName ? 'You' : m.name))
-                                .slice(0, 5)
+                                .slice(0, 4)
                                 .join(', ') +
-                              (activeGroup.members.length > 5 ? `, +${activeGroup.members.length - 5} more` : '')
+                              (activeGroup.members.length > 4 ? `, +${activeGroup.members.length - 4}` : '')
                             : `${activeGroup.members?.length || 0} participants`}
                         </span>
                       )}
@@ -1081,32 +1095,33 @@ const ChatRoom = () => {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1 sm:gap-2 shrink-0 ml-2">
                   <button
+                    type="button"
                     onClick={() => setShowMembersDrawer((p) => !p)}
-                    className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold text-[#111b21] bg-white hover:bg-slate-100 border border-slate-300 shadow-2xs transition-colors cursor-pointer"
+                    className="inline-flex items-center gap-1 px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg text-xs font-semibold text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 shadow-2xs transition-colors cursor-pointer"
                     title="Group details & participants"
                   >
-                    <UsersIcon className="w-4 h-4 text-[#00a884]" />
-                    <span>Group Info</span>
+                    <UsersIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-600" />
+                    <span className="hidden sm:inline">Details</span>
                   </button>
                 </div>
               </div>
 
-              {/* WhatsApp Messages Scroll Flow Area with Date Dividers */}
-              <div className="flex-1 overflow-y-auto px-4 sm:px-8 py-4 space-y-2.5">
+              {/* Messages Scroll Flow Area with Date Dividers */}
+              <div className="flex-1 overflow-y-auto px-2.5 sm:px-6 py-2.5 sm:py-4 space-y-2.5 sm:space-y-3 min-w-0">
                 {loadingMessages ? (
-                  <div className="flex justify-center items-center h-full text-[#667781] text-sm">
-                    <div className="w-6 h-6 border-2 border-[#00a884] border-t-transparent rounded-full animate-spin mr-2" />
+                  <div className="flex justify-center items-center h-full text-slate-500 text-xs sm:text-sm">
+                    <div className="w-5 h-5 sm:w-6 sm:h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mr-2" />
                     Loading conversation...
                   </div>
                 ) : messages.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center h-full text-center text-[#667781]">
-                    <div className="w-14 h-14 rounded-full bg-white/90 text-[#00a884] border border-slate-200 flex items-center justify-center mb-3 shadow-xs">
-                      <SendIcon className="w-6 h-6" />
+                  <div className="flex flex-col items-center justify-center h-full text-center text-slate-500 p-4">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-white text-blue-600 border border-slate-200 flex items-center justify-center mb-2.5 shadow-2xs">
+                      <SendIcon className="w-4 h-4 sm:w-5 sm:h-5" />
                     </div>
-                    <p className="text-sm font-bold text-[#111b21]">No messages yet</p>
-                    <p className="text-xs text-[#667781] mt-1">
+                    <p className="text-xs sm:text-sm font-bold text-slate-900">No messages yet</p>
+                    <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5">
                       Say hello or share study resources to start chatting.
                     </p>
                   </div>
@@ -1124,14 +1139,14 @@ const ChatRoom = () => {
                       return (
                         <React.Fragment key={msg._id || msg.clientTempId || idx}>
                           {isDifferentDay && (
-                            <div className="flex justify-center my-3 sticky top-2 z-10 pointer-events-none">
-                              <span className="bg-white/95 backdrop-blur-md text-[#54656f] text-xs font-semibold px-3 py-1 rounded-lg shadow-xs border border-slate-200/80 uppercase tracking-wide pointer-events-auto select-none">
+                            <div className="flex justify-center my-2 sm:my-3 sticky top-1 sm:top-2 z-10 pointer-events-none">
+                              <span className="bg-white/95 text-slate-600 text-[10px] sm:text-xs font-medium px-2.5 sm:px-3.5 py-0.5 sm:py-1 rounded-full shadow-2xs border border-slate-200 uppercase tracking-wide pointer-events-auto select-none">
                                 {dateBadge}
                               </span>
                             </div>
                           )}
-                          <div className="flex justify-center my-2">
-                            <span className="bg-white/90 backdrop-blur-xs text-[#54656f] text-xs font-medium px-4 py-1 rounded-lg shadow-2xs border border-slate-200/60">
+                          <div className="flex justify-center my-1.5 sm:my-2">
+                            <span className="bg-white/95 text-slate-600 text-[11px] sm:text-xs font-medium px-3 sm:px-3.5 py-1 sm:py-1.5 rounded-xl shadow-2xs border border-slate-200">
                               ℹ️ {msg.content}
                             </span>
                           </div>
@@ -1170,35 +1185,35 @@ const ChatRoom = () => {
 
                     return (
                       <React.Fragment key={msg._id || msg.clientTempId || idx}>
-                        {/* Centered WhatsApp Date Divider Pill */}
+                        {/* Centered Date Divider Pill */}
                         {isDifferentDay && (
-                          <div className="flex justify-center my-3 sticky top-2 z-10 pointer-events-none">
-                            <span className="bg-white/95 backdrop-blur-md text-[#54656f] text-xs font-semibold px-3.5 py-1 rounded-lg shadow-xs border border-slate-200/80 uppercase tracking-wide pointer-events-auto select-none">
+                          <div className="flex justify-center my-2 sm:my-3 sticky top-1 sm:top-2 z-10 pointer-events-none">
+                            <span className="bg-white/95 text-slate-600 text-[10px] sm:text-xs font-medium px-2.5 sm:px-3.5 py-0.5 sm:py-1 rounded-full shadow-2xs border border-slate-200 uppercase tracking-wide pointer-events-auto select-none">
                               {dateBadge}
                             </span>
                           </div>
                         )}
 
-                        {/* WhatsApp Message Bubble */}
-                        <div className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
+                        {/* Message Bubble Row */}
+                        <div className={`flex ${isMe ? 'justify-end' : 'justify-start'} w-full min-w-0`}>
                           <div
-                            className={`relative max-w-[88%] sm:max-w-[70%] p-2.5 sm:p-3 shadow-[0_1px_0.5px_rgba(11,20,26,0.13)] text-sm sm:text-[15px] leading-relaxed break-words ${
+                            className={`relative max-w-[85%] sm:max-w-[70%] min-w-0 p-2.5 sm:p-3.5 shadow-xs text-sm sm:text-[14px] leading-normal sm:leading-relaxed break-words [overflow-wrap:anywhere] [word-break:break-word] rounded-lg overflow-hidden ${
                               isMe
-                                ? 'bg-[#d9fdd3] text-[#111b21] rounded-2xl rounded-tr-xs border border-[#c4f4be]/70'
-                                : 'bg-white text-[#111b21] rounded-2xl rounded-tl-xs border border-slate-200/80'
+                                ? 'bg-blue-600 text-white shadow-blue-500/10'
+                                : 'bg-white text-slate-900 border border-slate-200/90 shadow-2xs'
                             }`}
                           >
-                            {/* Sender Name in WhatsApp Incoming Bubble */}
+                            {/* Sender Name in Incoming Bubble */}
                             {!isMe && (
-                              <div className="flex items-center gap-1.5 mb-1 px-0.5">
-                                <span className={`text-xs font-bold ${msg.sender?.role === 'lecture' ? 'text-[#008069]' : 'text-[#128c7e]'}`}>
+                              <div className="flex items-center gap-1.5 mb-1 px-0.5 min-w-0">
+                                <span className={`text-[11px] sm:text-xs font-bold truncate flex-1 min-w-0 ${msg.sender?.role === 'lecture' ? 'text-indigo-600' : 'text-blue-600'}`}>
                                   {msg.sender?.name || 'User'}
                                 </span>
                                 <span
-                                  className={`text-[10px] font-bold px-1.5 py-0.2 rounded uppercase ${
+                                  className={`text-[8px] sm:text-[9px] font-bold px-1 py-0.2 sm:px-1.5 sm:py-0.5 rounded uppercase tracking-wider shrink-0 ${
                                     msg.sender?.role === 'lecture'
-                                      ? 'bg-emerald-100 text-emerald-800'
-                                      : 'bg-blue-100 text-blue-800'
+                                      ? 'bg-indigo-50 text-indigo-700 border border-indigo-200/60'
+                                      : 'bg-blue-50 text-blue-700 border border-blue-200/60'
                                   }`}
                                 >
                                   {msg.sender?.role === 'lecture' ? 'Lecturer' : 'Student'}
@@ -1208,47 +1223,47 @@ const ChatRoom = () => {
 
                             {/* Media Attachments */}
                             {fileObj && fileUrl && (
-                              <div className="mb-2">
-                                {/* Image Attachment with Lightbox & One-Click Download */}
+                              <div className="mb-1.5 sm:mb-2 w-full max-w-full min-w-0 overflow-hidden">
+                                {/* Image Attachment with Lightbox & Download */}
                                 {isImage && (
-                                  <div>
+                                  <div className="w-full max-w-full min-w-0 overflow-hidden">
                                     <div
                                       onClick={() => setPreviewModalImage({ url: fileUrl, fileName: fileObj.fileName || 'image.png' })}
-                                      className="rounded-xl overflow-hidden border border-black/10 cursor-pointer shadow-2xs hover:opacity-95 transition-all group relative bg-black/5"
+                                      className="rounded-md overflow-hidden border border-slate-200/80 cursor-pointer shadow-2xs hover:opacity-95 transition-all group relative bg-slate-100 max-w-full"
                                     >
                                       <img
                                         src={fileUrl}
                                         alt={fileObj.fileName || 'Attached Image'}
-                                        className="max-h-80 sm:max-h-96 w-full object-contain rounded-xl transition-transform duration-200 group-hover:scale-[1.01]"
+                                        className="max-h-48 sm:max-h-80 w-full object-cover rounded-md transition-transform duration-200 group-hover:scale-[1.01]"
                                         loading="lazy"
                                       />
-                                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100 gap-2">
-                                        <span className="bg-black/75 text-white text-xs px-3 py-1.5 rounded-full font-medium backdrop-blur-xs flex items-center gap-1.5 shadow-md">
-                                          <SearchIcon className="w-3.5 h-3.5" /> Enlarge
+                                      <div className="absolute inset-0 bg-slate-900/30 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100 gap-2">
+                                        <span className="bg-slate-900/85 text-white text-[10px] sm:text-xs px-2.5 py-1 rounded-full font-medium backdrop-blur-xs flex items-center gap-1 shadow-md">
+                                          <SearchIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> Enlarge
                                         </span>
                                         <button
                                           type="button"
                                           onClick={(e) => downloadFile(fileObj, e)}
-                                          className="bg-[#00a884] hover:bg-[#008f72] text-white p-2 rounded-full font-bold shadow-md flex items-center justify-center active:scale-90 cursor-pointer"
+                                          className="bg-white hover:bg-slate-100 text-slate-900 p-1.5 rounded-full font-bold shadow-md flex items-center justify-center active:scale-90 cursor-pointer"
                                           title={`Download ${fileObj.fileName || 'image'}`}
                                           aria-label="Download image"
                                         >
-                                          <DownloadIcon className="w-4 h-4" />
+                                          <DownloadIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                                         </button>
                                       </div>
                                     </div>
-                                    <div className="flex items-center justify-between text-xs mt-1 px-1 text-[#667781]">
-                                      <span className="truncate max-w-[200px] font-medium">{fileObj.fileName}</span>
-                                      <div className="flex items-center gap-1.5">
-                                        {fileObj.fileSize && <span>{fileObj.fileSize}</span>}
+                                    <div className={`flex items-center justify-between text-[10px] sm:text-xs mt-1 px-0.5 gap-2 min-w-0 ${isMe ? 'text-blue-100' : 'text-slate-500'}`}>
+                                      <span className="truncate flex-1 min-w-0 font-medium">{fileObj.fileName}</span>
+                                      <div className="flex items-center gap-1 shrink-0">
+                                        {fileObj.fileSize && <span className="opacity-80">{fileObj.fileSize}</span>}
                                         <button
                                           type="button"
                                           onClick={(e) => downloadFile(fileObj, e)}
-                                          className="text-[#00a884] hover:text-[#008f72] p-1 rounded-full hover:bg-slate-100 transition-colors cursor-pointer flex items-center justify-center"
+                                          className={`p-0.5 rounded-md transition-colors cursor-pointer flex items-center justify-center ${isMe ? 'hover:bg-white/20 text-white' : 'hover:bg-slate-100 text-slate-600'}`}
                                           title={`Download ${fileObj.fileName || 'image'}`}
                                           aria-label="Download image"
                                         >
-                                          <DownloadIcon className="w-3.5 h-3.5" />
+                                          <DownloadIcon className="w-3.5 h-3.5 sm:w-3.5 sm:h-3.5" />
                                         </button>
                                       </div>
                                     </div>
@@ -1257,19 +1272,19 @@ const ChatRoom = () => {
 
                                 {/* Video Attachment */}
                                 {isVideo && (
-                                  <div className="rounded-xl overflow-hidden border border-black/10 bg-black shadow-xs">
+                                  <div className="rounded-md overflow-hidden border border-slate-200 bg-black shadow-xs w-full max-w-full min-w-0">
                                     <video
                                       src={fileUrl}
                                       controls
-                                      className="max-h-80 w-full"
+                                      className="max-h-60 sm:max-h-72 w-full"
                                     />
                                     {fileObj.fileName && (
-                                      <div className="flex items-center justify-between text-xs p-1 text-slate-300">
-                                        <span className="truncate">{fileObj.fileName}</span>
+                                      <div className="flex items-center justify-between text-[10px] sm:text-xs p-1.5 text-slate-300 gap-2 min-w-0">
+                                        <span className="truncate flex-1 min-w-0">{fileObj.fileName}</span>
                                         <button
                                           type="button"
                                           onClick={(e) => downloadFile(fileObj, e)}
-                                          className="text-[#00a884] hover:text-[#008f72] p-1 rounded-full hover:bg-slate-800 transition-colors cursor-pointer flex items-center justify-center"
+                                          className="p-1 rounded-md hover:bg-slate-800 text-slate-300 hover:text-white transition-colors cursor-pointer flex items-center justify-center shrink-0"
                                           title={`Download ${fileObj.fileName || 'video'}`}
                                           aria-label="Download video"
                                         >
@@ -1280,38 +1295,42 @@ const ChatRoom = () => {
                                   </div>
                                 )}
 
-                                {/* WhatsApp Document / PDF Card with Direct Device Download */}
+                                {/* Document / PDF Card */}
                                 {(isPdf || isDoc) && (
                                   <div
-                                    className={`flex items-center gap-3 p-3 rounded-xl border shadow-2xs transition-all ${
+                                    className={`flex items-center gap-2 p-2 sm:p-2.5 rounded-md border transition-all w-full max-w-full min-w-0 overflow-hidden ${
                                       isMe
-                                        ? 'bg-[#cbf7c3]/80 border-[#b5eab0] text-[#111b21]'
-                                        : 'bg-[#f0f2f5] border-slate-200 text-[#111b21]'
+                                        ? 'bg-blue-700/60 border-blue-500/60 text-white'
+                                        : 'bg-slate-50 border-slate-200 text-slate-900'
                                     }`}
                                   >
-                                    <div className={`p-2.5 rounded-lg shrink-0 ${
-                                      isPdf ? 'bg-red-500 text-white' : 'bg-[#00a884] text-white'
+                                    <div className={`p-1.5 rounded shrink-0 ${
+                                      isMe
+                                        ? 'bg-white/15 text-white border border-white/20'
+                                        : (isPdf ? 'bg-rose-50 text-rose-600 border border-rose-200' : 'bg-blue-50 text-blue-600 border border-blue-200')
                                     }`}>
-                                      <FileIcon className="w-5 h-5" />
+                                      <FileIcon className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                      <div className="flex items-center gap-1.5">
-                                        <span className={`text-[10px] font-bold uppercase px-1.5 py-0.2 rounded ${
-                                          isPdf ? 'bg-red-100 text-red-700' : 'bg-teal-100 text-teal-800'
+                                      <div className="flex items-center gap-1.5 min-w-0">
+                                        <span className={`text-[9px] font-bold uppercase px-1.5 py-0.5 rounded shrink-0 ${
+                                          isMe
+                                            ? 'bg-white/20 text-white'
+                                            : (isPdf ? 'bg-rose-100 text-rose-700' : 'bg-blue-100 text-blue-700')
                                         }`}>
                                           {isPdf ? 'PDF' : 'DOC'}
                                         </span>
-                                        <p className="text-xs sm:text-sm font-semibold truncate text-[#111b21]">
+                                        <p className={`text-xs sm:text-sm font-semibold truncate ${isMe ? 'text-white' : 'text-slate-900'}`}>
                                           {fileObj.fileName || (isPdf ? 'Document.pdf' : 'Attachment')}
                                         </p>
                                       </div>
-                                      <p className="text-xs mt-0.5 text-[#667781]">
+                                      <p className={`text-[10px] mt-0.5 truncate ${isMe ? 'text-blue-100' : 'text-slate-500'}`}>
                                         {fileObj.fileSize || 'Document File'}
                                       </p>
                                     </div>
 
-                                    <div className="flex items-center gap-1.5 shrink-0">
-                                      {/* In-App PDF Reader Modal (Eye Icon Only) */}
+                                    <div className="flex items-center gap-1 shrink-0 ml-1">
+                                      {/* In-App PDF Reader Modal */}
                                       {isPdf && (
                                         <button
                                           type="button"
@@ -1322,23 +1341,31 @@ const ChatRoom = () => {
                                               title: fileObj.fileName || 'PDF Document',
                                             });
                                           }}
-                                          className="p-2 rounded-full font-bold text-xs flex items-center justify-center transition-all shadow-2xs cursor-pointer bg-white text-[#00a884] border border-slate-300 hover:bg-slate-100 active:scale-90"
+                                          className={`p-1.5 rounded-lg font-medium text-xs flex items-center justify-center transition-all cursor-pointer ${
+                                            isMe
+                                              ? 'bg-white/20 hover:bg-white/30 text-white border border-white/30'
+                                              : 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 shadow-2xs'
+                                          }`}
                                           title="Preview PDF"
                                           aria-label="Preview PDF"
                                         >
-                                          <EyeIcon className="w-4 h-4 text-[#00a884]" />
+                                          <EyeIcon className="w-3.5 h-3.5" />
                                         </button>
                                       )}
 
-                                      {/* Direct Local Device Download (Download Icon Only) */}
+                                      {/* Download Button */}
                                       <button
                                         type="button"
                                         onClick={(e) => downloadFile(fileObj, e)}
-                                        className="p-2 rounded-full font-bold text-xs flex items-center justify-center transition-all shadow-2xs cursor-pointer bg-[#00a884] hover:bg-[#008f72] text-white active:scale-90"
-                                        title={`Download ${fileObj.fileName || 'file'} to your device`}
+                                        className={`p-1.5 rounded-lg font-medium text-xs flex items-center justify-center transition-all cursor-pointer ${
+                                          isMe
+                                            ? 'bg-white hover:bg-blue-50 text-blue-600 shadow-xs'
+                                            : 'bg-slate-900 hover:bg-slate-800 text-white shadow-xs'
+                                        }`}
+                                        title={`Download ${fileObj.fileName || 'file'}`}
                                         aria-label="Download file"
                                       >
-                                        <DownloadIcon className="w-4 h-4" />
+                                        <DownloadIcon className="w-3.5 h-3.5" />
                                       </button>
                                     </div>
                                   </div>
@@ -1348,13 +1375,15 @@ const ChatRoom = () => {
 
                             {/* Message Text */}
                             {hasUserText && (
-                              <p className="whitespace-pre-wrap">{msg.content}</p>
+                              <div className={`whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] text-sm sm:text-[14px] leading-relaxed ${isMe ? 'text-white' : 'text-slate-900'}`}>
+                                {msg.content}
+                              </div>
                             )}
 
-                            {/* WhatsApp Timestamp & Status Icons */}
-                            <div className="flex items-center justify-end gap-1 mt-1 text-[11px] text-[#667781] select-none float-right ml-2 -mb-0.5">
+                            {/* Timestamp & Status Icons - Securely contained inside bubble */}
+                            <div className={`flex items-center justify-end gap-1 mt-1 pt-0.5 text-[10px] sm:text-[11px] select-none ${isMe ? 'text-blue-200' : 'text-slate-400'}`}>
                               <span>{formatTime(msg.createdAt)}</span>
-                              {isMe && <MessageTicks message={msg} currentUsn={currentUsn} />}
+                              {isMe && <MessageTicks message={msg} currentUsn={currentUsn} isMe={true} />}
                             </div>
                           </div>
                         </div>
@@ -1365,74 +1394,59 @@ const ChatRoom = () => {
 
                 {/* Live Typing Indicator */}
                 {typingUsers.length > 0 && (
-                  <div className="flex items-center gap-2 text-xs font-semibold text-[#00a884] py-1 px-1">
+                  <div className="flex items-center gap-1.5 text-xs font-semibold text-blue-600 py-0.5 px-1">
                     <span className="flex gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#00a884] animate-bounce" style={{ animationDelay: '0ms' }} />
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#00a884] animate-bounce" style={{ animationDelay: '150ms' }} />
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#00a884] animate-bounce" style={{ animationDelay: '300ms' }} />
+                      <span className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-bounce" style={{ animationDelay: '0ms' }} />
+                      <span className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-bounce" style={{ animationDelay: '150ms' }} />
+                      <span className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-bounce" style={{ animationDelay: '300ms' }} />
                     </span>
-                    <span>{typingUsers.join(', ')} typing...</span>
+                    <span className="text-[11px] sm:text-xs">{typingUsers.join(', ')} typing...</span>
                   </div>
                 )}
 
                 <div ref={messagesEndRef} />
               </div>
 
-              {/* ── WhatsApp-Style Input Bar ── */}
-              <div className="p-2.5 sm:p-3 bg-[#f0f2f5] border-t border-[#e9edef] shadow-sm z-20">
+              {/* ── Input Bar ── */}
+              <div className="p-2.5 sm:p-3 bg-white border-t border-slate-200 shadow-xs z-20 shrink-0 w-full">
                 {/* Pending Attachment Card & Sender Live Preview */}
                 {selectedFile && (
-                  <div className="mb-2.5 bg-white border border-slate-200 p-3 rounded-xl shadow-md">
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="flex items-center gap-3 min-w-0">
+                  <div className="mb-2 bg-slate-50 border border-slate-200 p-2 sm:p-2.5 rounded-xl shadow-xs">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2 min-w-0 flex-1">
                         <span
-                          className={`p-2.5 rounded-lg shrink-0 ${
+                          className={`p-1.5 rounded-lg shrink-0 ${
                             selectedFile.type === 'application/pdf' || selectedFile.name.toLowerCase().endsWith('.pdf')
-                              ? 'bg-red-100 text-red-600'
-                              : 'bg-emerald-100 text-[#00a884]'
+                              ? 'bg-rose-50 text-rose-600 border border-rose-200'
+                              : 'bg-blue-50 text-blue-600 border border-blue-200'
                           }`}
                         >
-                          <FileIcon className="w-5 h-5" />
+                          <FileIcon className="w-4 h-4" />
                         </span>
-                        <div className="min-w-0">
-                          <p className="text-sm font-bold text-[#111b21] truncate">{selectedFile.name}</p>
-                          <p className="text-xs text-[#667781] mt-0.5">
-                            {(selectedFile.size / (1024 * 1024)).toFixed(2)} MB ·{' '}
-                            {selectedFile.type === 'application/pdf' || selectedFile.name.toLowerCase().endsWith('.pdf')
-                              ? 'PDF Document'
-                              : 'Attachment'}{' '}
-                            — Ready to send
+                        <div className="min-w-0 flex-1">
+                          <p className="text-xs sm:text-sm font-bold text-slate-900 truncate">{selectedFile.name}</p>
+                          <p className="text-[10px] sm:text-xs text-slate-500">
+                            {(selectedFile.size / (1024 * 1024)).toFixed(2)} MB · Ready to send
                           </p>
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-2 shrink-0">
+                      <div className="flex items-center gap-1.5 shrink-0">
                         {/* PDF Sender Controls */}
                         {(selectedFile.type === 'application/pdf' || selectedFile.name.toLowerCase().endsWith('.pdf')) && (
-                          <>
-                            <button
-                              type="button"
-                              onClick={() => setShowPdfSenderPreview((prev) => !prev)}
-                              className="px-2.5 py-1.5 rounded-md text-xs font-semibold text-[#111b21] bg-[#f0f2f5] hover:bg-slate-200 border border-slate-300 shadow-2xs transition-colors cursor-pointer flex items-center gap-1"
-                              title="Toggle inline preview"
-                            >
-                              <EyeIcon className="w-3.5 h-3.5 text-[#00a884]" />
-                              <span>{showPdfSenderPreview ? 'Hide Preview' : 'Preview'}</span>
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() =>
-                                setPdfModalPreview({
-                                  url: selectedFilePreviewUrl,
-                                  title: selectedFile.name,
-                                })
-                              }
-                              className="px-2.5 py-1.5 rounded-md text-xs font-semibold text-white bg-[#00a884] hover:bg-[#008f72] shadow-2xs transition-colors cursor-pointer flex items-center gap-1"
-                              title="Expand to Full Screen Reader"
-                            >
-                              <span>Full Screen</span>
-                            </button>
-                          </>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setPdfModalPreview({
+                                url: selectedFilePreviewUrl,
+                                title: selectedFile.name,
+                              })
+                            }
+                            className="px-2.5 py-1 rounded-lg text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 shadow-2xs transition-colors cursor-pointer"
+                            title="Preview PDF"
+                          >
+                            Preview
+                          </button>
                         )}
 
                         {/* Image Thumbnail preview click */}
@@ -1445,7 +1459,7 @@ const ChatRoom = () => {
                             <img
                               src={selectedFilePreviewUrl}
                               alt="Thumbnail"
-                              className="w-10 h-10 rounded-lg object-cover border border-slate-300 shadow-2xs"
+                              className="w-8 h-8 rounded-lg object-cover border border-slate-300 shadow-2xs"
                             />
                           </div>
                         )}
@@ -1456,33 +1470,13 @@ const ChatRoom = () => {
                             setSelectedFile(null);
                             if (fileInputRef.current) fileInputRef.current.value = '';
                           }}
-                          className="text-[#54656f] hover:text-[#111b21] p-1.5 rounded-full hover:bg-slate-100 transition-colors cursor-pointer"
+                          className="text-slate-400 hover:text-slate-700 p-1 rounded-lg hover:bg-slate-200 transition-colors cursor-pointer"
                           title="Remove attachment"
                         >
                           <CloseIcon className="w-4 h-4" />
                         </button>
                       </div>
                     </div>
-
-                    {/* Sender PDF Live Inline Preview */}
-                    {(selectedFile.type === 'application/pdf' || selectedFile.name.toLowerCase().endsWith('.pdf')) &&
-                      showPdfSenderPreview &&
-                      selectedFilePreviewUrl && (
-                        <div className="mt-2.5 rounded-lg border border-slate-300 overflow-hidden bg-slate-900 shadow-inner">
-                          <div className="px-3.5 py-1.5 bg-slate-800 border-b border-slate-700 flex items-center justify-between text-xs text-white">
-                            <div className="flex items-center gap-2">
-                              <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                              <span className="font-bold">PDF Live Preview: {selectedFile.name}</span>
-                            </div>
-                            <span className="text-[11px] text-slate-400">Scroll inside to read pages</span>
-                          </div>
-                          <iframe
-                            src={selectedFilePreviewUrl}
-                            title="Sender PDF Preview"
-                            className="w-full h-60 sm:h-72 bg-white"
-                          />
-                        </div>
-                      )}
                   </div>
                 )}
 
@@ -1500,128 +1494,129 @@ const ChatRoom = () => {
                     }}
                   />
 
-                  {/* Attachment Button (Paperclip) */}
+                  {/* Attachment Button */}
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
                     disabled={isUploading}
-                    className="p-2.5 rounded-full text-[#54656f] hover:text-[#111b21] hover:bg-slate-200/80 transition-all cursor-pointer shrink-0 active:scale-95 disabled:opacity-50"
-                    title="Attach File (PDFs, Images, Docs)"
+                    className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-all cursor-pointer shrink-0 active:scale-95 disabled:opacity-50 flex items-center justify-center"
+                    title="Attach File"
                   >
                     <PaperclipIcon className="w-5 h-5" />
                   </button>
 
-                  {/* Text Input Pill */}
-                  <div className="flex-1 bg-white rounded-lg px-4 py-2.5 shadow-2xs border border-transparent focus-within:border-slate-300 transition-all">
+                  {/* Text Input Pill - Increased height and generous left padding for cursor */}
+                  <div className="flex-1 min-w-0 bg-slate-50 rounded-xl px-4 sm:px-5 py-2.5 sm:py-3 min-h-[44px] sm:min-h-[48px] flex items-center border border-slate-200 focus-within:bg-white focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/10 transition-all shadow-2xs">
                     <input
                       type="text"
                       value={input}
                       onChange={handleInputChange}
                       onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
-                      placeholder={selectedFile ? 'Add a caption for this attachment…' : 'Type a message'}
+                      placeholder={selectedFile ? 'Add caption…' : 'Type a message...'}
                       disabled={isUploading}
-                      className="w-full bg-transparent text-sm sm:text-base text-[#111b21] placeholder:text-[#8696a0] outline-none border-none p-0"
+                      className="w-full bg-transparent text-sm sm:text-base text-slate-900 placeholder:text-slate-400 outline-none border-none p-0 pl-1.5 sm:pl-2"
                     />
                   </div>
 
-                  {/* WhatsApp Circular Emerald Send Button */}
+                  {/* Send Button */}
                   <button
                     type="button"
                     onClick={handleSend}
                     disabled={(!input.trim() && !selectedFile) || isUploading}
-                    className={`w-11 h-11 rounded-full font-bold shadow-md transition-all cursor-pointer flex items-center justify-center shrink-0 active:scale-90 ${
+                    className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl font-bold shadow-xs transition-all cursor-pointer flex items-center justify-center shrink-0 active:scale-95 ${
                       input.trim() || selectedFile
-                        ? 'bg-[#00a884] hover:bg-[#008f72] text-white shadow-emerald-600/25'
-                        : 'bg-slate-300 text-slate-500 cursor-not-allowed opacity-60'
+                        ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-blue-500/20'
+                        : 'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200'
                     }`}
                     title="Send Message"
                   >
                     {isUploading ? (
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                     ) : (
-                      <SendIcon className="w-5 h-5" />
+                      <SendIcon className="w-4 h-4 sm:w-5 sm:h-5" />
                     )}
                   </button>
                 </div>
               </div>
             </>
           ) : (
-            <div className="flex flex-col items-center justify-center h-full text-center text-[#667781] p-6">
-              <div className="w-16 h-16 rounded-full bg-white text-[#00a884] border border-slate-200 flex items-center justify-center mb-3 shadow-xs">
-                <UsersIcon className="w-8 h-8" />
+            <div className="flex flex-col items-center justify-center h-full text-center text-slate-500 p-4 sm:p-6">
+              <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-white text-blue-600 border border-slate-200 flex items-center justify-center mb-2.5 shadow-xs">
+                <UsersIcon className="w-5 h-5 sm:w-7 sm:h-7" />
               </div>
-              <h3 className="text-base font-bold text-[#111b21]">WhatsApp-Style Chat Room</h3>
-              <p className="text-xs text-[#667781] max-w-sm mt-1">
-                Select a chat from the left panel to join the conversation, share files, and view real-time status.
+              <h3 className="text-sm sm:text-base font-bold text-slate-900">Discussion Channels</h3>
+              <p className="text-[11px] sm:text-xs text-slate-500 max-w-sm mt-0.5">
+                Select a channel from the left panel to join discussions and share study resources.
               </p>
             </div>
           )}
         </section>
 
-        {/* ── Slide-Over WhatsApp Group Info Drawer ── */}
+        {/* ── Slide-Over Group Info Drawer ── */}
         {showMembersDrawer && activeGroup && (
-          <aside className="w-full sm:w-88 bg-white border-l border-[#e9edef] flex flex-col shadow-2xl absolute right-0 top-0 bottom-0 z-30">
-            <div className="p-3.5 bg-[#f0f2f5] border-b border-[#e9edef] flex items-center justify-between">
+          <aside className="w-full sm:w-88 bg-white border-l border-slate-200 flex flex-col shadow-2xl absolute right-0 top-0 bottom-0 z-30">
+            <div className="px-4 py-3.5 bg-white border-b border-slate-200 flex items-center justify-between">
               <div>
-                <h3 className="text-[#111b21] font-bold text-sm sm:text-base">Group Info</h3>
-                <p className="text-[#667781] text-xs">{activeGroup.members?.length || 0} participants</p>
+                <h3 className="text-slate-900 font-bold text-sm sm:text-base">Group Info</h3>
+                <p className="text-slate-500 text-xs">{activeGroup.members?.length || 0} participants</p>
               </div>
               <button
+                type="button"
                 onClick={() => setShowMembersDrawer(false)}
-                className="p-1.5 rounded-full text-[#54656f] hover:text-[#111b21] hover:bg-slate-200 transition-colors"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
                 title="Close"
               >
                 <CloseIcon className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="p-5 border-b border-[#e9edef] bg-white text-center">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-[#00a884] to-teal-600 text-white flex items-center justify-center font-bold text-2xl mx-auto mb-2.5 shadow-xs">
+            <div className="p-5 border-b border-slate-100 bg-white text-center">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold text-2xl mx-auto mb-2.5 shadow-xs">
                 {activeGroup.name[0]?.toUpperCase()}
               </div>
-              <h4 className="text-[#111b21] font-bold text-base">{activeGroup.name}</h4>
+              <h4 className="text-slate-900 font-bold text-base">{activeGroup.name}</h4>
               {activeGroup.description && (
-                <p className="text-[#667781] text-xs mt-1">{activeGroup.description}</p>
+                <p className="text-slate-500 text-xs mt-1">{activeGroup.description}</p>
               )}
-              <p className="mt-1.5 text-xs text-[#667781]">
-                Created by <span className="font-semibold text-[#111b21]">{activeGroup.createdBy?.name || 'Lecturer'}</span>
+              <p className="mt-1.5 text-xs text-slate-400">
+                Created by <span className="font-semibold text-slate-700">{activeGroup.createdBy?.name || 'Lecturer'}</span>
               </p>
             </div>
 
             {/* Filter Member Input */}
-            <div className="p-3 border-b border-[#e9edef]">
-              <div className="flex items-center gap-2 bg-[#f0f2f5] rounded-lg px-3 py-1.5">
-                <SearchIcon className="w-4 h-4 text-[#54656f] shrink-0" />
+            <div className="p-3 border-b border-slate-100">
+              <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 focus-within:bg-white focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/10 transition-all">
+                <SearchIcon className="w-4 h-4 text-slate-400 shrink-0" />
                 <input
                   type="text"
                   value={memberSearch}
                   onChange={(e) => setMemberSearch(e.target.value)}
                   placeholder="Search participants..."
-                  className="w-full bg-transparent text-sm text-[#111b21] placeholder:text-[#8696a0] outline-none border-none p-0"
+                  className="w-full bg-transparent text-sm text-slate-800 placeholder:text-slate-400 outline-none border-none p-0"
                 />
               </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-3 divide-y divide-[#e9edef]/60">
+            <div className="flex-1 overflow-y-auto p-3 divide-y divide-slate-100">
               {filteredMembers.map((member) => (
                 <div
                   key={member.usn}
-                  className="flex items-center justify-between p-2.5 hover:bg-[#f5f6f6] rounded-lg transition-colors"
+                  className="flex items-center justify-between p-2.5 hover:bg-slate-50 rounded-xl transition-colors"
                 >
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-9 h-9 rounded-full bg-[#dfe5e7] text-[#54656f] flex items-center justify-center text-xs font-bold shrink-0">
+                    <div className="w-9 h-9 rounded-xl bg-slate-100 text-slate-600 border border-slate-200 flex items-center justify-center text-xs font-bold shrink-0">
                       {member.name[0]?.toUpperCase()}
                     </div>
                     <div className="min-w-0">
                       <div className="flex items-center gap-1.5">
-                        <p className="text-sm font-semibold text-[#111b21] truncate">{member.name}</p>
+                        <p className="text-sm font-semibold text-slate-900 truncate">{member.name}</p>
                         {member.role === 'lecture' && (
-                          <span className="text-[10px] bg-emerald-100 text-emerald-800 px-1.5 py-0.2 rounded font-bold">
+                          <span className="text-[10px] bg-indigo-50 text-indigo-700 border border-indigo-200/60 px-1.5 py-0.5 rounded-md font-bold">
                             Lecturer
                           </span>
                         )}
                       </div>
-                      <p className="text-xs font-mono text-[#667781] truncate">{member.usn}</p>
+                      <p className="text-xs font-mono text-slate-400 truncate">{member.usn}</p>
                     </div>
                   </div>
 
@@ -1629,7 +1624,7 @@ const ChatRoom = () => {
                     <button
                       type="button"
                       onClick={() => handleRemoveStudent(member.usn, member.name)}
-                      className="p-2 text-red-500 hover:bg-red-50 rounded-full transition-colors cursor-pointer"
+                      className="p-2 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
                       title="Remove student from group"
                     >
                       <TrashIcon className="w-4 h-4" />
@@ -1640,7 +1635,7 @@ const ChatRoom = () => {
             </div>
 
             {isStudent && (
-              <div className="p-4 border-t border-[#e9edef] bg-[#f0f2f5]">
+              <div className="p-4 border-t border-slate-200 bg-slate-50">
                 <button
                   type="button"
                   onClick={handleLeaveGroup}
@@ -1657,22 +1652,22 @@ const ChatRoom = () => {
       {/* ── Modal: New Group with Clear, Visible Buttons & Roster Selection ── */}
       {showCreateModal && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-          <div className="bg-white rounded-xl border border-slate-200 shadow-2xl w-full max-w-xl overflow-hidden flex flex-col max-h-[90vh]">
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-xl overflow-hidden flex flex-col max-h-[90vh]">
             
             {/* Modal Header */}
-            <div className="px-5 py-4 border-b border-[#e9edef] bg-[#f0f2f5] flex items-center justify-between">
+            <div className="px-5 py-4 border-b border-slate-200 bg-white flex items-center justify-between">
               <div>
-                <h3 className="text-base sm:text-lg font-bold text-[#111b21]">
-                  Create New Chat Group
+                <h3 className="text-base sm:text-lg font-bold text-slate-900">
+                  Create New Discussion Channel
                 </h3>
-                <p className="text-[#667781] text-xs mt-0.5">
+                <p className="text-slate-500 text-xs mt-0.5">
                   Broadcast to all students or pick a specific roster
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setShowCreateModal(false)}
-                className="p-1.5 rounded-full text-[#54656f] hover:text-[#111b21] hover:bg-slate-200 transition-colors"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
                 title="Close"
               >
                 <CloseIcon className="w-5 h-5" />
@@ -1684,7 +1679,7 @@ const ChatRoom = () => {
               {/* Group Name */}
               <div>
                 <label className="block text-xs sm:text-sm font-bold text-slate-700 mb-1.5">
-                  Group Name <span className="text-red-500">*</span>
+                  Channel Name <span className="text-rose-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -1692,7 +1687,7 @@ const ChatRoom = () => {
                   value={createName}
                   onChange={(e) => setCreateName(e.target.value)}
                   placeholder="e.g. CS601 - Database Engineering"
-                  className="w-full px-4 py-2.5 rounded-lg text-sm font-medium border border-slate-300 bg-white text-slate-800 placeholder:text-slate-400 focus:border-[#00a884] focus:ring-1 focus:ring-[#00a884]/20 focus:outline-none transition-all shadow-xs"
+                  className="w-full px-4 py-2.5 rounded-xl text-sm font-medium border border-slate-300 bg-white text-slate-800 placeholder:text-slate-400 focus:border-blue-600 focus:ring-1 focus:ring-blue-600/20 focus:outline-none transition-all shadow-2xs"
                 />
               </div>
 
@@ -1706,26 +1701,26 @@ const ChatRoom = () => {
                   value={createDesc}
                   onChange={(e) => setCreateDesc(e.target.value)}
                   placeholder="Brief note about this channel..."
-                  className="w-full px-4 py-2.5 rounded-lg text-sm font-medium border border-slate-300 bg-white text-slate-800 placeholder:text-slate-400 focus:border-[#00a884] focus:ring-1 focus:ring-[#00a884]/20 focus:outline-none transition-all shadow-xs"
+                  className="w-full px-4 py-2.5 rounded-xl text-sm font-medium border border-slate-300 bg-white text-slate-800 placeholder:text-slate-400 focus:border-blue-600 focus:ring-1 focus:ring-blue-600/20 focus:outline-none transition-all shadow-2xs"
                 />
               </div>
 
               {/* Audience Choice Buttons */}
               <div>
                 <label className="block text-xs sm:text-sm font-bold text-slate-700 mb-1.5">
-                  Audience <span className="text-red-500">*</span>
+                  Audience <span className="text-rose-500">*</span>
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                   <button
                     type="button"
                     onClick={() => setCreateAudience('all')}
-                    className={`flex items-center gap-3 p-3.5 rounded-lg border text-left transition-all cursor-pointer ${
+                    className={`flex items-center gap-3 p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
                       createAudience === 'all'
-                        ? 'bg-emerald-50 border-[#00a884] text-[#111b21] shadow-xs'
+                        ? 'bg-blue-50/70 border-blue-600 text-slate-900 shadow-xs'
                         : 'border-slate-200 text-slate-600 hover:bg-slate-50'
                     }`}
                   >
-                    <div className="p-2 rounded-lg bg-emerald-100 text-[#00a884] shrink-0">
+                    <div className="p-2 rounded-lg bg-blue-100/80 text-blue-600 shrink-0">
                       <UsersIcon className="w-5 h-5" />
                     </div>
                     <div>
@@ -1737,13 +1732,13 @@ const ChatRoom = () => {
                   <button
                     type="button"
                     onClick={() => setCreateAudience('selected')}
-                    className={`flex items-center gap-3 p-3.5 rounded-lg border text-left transition-all cursor-pointer ${
+                    className={`flex items-center gap-3 p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
                       createAudience === 'selected'
-                        ? 'bg-emerald-50 border-[#00a884] text-[#111b21] shadow-xs'
+                        ? 'bg-blue-50/70 border-blue-600 text-slate-900 shadow-xs'
                         : 'border-slate-200 text-slate-600 hover:bg-slate-50'
                     }`}
                   >
-                    <div className="p-2 rounded-lg bg-teal-100 text-teal-800 shrink-0">
+                    <div className="p-2 rounded-lg bg-indigo-100/80 text-indigo-600 shrink-0">
                       <TargetIcon className="w-5 h-5" />
                     </div>
                     <div>
@@ -1756,7 +1751,7 @@ const ChatRoom = () => {
 
               {/* ── Registered Students Roster (Click-to-Select) ── */}
               {createAudience === 'selected' && (
-                <div className="p-3.5 bg-slate-50 rounded-lg border border-slate-200 space-y-3">
+                <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
                   <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 border-b border-slate-200 pb-2.5">
                     <div>
                       <h4 className="text-sm font-bold text-slate-900">
@@ -1768,13 +1763,13 @@ const ChatRoom = () => {
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-bold text-[#00a884] bg-emerald-100 px-2.5 py-1 rounded-md">
+                      <span className="text-xs font-semibold text-blue-700 bg-blue-50 border border-blue-200/80 px-2.5 py-1 rounded-lg">
                         {selectedStudentUsns.length} / {availableStudents.length} Selected
                       </span>
                       <button
                         type="button"
                         onClick={selectAllStudents}
-                        className="text-xs font-bold text-[#00a884] hover:underline cursor-pointer px-1"
+                        className="text-xs font-bold text-blue-600 hover:text-blue-700 hover:underline cursor-pointer px-1"
                       >
                         Select All
                       </button>
@@ -1790,7 +1785,7 @@ const ChatRoom = () => {
                   </div>
 
                   {/* Filter by Name */}
-                  <div className="flex items-center gap-2.5 bg-white border border-slate-300 rounded-lg px-3.5 py-2 focus-within:border-[#00a884] transition-all shadow-2xs">
+                  <div className="flex items-center gap-2.5 bg-white border border-slate-300 rounded-xl px-3.5 py-2 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/10 transition-all shadow-2xs">
                     <SearchIcon className="w-4 h-4 text-slate-400 shrink-0" />
                     <input
                       type="text"
@@ -1814,7 +1809,7 @@ const ChatRoom = () => {
                   <div className="max-h-56 overflow-y-auto pr-1 grid grid-cols-1 sm:grid-cols-2 gap-2">
                     {loadingStudents ? (
                       <div className="col-span-full py-8 text-center text-slate-400 text-sm">
-                        <div className="w-5 h-5 border-2 border-[#00a884] border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+                        <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
                         Loading student records...
                       </div>
                     ) : filteredAvailableStudents.length === 0 ? (
@@ -1828,17 +1823,17 @@ const ChatRoom = () => {
                           <div
                             key={st.usn}
                             onClick={() => toggleStudentSelection(st.usn)}
-                            className={`flex items-center justify-between p-2.5 sm:p-3 rounded-lg border text-sm cursor-pointer transition-all select-none ${
+                            className={`flex items-center justify-between p-2.5 sm:p-3 rounded-xl border text-sm cursor-pointer transition-all select-none ${
                               isSelected
-                                ? 'bg-emerald-50 border-[#00a884] text-slate-900 shadow-xs'
+                                ? 'bg-blue-50 border-blue-600 text-slate-900 shadow-xs'
                                 : 'bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700'
                             }`}
                           >
                             <div className="flex items-center gap-2.5 min-w-0 flex-1">
                               <div
-                                className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs shrink-0 ${
+                                className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs shrink-0 ${
                                   isSelected
-                                    ? 'bg-[#00a884] text-white'
+                                    ? 'bg-blue-600 text-white'
                                     : 'bg-slate-200 text-slate-700'
                                 }`}
                               >
@@ -1846,7 +1841,7 @@ const ChatRoom = () => {
                               </div>
 
                               <div className="min-w-0">
-                                <p className={`font-bold text-xs sm:text-sm truncate ${isSelected ? 'text-[#008069]' : 'text-slate-900'}`}>
+                                <p className={`font-semibold text-xs sm:text-sm truncate ${isSelected ? 'text-blue-900' : 'text-slate-900'}`}>
                                   {st.username}
                                 </p>
                                 <p className="text-xs font-mono text-slate-500 truncate">
@@ -1859,7 +1854,7 @@ const ChatRoom = () => {
                             <div
                               className={`w-5 h-5 rounded flex items-center justify-center shrink-0 transition-all ${
                                 isSelected
-                                  ? 'bg-[#00a884] text-white'
+                                  ? 'bg-blue-600 text-white'
                                   : 'border border-slate-300 text-transparent'
                               }`}
                             >
@@ -1878,19 +1873,19 @@ const ChatRoom = () => {
                 <button
                   type="button"
                   onClick={() => setShowCreateModal(false)}
-                  className="px-5 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
+                  className="px-5 py-2 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isCreatingGroup}
-                  className="px-6 py-2 rounded-lg text-sm font-bold bg-[#00a884] hover:bg-[#008f72] text-white disabled:opacity-50 transition-all shadow-md cursor-pointer flex items-center gap-2"
+                  className="px-6 py-2.5 rounded-xl text-sm font-bold bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 transition-all shadow-xs cursor-pointer flex items-center gap-2"
                 >
                   {isCreatingGroup && (
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                   )}
-                  <span>Create Group</span>
+                  <span>Create Channel</span>
                 </button>
               </div>
             </form>
@@ -1901,14 +1896,14 @@ const ChatRoom = () => {
       {/* ── Image Lightbox Modal with Direct Download ── */}
       {previewModalImage && (
         <div
-          className="fixed inset-0 bg-black/85 backdrop-blur-xs z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 bg-slate-950/85 backdrop-blur-xs z-50 flex items-center justify-center p-4"
           onClick={() => setPreviewModalImage(null)}
         >
           <div className="relative max-w-4xl max-h-[90vh] flex flex-col items-center" onClick={(e) => e.stopPropagation()}>
             <img
               src={typeof previewModalImage === 'string' ? previewModalImage : previewModalImage.url}
               alt="Expanded Preview"
-              className="max-h-[82vh] max-w-full rounded-xl object-contain shadow-2xl"
+              className="max-h-[82vh] max-w-full rounded-2xl object-contain shadow-2xl"
             />
             
             <div className="mt-3 flex items-center gap-3">
@@ -1920,8 +1915,8 @@ const ChatRoom = () => {
                     fileUrl: typeof previewModalImage === 'string' ? previewModalImage : previewModalImage.url,
                   })
                 }
-                className="px-4 py-2 rounded-lg bg-[#00a884] hover:bg-[#008f72] text-white font-bold text-xs flex items-center gap-2 shadow-lg transition-all cursor-pointer active:scale-95"
-                title="Download image to your computer"
+                className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs flex items-center gap-2 shadow-lg transition-all cursor-pointer active:scale-95"
+                title="Download image"
               >
                 <DownloadIcon className="w-4 h-4" />
                 <span>Download Image</span>
@@ -1929,7 +1924,7 @@ const ChatRoom = () => {
 
               <button
                 onClick={() => setPreviewModalImage(null)}
-                className="p-2 rounded-lg bg-black/60 hover:bg-black text-white transition-colors cursor-pointer"
+                className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white transition-colors cursor-pointer"
                 title="Close Preview"
               >
                 <CloseIcon className="w-5 h-5" />
@@ -1946,13 +1941,13 @@ const ChatRoom = () => {
           onClick={() => setPdfModalPreview(null)}
         >
           <div
-            className="bg-white rounded-xl border border-slate-300 shadow-2xl w-full max-w-5xl h-[88vh] flex flex-col overflow-hidden"
+            className="bg-white rounded-2xl border border-slate-300 shadow-2xl w-full max-w-5xl h-[88vh] flex flex-col overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
             <div className="px-4 sm:px-6 py-3 border-b border-slate-800 bg-slate-900 text-white flex items-center justify-between shadow-xs">
               <div className="flex items-center gap-3 min-w-0">
-                <div className="p-2 rounded-lg bg-red-500 text-white shrink-0 shadow-xs">
+                <div className="p-2 rounded-lg bg-rose-500/20 text-rose-400 border border-rose-500/30 shrink-0">
                   <FileIcon className="w-5 h-5" />
                 </div>
                 <div className="min-w-0">
@@ -1966,7 +1961,6 @@ const ChatRoom = () => {
               </div>
 
               <div className="flex items-center gap-2.5">
-                {/* Download PDF button that downloads with exact original filename */}
                 <button
                   type="button"
                   onClick={() =>
@@ -1975,8 +1969,8 @@ const ChatRoom = () => {
                       fileUrl: pdfModalPreview.url,
                     })
                   }
-                  className="px-4 py-2 rounded-lg bg-[#00a884] hover:bg-[#008f72] active:scale-95 text-white font-bold text-xs flex items-center gap-1.5 transition-all shadow-sm cursor-pointer"
-                  title="Download PDF to your computer"
+                  className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-semibold text-xs flex items-center gap-1.5 transition-all shadow-sm cursor-pointer"
+                  title="Download PDF"
                 >
                   <DownloadIcon className="w-4 h-4" />
                   <span>Download PDF</span>
@@ -1985,7 +1979,7 @@ const ChatRoom = () => {
                 <button
                   type="button"
                   onClick={() => setPdfModalPreview(null)}
-                  className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+                  className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
                   title="Close viewer"
                 >
                   <CloseIcon className="w-5 h-5" />
@@ -2016,8 +2010,8 @@ const ChatRoom = () => {
             onClick={(e) => e.stopPropagation()}
           >
             {/* Warning Exit Icon */}
-            <div className="w-14 h-14 rounded-full bg-red-50 text-red-600 border border-red-100 flex items-center justify-center mx-auto mb-4 shadow-xs">
-              <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <div className="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 border border-rose-200/80 flex items-center justify-center mx-auto mb-4 shadow-2xs">
+              <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
                 <polyline points="16 17 21 12 16 7" />
                 <line x1="21" y1="12" x2="9" y2="12" />
@@ -2028,7 +2022,7 @@ const ChatRoom = () => {
               Leave &ldquo;{activeGroup.name}&rdquo;?
             </h3>
             <p className="text-sm text-slate-500 leading-relaxed mb-6">
-              You will no longer receive new messages, announcements, or shared resources from this group. You can rejoin only if the lecturer adds you back.
+              You will no longer receive new messages, announcements, or shared resources from this channel. You can rejoin only if the lecturer adds you back.
             </p>
 
             <div className="flex items-center gap-3">
@@ -2044,7 +2038,7 @@ const ChatRoom = () => {
                 type="button"
                 onClick={confirmLeaveGroup}
                 disabled={isLeavingGroup}
-                className="flex-1 py-2.5 px-4 rounded-xl text-sm font-bold text-white bg-red-600 hover:bg-red-700 active:scale-95 transition-all shadow-md cursor-pointer flex items-center justify-center gap-2"
+                className="flex-1 py-2.5 px-4 rounded-xl text-sm font-bold text-white bg-rose-600 hover:bg-rose-700 active:scale-95 transition-all shadow-sm cursor-pointer flex items-center justify-center gap-2"
               >
                 {isLeavingGroup ? (
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />

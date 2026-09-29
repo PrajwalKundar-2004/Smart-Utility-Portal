@@ -35,7 +35,7 @@ const Navbar2 = () => {
       </div>
 
       {/* Right side: Nav Links & Logout */}
-      <div className="flex items-center gap-3 sm:gap-6 font-medium flex-shrink-0 mr-6 sm:mr-12 lg:mr-20">
+      <div className="flex items-center gap-3 sm:gap-6 font-medium flex-shrink-0">
         <NavLink
           to="/studentdash"
           className={({ isActive }) =>

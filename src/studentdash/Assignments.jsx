@@ -170,6 +170,7 @@ const Assignments = () => {
     if (!dueDateStr) {
       return {
         label: 'No deadline',
+        shortLabel: 'No deadline',
         badgeClass: 'bg-slate-100 text-slate-600 border-slate-200',
         dotClass: 'bg-slate-400',
       };
@@ -179,6 +180,7 @@ const Assignments = () => {
     if (isNaN(due.getTime())) {
       return {
         label: 'No deadline',
+        shortLabel: 'No deadline',
         badgeClass: 'bg-slate-100 text-slate-600 border-slate-200',
         dotClass: 'bg-slate-400',
       };
@@ -194,6 +196,11 @@ const Assignments = () => {
       minute: '2-digit',
     });
 
+    const shortDate = due.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+    });
+
     if (diffMs < 0) {
       const passedMinutes = Math.floor(Math.abs(diffMs) / (1000 * 60));
       const passedDays = Math.floor(passedMinutes / (60 * 24));
@@ -202,6 +209,7 @@ const Assignments = () => {
 
       return {
         label: `Overdue • Due: ${formattedDate} (${overdueText})`,
+        shortLabel: `Overdue (${overdueText})`,
         badgeClass: 'bg-rose-50 text-rose-700 border-rose-200',
         dotClass: 'bg-rose-500',
       };
@@ -212,6 +220,7 @@ const Assignments = () => {
     if (diffHours <= 24) {
       return {
         label: `Due: ${formattedDate} • ${timeLeft}`,
+        shortLabel: timeLeft ? `Due: ${timeLeft}` : 'Due today',
         badgeClass: 'bg-amber-50 text-amber-700 border-amber-200',
         dotClass: 'bg-amber-500 animate-pulse',
       };
@@ -220,6 +229,7 @@ const Assignments = () => {
     if (diffHours <= 48) {
       return {
         label: `Due: ${formattedDate} • ${timeLeft}`,
+        shortLabel: timeLeft ? `Due: ${timeLeft}` : 'Due soon',
         badgeClass: 'bg-amber-50 text-amber-700 border-amber-200',
         dotClass: 'bg-amber-500',
       };
@@ -227,6 +237,7 @@ const Assignments = () => {
 
     return {
       label: `Due: ${formattedDate} • ${timeLeft}`,
+      shortLabel: `Due ${shortDate}`,
       badgeClass: 'bg-blue-50 text-blue-700 border-blue-200',
       dotClass: 'bg-blue-500',
     };
@@ -289,32 +300,11 @@ const Assignments = () => {
     <main className="min-h-screen w-full bg-sky-50 font-sans pb-10 flex flex-col items-center">
       <Navbar2 />
 
-      {/* Sleek Scrollbar for Long Description & Horizontal Attachments (Touch Enabled) */}
-      <style>{`
-        .assignment-scroll::-webkit-scrollbar {
-          width: 4px;
-          height: 4px;
-        }
-        .assignment-scroll::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        .assignment-scroll::-webkit-scrollbar-thumb {
-          background: #cbd5e1;
-          border-radius: 4px;
-        }
-        .assignment-scroll::-webkit-scrollbar-thumb:hover {
-          background: #94a3b8;
-        }
-        .assignment-scroll {
-          -webkit-overflow-scrolling: touch;
-        }
-      `}</style>
-
       {/* ── Main Container (Mobile Responsive, Max Width 4xl) ── */}
-      <div className="flex-1 w-full max-w-4xl px-3 sm:px-6 py-3 sm:py-5 flex flex-col gap-2.5 sm:gap-3 items-stretch">
+      <div className="flex-1 w-[90%] sm:w-full max-w-sm sm:max-w-4xl mx-auto px-0 sm:px-6 py-3.5 sm:py-5 flex flex-col gap-3 sm:gap-3.5 items-stretch">
         
         {/* ── Top Bar ── */}
-        <div className="w-full flex items-center justify-between">
+        <div className="w-full flex items-center justify-between gap-2">
           <button
             onClick={() => navigate('/studentdash')}
             className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors cursor-pointer group"
@@ -333,13 +323,14 @@ const Assignments = () => {
             >
               <polyline points="15 18 9 12 15 6" />
             </svg>
-            <span>Back to Dashboard</span>
+            <span className="hidden sm:inline">Back to Dashboard</span>
+            <span className="sm:hidden">Dashboard</span>
           </button>
 
           <button
             onClick={fetchStudentAssignments}
             disabled={loading}
-            className="h-8 sm:h-9 px-2.5 sm:px-3.5 rounded-md bg-white hover:bg-slate-50 active:bg-slate-100 text-slate-700 text-xs sm:text-sm font-medium border border-slate-300 transition-colors cursor-pointer flex items-center gap-1.5 shadow-2xs disabled:opacity-50"
+            className="h-8 sm:h-9 px-2.5 sm:px-3.5 rounded-lg bg-white hover:bg-slate-50 active:bg-slate-100 text-slate-700 text-xs sm:text-sm font-medium border border-slate-200/90 hover:border-slate-300 transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs disabled:opacity-50"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -360,29 +351,40 @@ const Assignments = () => {
           </button>
         </div>
 
-        {/* ── Header Card (Compact on Mobile) ── */}
-        <div className="w-full bg-white rounded-xl border border-slate-200/90 shadow-2xs p-3 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-3.5">
-          <div>
-            <h1 className="text-base sm:text-xl font-bold text-slate-900 tracking-tight">
-              Assignments
-            </h1>
-            <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5">
-              Course tasks and homework posted by your faculty
-            </p>
+        {/* ── Header Card ── */}
+        <div className="w-full bg-white rounded-2xl border border-slate-200/90 shadow-2xs p-3.5 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 border border-blue-100">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+              </svg>
+            </div>
+            <div>
+              <h1 className="text-base sm:text-xl font-bold text-slate-900 tracking-tight">
+                Assignments
+              </h1>
+              <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5 hidden xs:block">
+                Course tasks and homework posted by your faculty
+              </p>
+            </div>
           </div>
 
-          <div className="flex items-center gap-1 sm:gap-2 text-[10px] sm:text-xs font-semibold self-start sm:self-auto flex-wrap">
-            <span className="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md bg-slate-100 text-slate-700 border border-slate-200">
+          <div className="flex items-center gap-1.5 text-[10px] sm:text-xs font-semibold flex-wrap">
+            <span className="px-2.5 py-0.5 sm:py-1 rounded-full bg-slate-100 text-slate-700 border border-slate-200/80">
               Total: {assignments.length}
             </span>
             {stats.dueSoon > 0 && (
-              <span className="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md bg-amber-50 text-amber-700 border border-amber-200 flex items-center gap-1">
+              <span className="px-2.5 py-0.5 sm:py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200 flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
                 {stats.dueSoon} Due Soon
               </span>
             )}
             {stats.overdue > 0 && (
-              <span className="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md bg-rose-50 text-rose-700 border border-rose-200 flex items-center gap-1">
+              <span className="px-2.5 py-0.5 sm:py-1 rounded-full bg-rose-50 text-rose-700 border border-rose-200 flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
                 {stats.overdue} Overdue
               </span>
@@ -390,10 +392,10 @@ const Assignments = () => {
           </div>
         </div>
 
-        {/* ── Simple & Clean Filter Bar (Mobile-safe side-by-side) ── */}
-        <div className="w-full flex items-center justify-between gap-2">
+        {/* ── Filter Bar ── */}
+        <div className="w-full flex items-center gap-2">
           {/* Search Box */}
-          <div className="flex items-center gap-2 h-9 sm:h-10 px-2.5 sm:px-3 rounded-md bg-white border border-slate-300 focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-600 transition-all shadow-2xs flex-1 min-w-0">
+          <div className="flex items-center gap-2 h-9 sm:h-10 px-3 rounded-xl bg-white border border-slate-200/90 focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500 transition-all shadow-2xs flex-1 min-w-0">
             <svg
               className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-400 shrink-0 pointer-events-none"
               xmlns="http://www.w3.org/2000/svg"
@@ -406,7 +408,7 @@ const Assignments = () => {
             </svg>
             <input
               type="text"
-              placeholder="Search by title or subject..."
+              placeholder="Search assignments..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full h-full text-xs sm:text-sm bg-transparent text-slate-900 placeholder-slate-400 focus:outline-none min-w-0"
@@ -425,12 +427,12 @@ const Assignments = () => {
             )}
           </div>
 
-          {/* Subject Dropdown (Dedicated mobile width prevents horizontal overflow) */}
+          {/* Subject Dropdown */}
           <div className="relative shrink-0 w-28 sm:w-36">
             <select
               value={selectedSubject}
               onChange={(e) => setSelectedSubject(e.target.value)}
-              className="w-full h-9 sm:h-10 pl-2 sm:pl-3 pr-6 sm:pr-7 text-xs sm:text-sm font-medium rounded-md bg-white border border-slate-300 text-slate-800 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 shadow-2xs cursor-pointer appearance-none transition-colors truncate"
+              className="w-full h-9 sm:h-10 pl-2.5 sm:pl-3 pr-7 sm:pr-8 text-xs sm:text-sm font-medium rounded-xl bg-white border border-slate-200/90 text-slate-700 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 shadow-2xs cursor-pointer appearance-none transition-all truncate"
             >
               <option value="all">All Subjects</option>
               {uniqueSubjects.map((sub) => (
@@ -440,7 +442,7 @@ const Assignments = () => {
               ))}
             </select>
             <svg
-              className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-500 absolute right-2 sm:right-2.5 top-1/2 -translate-y-1/2 pointer-events-none"
+              className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-400 absolute right-2 sm:right-2.5 top-1/2 -translate-y-1/2 pointer-events-none"
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 20 20"
               fill="currentColor"
@@ -452,14 +454,18 @@ const Assignments = () => {
 
         {/* ── Assignments Feed List ── */}
         {loading ? (
-          <div className="w-full bg-white py-12 rounded-xl border border-slate-200 text-center flex flex-col items-center justify-center shadow-2xs">
+          <div className="w-full bg-white py-12 rounded-2xl border border-slate-200/90 text-center flex flex-col items-center justify-center shadow-2xs">
             <div className="w-7 h-7 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mb-2.5"></div>
             <p className="text-slate-600 text-xs sm:text-sm font-medium">Loading assignments...</p>
           </div>
         ) : filteredAssignments.length === 0 ? (
-          <div className="w-full bg-white py-12 px-4 rounded-xl border border-slate-200 text-center flex flex-col items-center justify-center shadow-2xs">
-            <div className="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-xl font-bold mb-3">
-              📝
+          <div className="w-full bg-white py-10 px-4 rounded-2xl border border-slate-200/90 text-center flex flex-col items-center justify-center shadow-2xs">
+            <div className="w-10 h-10 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mb-2.5">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
             </div>
             <h3 className="text-sm sm:text-base font-bold text-slate-800">
               {searchQuery || selectedSubject !== 'all'
@@ -477,46 +483,40 @@ const Assignments = () => {
                   setSearchQuery('');
                   setSelectedSubject('all');
                 }}
-                className="mt-3.5 px-3 py-1.5 rounded-md bg-blue-50 text-blue-600 hover:bg-blue-100 text-xs font-semibold cursor-pointer transition-colors"
+                className="mt-3.5 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold cursor-pointer transition-colors"
               >
                 Clear all filters
               </button>
             )}
           </div>
         ) : (
-          <div className="flex flex-col gap-2.5 sm:gap-3">
+          <div className="flex flex-col gap-3 sm:gap-3.5">
             {filteredAssignments.map((asgn) => {
               const deadline = getDeadlineInfo(asgn.dueDate);
               const attachments = getAssignmentAttachments(asgn);
 
               return (
-                <div
+                <article
                   key={asgn._id}
-                  className="bg-white rounded-xl border border-slate-200/90 hover:border-slate-300 transition-all shadow-2xs p-3 sm:p-4 flex flex-col gap-2 sm:gap-2.5"
+                  className="bg-white rounded-2xl border border-slate-200/90 hover:border-slate-300 transition-all shadow-2xs p-3.5 sm:p-5 flex flex-col gap-2.5 sm:gap-3"
                 >
-                  {/* Row 1: Subject & Marks + Due text (Fluid wrap on narrow screens) */}
-                  <div className="flex flex-wrap items-center justify-between gap-1.5">
+                  {/* Row 1: Subject, Marks & Due Badge */}
+                  <div className="flex items-center justify-between gap-1.5 flex-wrap">
                     <div className="flex items-center gap-1.5">
-                      <span className="px-2 sm:px-2.5 py-0.5 rounded-md text-[11px] sm:text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                      <span className="px-2.5 py-0.5 rounded-md text-[10px] sm:text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200/80">
                         {asgn.subject}
                       </span>
-                      <span className="px-2 py-0.5 rounded-md text-[10px] sm:text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200 sm:hidden">
+                      <span className="px-2 py-0.5 rounded-md text-[10px] sm:text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200/80">
                         🎯 {asgn.totalMarks || 0} Marks
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
-                      {/* Due text & live countdown */}
-                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md border text-[10px] sm:text-xs font-semibold ${deadline.badgeClass}`}>
-                        <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${deadline.dotClass}`} />
-                        <span className="truncate max-w-[210px] sm:max-w-none">{deadline.label}</span>
-                      </span>
-
-                      {/* Marks Badge (Desktop) */}
-                      <span className="hidden sm:inline-flex px-2 sm:px-2.5 py-0.5 rounded-md text-[11px] sm:text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200">
-                        🎯 {asgn.totalMarks || 0} Marks
-                      </span>
-                    </div>
+                    {/* Due text & countdown badge */}
+                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md border text-[10px] sm:text-xs font-semibold ${deadline.badgeClass}`}>
+                      <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${deadline.dotClass}`} />
+                      <span className="hidden sm:inline">{deadline.label}</span>
+                      <span className="sm:hidden">{deadline.shortLabel || deadline.label}</span>
+                    </span>
                   </div>
 
                   {/* Row 2: Title */}
@@ -524,105 +524,68 @@ const Assignments = () => {
                     {asgn.title}
                   </h2>
 
-                  {/* Row 3: Description / Instructions (Scrollable if long) */}
+                  {/* Row 3: Description / Instructions */}
                   {asgn.description && (
-                    <div className="flex flex-col gap-1">
-                      <span className="text-[10px] sm:text-[11px] font-semibold text-slate-500">
-                        Instructions:
-                      </span>
-                      <div className="assignment-scroll max-h-24 sm:max-h-36 overflow-y-auto p-2 sm:p-2.5 rounded-lg bg-slate-50 border border-slate-200/70 text-xs sm:text-sm text-slate-700 whitespace-pre-line leading-relaxed break-words">
-                        {asgn.description}
-                      </div>
-                    </div>
+                    <p className="text-xs sm:text-sm text-slate-600 leading-relaxed whitespace-pre-line font-normal break-words">
+                      {asgn.description}
+                    </p>
                   )}
 
-                  {/* Row 4: Attachments (Horizontal Touch-Scrollable Row with Visual Thumbnails) */}
+                  {/* Row 4: Attachments (Clean, readable chips) */}
                   {attachments.length > 0 && (
-                    <div className="flex flex-col gap-1 mt-0.5">
+                    <div className="flex flex-col gap-1.5 pt-0.5">
                       <span className="text-[10px] sm:text-[11px] font-semibold text-slate-500">
                         Attachments ({attachments.length}):
                       </span>
 
-                      {/* Single horizontal scroll line of attachment thumbnails (touch enabled) */}
-                      <div className="assignment-scroll flex items-center gap-2 sm:gap-2.5 overflow-x-auto pb-1 max-w-full touch-pan-x">
+                      <div className="flex flex-col sm:flex-row flex-wrap gap-2">
                         {attachments.map((att, idx) => {
                           const attName = att.fileName || `Attachment ${idx + 1}`;
                           const isAttPdf =
                             att.fileType === 'pdf' ||
                             (att.fileName && att.fileName.toLowerCase().endsWith('.pdf'));
                           const viewUrl = getAttachmentViewUrl(att);
-                          const thumbUrl = getAttachmentThumbnailUrl(att);
 
                           return (
                             <div
                               key={idx}
-                              className="w-18 sm:w-20 shrink-0 flex flex-col rounded-md border border-slate-200 bg-white overflow-hidden shadow-2xs hover:border-blue-300 transition-all"
+                              className="flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200/90 hover:border-slate-300 hover:bg-slate-100/60 transition-all w-full sm:w-auto sm:max-w-xs group"
                             >
-                              {/* Thumbnail preview container (ultra-compact) */}
                               <div
                                 onClick={() => openAttachmentPreview(att)}
-                                className="relative w-full h-11 sm:h-12 bg-slate-100 cursor-pointer overflow-hidden group/thumb flex items-center justify-center"
-                                title={`Click to preview ${attName}`}
+                                className="flex items-center gap-2 min-w-0 cursor-pointer flex-1"
                               >
-                                {thumbUrl ? (
-                                  <img
-                                    src={thumbUrl}
-                                    alt={attName}
-                                    className="w-full h-full object-cover group-hover/thumb:scale-105 transition-transform"
-                                    onError={(e) => {
-                                      e.target.style.display = 'none';
-                                      if (e.target.nextSibling) e.target.nextSibling.style.display = 'flex';
-                                    }}
-                                  />
-                                ) : null}
-
-                                {/* Fallback Icon */}
-                                <div
-                                  style={{ display: thumbUrl ? 'none' : 'flex' }}
-                                  className="w-full h-full flex-col items-center justify-center bg-slate-100 text-slate-500 font-bold text-xs p-0.5 text-center"
-                                >
-                                  <span className="text-xs mb-0.5">{isAttPdf ? '📄' : '🖼️'}</span>
-                                  <span className="text-[6px] uppercase font-mono font-bold text-slate-600">
-                                    {isAttPdf ? 'PDF' : 'IMG'}
-                                  </span>
-                                </div>
-
-                                {/* Format tag in corner */}
                                 <span
-                                  className={`absolute top-0.5 left-0.5 px-1 py-0 rounded text-[6px] font-bold shadow-xs ${
-                                    isAttPdf ? 'bg-rose-600 text-white' : 'bg-emerald-600 text-white'
+                                  className={`w-6 h-6 rounded-md flex items-center justify-center text-[10px] shrink-0 font-bold ${
+                                    isAttPdf
+                                      ? 'bg-rose-100 text-rose-700 border border-rose-200'
+                                      : 'bg-emerald-100 text-emerald-700 border border-emerald-200'
                                   }`}
                                 >
                                   {isAttPdf ? 'PDF' : 'IMG'}
                                 </span>
-                              </div>
-
-                              {/* File name below thumbnail */}
-                              <div className="p-0.5 px-1 bg-slate-50/60 border-t border-slate-100">
-                                <p className="text-[9px] font-semibold text-slate-800 truncate" title={attName}>
+                                <span className="text-xs font-semibold text-slate-700 truncate group-hover:text-blue-600 transition-colors">
                                   {attName}
-                                </p>
+                                </span>
                               </div>
 
-                              {/* View & Open buttons below thumbnail */}
-                              <div className="grid grid-cols-2 gap-0.5 p-1 pt-0 bg-slate-50/60">
+                              <div className="flex items-center gap-1 shrink-0">
                                 <button
                                   type="button"
                                   onClick={() => openAttachmentPreview(att)}
-                                  className="h-4.5 px-0.5 rounded bg-white hover:bg-blue-50 text-slate-700 hover:text-blue-600 border border-slate-300 text-[8px] font-semibold flex items-center justify-center cursor-pointer transition-colors shadow-2xs"
+                                  className="px-2 py-1 rounded-md bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-[11px] font-medium transition-colors cursor-pointer shadow-2xs"
                                   title="View preview"
                                 >
-                                  <span>View</span>
+                                  View
                                 </button>
-
                                 <a
                                   href={viewUrl}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="h-4.5 px-0.5 rounded bg-blue-600 hover:bg-blue-700 text-white text-[8px] font-semibold flex items-center justify-center cursor-pointer transition-colors shadow-2xs"
+                                  className="p-1.5 rounded-md bg-blue-600 hover:bg-blue-700 text-white transition-colors flex items-center justify-center shadow-2xs"
                                   title="Open in new tab"
                                 >
-                                  <span>Open</span>
+                                  <ExternalLinkIcon />
                                 </a>
                               </div>
                             </div>
@@ -633,20 +596,23 @@ const Assignments = () => {
                   )}
 
                   {/* Row 5: Card Footer (Attribution & Posted Date) */}
-                  <div className="pt-1.5 mt-0.5 border-t border-slate-100 flex items-center justify-between text-[10px] sm:text-xs text-slate-400 font-medium">
-                    <span className="flex items-center gap-1 text-slate-500 truncate max-w-[160px] sm:max-w-none">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="12" cy="7" r="4"></circle>
-                      </svg>
-                      <span className="truncate">Posted by {asgn.createdBy || 'Lecturer'}</span>
-                    </span>
+                  <div className="border-t border-slate-100 pt-2.5 mt-0.5 flex items-center justify-between text-[11px] sm:text-xs text-slate-500">
+                    <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+                      <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-blue-50 text-blue-700 border border-blue-200/80 flex items-center justify-center font-bold text-[10px] sm:text-xs shrink-0">
+                        {(asgn.createdBy || 'L')[0].toUpperCase()}
+                      </div>
+                      <span className="font-medium text-slate-700 truncate">
+                        Prof. {(asgn.createdBy || 'Lecturer').replace(/^Prof\.?\s*/i, '')}
+                      </span>
+                    </div>
 
                     {asgn.createdAt && (
-                      <span className="shrink-0">{formatCreatedDate(asgn.createdAt)}</span>
+                      <span className="text-[10px] sm:text-xs text-slate-400 font-medium shrink-0">
+                        {formatCreatedDate(asgn.createdAt)}
+                      </span>
                     )}
                   </div>
-                </div>
+                </article>
               );
             })}
           </div>

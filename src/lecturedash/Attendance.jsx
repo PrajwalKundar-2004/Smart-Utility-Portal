@@ -203,32 +203,38 @@ const Attendance = () => {
         <Navbar1 />
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-8 py-8 flex flex-col gap-6">
+      {/* ── Outer Page Container: max-w-7xl on laptop, neat & scaled on mobile ── */}
+      <div className="w-full max-w-lg sm:max-w-7xl mx-auto px-2.5 sm:px-6 lg:px-8 py-3 sm:py-8 flex flex-col gap-2.5 sm:gap-6">
         
         {/* ── Header Bar ── */}
-        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 bg-white/80 backdrop-blur-md p-6 sm:p-8 rounded-3xl border border-white shadow-xs">
-          <div className="flex-1 min-w-0">
+        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 sm:gap-6 bg-white p-3 sm:p-6 lg:p-7 rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-2xs">
+          <div className="flex-1 min-w-0 w-full">
             <button
               onClick={() => navigate('/lecturedash')}
-              className="inline-flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors mb-3 cursor-pointer"
+              className="inline-flex items-center gap-1.5 text-[11px] sm:text-sm font-semibold text-slate-500 hover:text-blue-600 transition-colors mb-1 sm:mb-2.5 cursor-pointer"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" className="sm:w-4 sm:h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
               <span>Back to Dashboard</span>
             </button>
 
-            <div className="flex flex-wrap items-center gap-3">
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 tracking-tight">
-                Attendance
-              </h1>
+            <div className="flex flex-wrap items-center justify-between sm:justify-start gap-2 sm:gap-3">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <h1 className="text-base sm:text-2xl lg:text-3xl font-black text-slate-900 tracking-tight">
+                  Attendance
+                </h1>
+                <span className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 rounded-md text-[10px] sm:text-xs font-bold bg-purple-50 text-purple-700 border border-purple-200 shadow-2xs">
+                  {records.length} Students
+                </span>
+              </div>
 
               {/* Subject Switcher Dropdown */}
               {subjects.length > 0 ? (
-                <div className="flex items-center gap-2 bg-blue-50 border border-blue-200 rounded-2xl px-3.5 py-1.5 shadow-2xs">
-                  <span className="text-xs font-extrabold text-blue-700 uppercase tracking-wider">Subject:</span>
+                <div className="flex items-center gap-1.5 bg-blue-50 border border-blue-200 rounded-md sm:rounded-lg px-2 sm:px-3 py-0.5 sm:py-1.5 shadow-2xs">
+                  <span className="text-[10px] sm:text-xs font-bold text-blue-700 uppercase tracking-wider">Subject:</span>
                   <select
                     value={activeSubject}
                     onChange={(e) => handleSubjectChange(e.target.value)}
-                    className="bg-transparent text-sm font-extrabold text-blue-900 outline-none cursor-pointer pr-1"
+                    className="bg-transparent text-xs sm:text-sm font-extrabold text-blue-900 outline-none cursor-pointer pr-1"
                   >
                     {subjects.map(s => (
                       <option key={s._id || s.name} value={s.name} className="text-slate-800 font-bold bg-white">
@@ -238,26 +244,26 @@ const Attendance = () => {
                   </select>
                 </div>
               ) : activeSubject ? (
-                <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-bold bg-blue-50 text-blue-700 border border-blue-200 shadow-xs">
+                <span className="inline-flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1 rounded-md sm:rounded-lg text-xs sm:text-sm font-bold bg-blue-50 text-blue-700 border border-blue-200 shadow-2xs">
                   {activeSubject}
                 </span>
               ) : null}
             </div>
 
-            <p className="text-slate-500 text-sm mt-2">
-              Attendance sheet for <strong>{activeSubject || 'selected subject'}</strong>.
+            <p className="text-slate-500 text-[11px] sm:text-sm mt-0.5 sm:mt-1">
+              Attendance sheet for <strong className="text-blue-600">{activeSubject || 'selected subject'}</strong>.
             </p>
           </div>
 
-          {/* Action Buttons with dedicated container */}
-          <div className="flex items-center gap-3 w-full lg:w-auto shrink-0 bg-transparent p-1 rounded-2xl">
+          {/* Action Buttons */}
+          <div className="flex items-center gap-2 sm:gap-3 w-full lg:w-auto shrink-0 pt-1 sm:pt-0 border-t lg:border-t-0 border-slate-100">
             <button
               onClick={() => setShowAddColModal(true)}
               disabled={!activeSubject}
-              className="flex-1 lg:flex-initial h-11 inline-flex items-center justify-center gap-2 px-5 rounded-xl bg-white hover:bg-blue-50 text-slate-800 hover:text-blue-700 border border-slate-200 hover:border-blue-300 text-sm font-bold shadow-xs hover:shadow transition-all cursor-pointer disabled:opacity-50 whitespace-nowrap"
+              className="flex-1 lg:flex-initial h-8.5 sm:h-11 inline-flex items-center justify-center gap-1.5 px-3 sm:px-5 rounded-md sm:rounded-lg bg-white hover:bg-blue-50 text-slate-800 hover:text-blue-700 border border-slate-300 hover:border-blue-300 text-xs sm:text-sm font-bold shadow-2xs transition-all cursor-pointer disabled:opacity-50 whitespace-nowrap active:scale-[0.98]"
             >
-              <div className="w-5 h-5 rounded flex items-center justify-center text-blue-600">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              <div className="w-4 h-4 rounded flex items-center justify-center text-blue-600">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
               </div>
               <span>Add Column</span>
             </button>
@@ -265,11 +271,11 @@ const Attendance = () => {
             <button
               onClick={handleSave}
               disabled={saving || !activeSubject || records.length === 0}
-              className="flex-1 lg:flex-initial h-11 inline-flex items-center justify-center gap-2 px-6 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-sm font-bold shadow-md shadow-blue-500/25 transition-all cursor-pointer disabled:opacity-50 whitespace-nowrap"
+              className="flex-1 lg:flex-initial h-8.5 sm:h-11 inline-flex items-center justify-center gap-1.5 px-4 sm:px-6 rounded-md sm:rounded-lg bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs sm:text-sm font-bold shadow-xs transition-all cursor-pointer disabled:opacity-50 whitespace-nowrap active:scale-[0.98]"
             >
               {saving ? (
                 <>
-                  <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                  <svg className="animate-spin h-3.5 w-3.5 sm:h-4 sm:w-4 text-white" fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
@@ -277,7 +283,7 @@ const Attendance = () => {
                 </>
               ) : (
                 <>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" className="sm:w-4 sm:h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
                   <span>Save</span>
                 </>
               )}
@@ -287,19 +293,19 @@ const Attendance = () => {
 
         {/* ── No Subject Warning ── */}
         {!activeSubject && (
-          <div className="bg-amber-50 border border-amber-200 rounded-3xl p-8 text-center text-amber-800">
-            <span className="text-5xl block mb-3">⚠️</span>
-            <h2 className="text-xl font-bold mb-2">No Subject Selected</h2>
-            <p className="text-sm sm:text-base text-amber-700 mb-5 max-w-md mx-auto">
+          <div className="bg-amber-50 border border-amber-200 rounded-xl sm:rounded-3xl p-4 sm:p-8 text-center text-amber-800">
+            <span className="text-3xl sm:text-5xl block mb-2 sm:mb-3">⚠️</span>
+            <h2 className="text-base sm:text-xl font-bold mb-1 sm:mb-2">No Subject Selected</h2>
+            <p className="text-xs sm:text-base text-amber-700 mb-3 sm:mb-5 max-w-md mx-auto">
               Select a subject to view attendance:
             </p>
             {subjects.length > 0 && (
-              <div className="flex flex-wrap justify-center gap-2 max-w-md mx-auto mb-5">
+              <div className="flex flex-wrap justify-center gap-1.5 sm:gap-2 max-w-md mx-auto mb-3 sm:mb-5">
                 {subjects.map(s => (
                   <button
                     key={s._id || s.name}
                     onClick={() => handleSubjectChange(s.name)}
-                    className="px-4 py-2 bg-white hover:bg-blue-50 text-slate-800 hover:text-blue-700 font-bold rounded-xl border border-slate-200 text-sm shadow-xs transition-all cursor-pointer"
+                    className="px-3 py-1.5 sm:px-4 sm:py-2 bg-white hover:bg-blue-50 text-slate-800 hover:text-blue-700 font-bold rounded-lg sm:rounded-xl border border-slate-200 text-xs sm:text-sm shadow-2xs transition-all cursor-pointer"
                   >
                     📚 {s.name}
                   </button>
@@ -308,7 +314,7 @@ const Attendance = () => {
             )}
             <button
               onClick={() => navigate('/lecturedash')}
-              className="px-6 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl text-sm transition-colors cursor-pointer shadow-sm"
+              className="px-4 sm:px-6 py-1.5 sm:py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-lg sm:rounded-xl text-xs sm:text-sm transition-colors cursor-pointer shadow-xs"
             >
               Go to Dashboard
             </button>
@@ -317,82 +323,93 @@ const Attendance = () => {
 
         {/* ── Search & Roster Meta Bar ── */}
         {activeSubject && (
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs">
-            {/* Search Input with distinct icon separation */}
-            <div className="flex items-center flex-1 max-w-lg bg-slate-50 hover:bg-white focus-within:bg-white border-2 border-slate-200 hover:border-slate-300 focus-within:border-blue-500 focus-within:ring-4 focus-within:ring-blue-500/10 rounded-2xl px-4 py-2.5 transition-all">
-              {/* Distinct Search Icon */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 sm:gap-4 bg-white p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-2xs">
+            {/* Search Input */}
+            <div className="flex items-center flex-1 max-w-full sm:max-w-lg bg-slate-50 hover:bg-white focus-within:bg-white border border-slate-300 hover:border-slate-400 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-100 rounded-lg sm:rounded-xl px-2.5 sm:px-4 py-1.5 sm:py-2.5 transition-all">
               <div className="text-slate-400 flex items-center justify-center shrink-0">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" className="sm:w-4 sm:h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
               </div>
 
-              {/* Space before text input */}
-              <div className="w-4 shrink-0"></div>
+              <div className="w-2 sm:w-3 shrink-0"></div>
 
-              {/* Dedicated Input Area for Placeholder and Typed Content */}
               <div className="flex-1 flex items-center min-w-0 pr-1">
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
                   placeholder="Search student or USN..."
-                  className="w-full bg-transparent outline-none text-slate-800 placeholder-slate-400 text-sm font-semibold"
+                  className="w-full bg-transparent outline-none text-slate-800 placeholder-slate-400 text-xs sm:text-sm font-semibold"
                 />
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery('')}
-                    className="p-1 rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-200/70 transition-colors ml-2 cursor-pointer shrink-0"
+                    className="p-0.5 rounded text-slate-400 hover:text-slate-700 hover:bg-slate-200/70 transition-colors ml-1.5 cursor-pointer shrink-0"
                     title="Clear search"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                   </button>
                 )}
               </div>
             </div>
 
             {/* Roster Badge */}
-            <div className="flex items-center gap-2.5 text-sm font-bold text-slate-700 bg-slate-50 px-4 py-2.5 rounded-xl border border-slate-200 shrink-0 self-start sm:self-auto">
-              <span className="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-              <span>{filteredRecords.length} of {records.length} Students</span>
+            <div className="flex items-center justify-between sm:justify-start gap-2 text-xs sm:text-sm font-bold text-slate-700 bg-slate-50 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl border border-slate-200 shrink-0">
+              <span className="flex items-center gap-1.5">
+                <span className="inline-block w-2 h-2 rounded-full bg-emerald-500"></span>
+                <span>{filteredRecords.length} of {records.length} Students</span>
+              </span>
+              <span className="text-[10px] sm:text-xs text-blue-700 font-semibold bg-blue-50 border border-blue-200 px-1.5 py-0.5 rounded">
+                {columns.length} columns
+              </span>
             </div>
           </div>
         )}
 
         {/* ── Excel Sheet Table ── */}
         {activeSubject && (
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+          <div className="bg-white rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-2xs overflow-hidden flex flex-col">
+            {/* Mobile horizontal scroll guidance hint */}
+            <div className="sm:hidden px-3 py-1.5 bg-blue-50/90 border-b border-blue-100 flex items-center justify-between text-[10px] font-semibold text-blue-700">
+              <span className="flex items-center gap-1">
+                <span>👉</span>
+                <span>Swipe sideways to view & edit all columns</span>
+              </span>
+              <span className="text-[9px] text-blue-600 font-bold uppercase tracking-wider bg-blue-100/70 px-1.5 py-0.5 rounded">Swipe ↔</span>
+            </div>
+
             {loading ? (
-              <div className="text-center py-24">
-                <div className="inline-block animate-spin rounded-full h-10 w-10 border-4 border-blue-500 border-t-transparent mb-4"></div>
-                <p className="text-slate-500 text-base font-semibold">Loading attendance…</p>
+              <div className="text-center py-16 sm:py-24">
+                <div className="inline-block animate-spin rounded-full h-8 w-8 sm:h-10 sm:w-10 border-3 sm:border-4 border-blue-500 border-t-transparent mb-3 sm:mb-4"></div>
+                <p className="text-slate-500 text-xs sm:text-base font-semibold">Loading attendance…</p>
               </div>
             ) : records.length === 0 ? (
-              <div className="text-center py-20">
-                <span className="text-6xl block mb-4">🎓</span>
-                <h3 className="text-xl font-bold text-slate-800 mb-1">No Students Found</h3>
-                <p className="text-slate-400 text-sm">No students found.</p>
+              <div className="text-center py-12 sm:py-20">
+                <span className="text-4xl sm:text-6xl block mb-2 sm:mb-4">🎓</span>
+                <h3 className="text-base sm:text-xl font-bold text-slate-800 mb-1">No Students Found</h3>
+                <p className="text-slate-400 text-xs sm:text-sm">No students found.</p>
               </div>
             ) : (
-              <div className="overflow-x-auto w-full">
-                <table className="w-full text-left border-collapse min-w-[800px]">
+              <div className="overflow-x-auto w-full custom-scrollbar">
+                <table className="w-full text-left border-collapse min-w-[500px] sm:min-w-[800px]">
                   <thead>
-                    <tr className="bg-slate-100 border-b-2 border-slate-200 text-slate-700 text-xs sm:text-sm uppercase tracking-wider font-extrabold">
-                      <th className="py-2.5 px-4 w-16 text-center border-r border-slate-200">#</th>
-                      <th className="py-2.5 px-6 min-w-[250px] border-r border-slate-200">Student Name</th>
-                      <th className="py-2.5 px-6 min-w-[180px] border-r border-slate-200">USN</th>
+                    <tr className="bg-slate-100/90 border-b-2 border-slate-200 text-slate-700 text-[10px] sm:text-sm uppercase tracking-wider font-extrabold">
+                      <th className="py-1.5 sm:py-2.5 px-2 sm:px-4 w-9 sm:w-16 text-center border-r border-slate-200">#</th>
+                      <th className="py-1.5 sm:py-2.5 px-2.5 sm:px-6 min-w-[125px] sm:min-w-[220px] border-r border-slate-200">Student Name</th>
+                      <th className="py-1.5 sm:py-2.5 px-2 sm:px-6 min-w-[105px] sm:min-w-[160px] border-r border-slate-200">USN</th>
                       
                       {/* Dynamic Columns: Internal, External, Total, and custom columns */}
                       {columns.map((col, cIdx) => (
-                        <th key={col} className={`py-2.5 px-5 text-center ${cIdx < columns.length - 1 ? 'border-r' : ''} border-slate-200 min-w-[200px] sm:min-w-[240px] group bg-slate-100 hover:bg-slate-200/80 transition-colors`}>
-                          <div className="flex items-center justify-between gap-2">
-                            <span className="truncate flex-1 font-black text-slate-900 text-sm" title={col}>
+                        <th key={col} className={`py-1.5 sm:py-2.5 px-2 sm:px-4 text-center ${cIdx < columns.length - 1 ? 'border-r' : ''} border-slate-200 min-w-[95px] sm:min-w-[180px] group bg-slate-100 hover:bg-slate-200/80 transition-colors`}>
+                          <div className="flex items-center justify-between gap-1 sm:gap-2">
+                            <span className="truncate flex-1 font-bold sm:font-black text-slate-900 text-[11px] sm:text-sm" title={col}>
                               {col}
                             </span>
                             <button
                               onClick={() => handleRemoveColumn(col)}
-                              className="text-slate-400 hover:text-red-600 hover:bg-red-50 p-1.5 rounded-lg transition-colors cursor-pointer"
+                              className="text-slate-400 hover:text-red-600 hover:bg-red-50 p-0.5 sm:p-1.5 rounded transition-colors cursor-pointer shrink-0"
                               title={`Delete column "${col}"`}
                             >
-                              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" className="sm:w-3.5 sm:h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                             </button>
                           </div>
                         </th>
@@ -400,7 +417,7 @@ const Attendance = () => {
                     </tr>
                   </thead>
 
-                  <tbody className="divide-y divide-slate-200 text-sm">
+                  <tbody className="divide-y divide-slate-200 text-xs sm:text-sm">
                     {filteredRecords.map((rec, index) => {
                       return (
                         <tr
@@ -408,31 +425,31 @@ const Attendance = () => {
                           className="hover:bg-blue-50/40 transition-colors odd:bg-white even:bg-slate-50/40 group"
                         >
                           {/* Index */}
-                          <td className="py-1.5 px-4 text-center font-bold text-slate-400 border-r border-slate-200">
+                          <td className="py-1 sm:py-1.5 px-2 sm:px-4 text-center font-bold text-slate-400 border-r border-slate-200 text-[10px] sm:text-xs">
                             {index + 1}
                           </td>
 
                           {/* Student Name */}
-                          <td className="py-1.5 px-6 font-bold text-slate-900 border-r border-slate-200 truncate max-w-[250px]" title={rec.studentName}>
+                          <td className="py-1 sm:py-1.5 px-2.5 sm:px-6 font-bold text-slate-900 border-r border-slate-200 truncate max-w-[125px] sm:max-w-[240px] text-[11px] sm:text-sm" title={rec.studentName}>
                             {rec.studentName || '—'}
                           </td>
 
                           {/* USN */}
-                          <td className="py-1.5 px-6 border-r border-slate-200 whitespace-nowrap">
-                            <span className="font-mono font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-lg border border-blue-100">
+                          <td className="py-1 sm:py-1.5 px-2 sm:px-6 border-r border-slate-200 whitespace-nowrap">
+                            <span className="font-mono font-bold text-blue-600 bg-blue-50 px-1.5 sm:px-2 py-0.5 rounded-md border border-blue-100 text-[10px] sm:text-xs">
                               {rec.usn}
                             </span>
                           </td>
 
                           {/* Dynamic Columns Editable Cells */}
                           {columns.map((col, cIdx) => (
-                            <td key={col} className={`py-1 px-3 ${cIdx < columns.length - 1 ? 'border-r' : ''} border-slate-200 text-center`}>
+                            <td key={col} className={`py-1 px-1.5 sm:px-3 ${cIdx < columns.length - 1 ? 'border-r' : ''} border-slate-200 text-center`}>
                               <input
                                 type="number"
                                 value={rec.attendance?.[col] !== undefined ? rec.attendance[col] : ''}
                                 onChange={e => handleAttendanceChange(rec.usn, col, e.target.value)}
                                 placeholder="0"
-                                className="w-full h-8 text-center text-sm font-bold text-slate-800 bg-white rounded border border-slate-200 hover:border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-400/20 outline-none shadow-2xs transition-all"
+                                className="w-full max-w-[70px] sm:max-w-[100px] mx-auto h-7 sm:h-8 text-center text-xs sm:text-sm font-bold text-slate-800 bg-white rounded-md sm:rounded-lg border border-slate-200 hover:border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-400/20 outline-none shadow-2xs transition-all"
                               />
                             </td>
                           ))}
@@ -447,7 +464,7 @@ const Attendance = () => {
         )}
       </div>
 
-      {/* ── Add Column Modal Container (Same as Result.jsx) ── */}
+      {/* ── Add Column Modal Container ── */}
       <AnimatePresence>
         {showAddColModal && (
           <motion.div
@@ -455,7 +472,7 @@ const Attendance = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setShowAddColModal(false)}
-            className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6"
+            className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6"
           >
             <motion.div
               initial={{ scale: 0.95, opacity: 0, y: 12 }}
@@ -463,32 +480,32 @@ const Attendance = () => {
               exit={{ scale: 0.95, opacity: 0, y: 12 }}
               transition={{ type: "spring", stiffness: 360, damping: 26 }}
               onClick={e => e.stopPropagation()}
-              className="bg-white rounded-2xl p-6 sm:p-7 w-full max-w-sm shadow-2xl border border-slate-200/80 overflow-hidden flex flex-col gap-5"
+              className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-7 w-full max-w-xs sm:max-w-sm shadow-2xl border border-slate-200/90 overflow-hidden flex flex-col gap-3.5 sm:gap-5"
             >
               {/* Modal Header */}
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100 shadow-2xs">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="3" x2="12" y2="21"/></svg>
+              <div className="flex items-center justify-between pb-2.5 sm:pb-3 border-b border-slate-100">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100 shadow-2xs font-bold text-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" className="sm:w-5 sm:h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="3" x2="12" y2="21"/></svg>
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold text-slate-900 tracking-tight">Add Column</h3>
+                    <h3 className="text-sm sm:text-lg font-bold text-slate-900 tracking-tight">Add Column</h3>
                   </div>
                 </div>
 
                 <button
                   onClick={() => setShowAddColModal(false)}
-                  className="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 flex items-center justify-center transition-colors cursor-pointer"
+                  className="w-7 h-7 sm:w-8 sm:h-8 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 flex items-center justify-center transition-colors cursor-pointer"
                   title="Close modal"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
               </div>
 
               {/* Modal Body */}
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-2.5 sm:gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                  <label className="block text-[11px] sm:text-xs font-bold text-slate-700 mb-1">
                     Column Name
                   </label>
                   <input
@@ -497,23 +514,23 @@ const Attendance = () => {
                     value={newColName}
                     onChange={e => setNewColName(e.target.value)}
                     onKeyDown={e => e.key === 'Enter' && handleAddColumn()}
-                    placeholder="e.g. Total Classes"
-                    className="w-full h-11 px-3 bg-slate-50 border border-slate-200 focus:border-blue-500 focus:bg-white rounded-xl outline-none text-slate-900 font-bold placeholder-slate-400 text-sm shadow-2xs transition-all"
+                    placeholder="e.g. Classes Held"
+                    className="w-full h-8.5 sm:h-11 px-2.5 sm:px-3 bg-slate-50 border border-slate-300 focus:border-blue-500 focus:bg-white rounded-md sm:rounded-xl outline-none text-slate-900 font-bold placeholder-slate-400 text-xs sm:text-sm shadow-2xs transition-all"
                   />
                 </div>
 
                 {/* Quick Suggestion Chips */}
                 <div>
-                  <span className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
+                  <span className="block text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5 sm:mb-2">
                     Suggestions:
                   </span>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-1.5">
                     {['Classes Held', 'Attended', 'Total', 'Lab', 'Percentage'].map(suggestion => (
                       <button
                         key={suggestion}
                         type="button"
                         onClick={() => setNewColName(suggestion)}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
+                        className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-md sm:rounded-lg text-[10px] sm:text-xs font-bold transition-all cursor-pointer border ${
                           newColName === suggestion
                             ? 'bg-blue-600 text-white border-blue-600 shadow-xs'
                             : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-200'
@@ -527,18 +544,18 @@ const Attendance = () => {
               </div>
 
               {/* Modal Footer */}
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+              <div className="flex items-center justify-end gap-2 sm:gap-3 pt-3 sm:pt-4 border-t border-slate-100">
                 <button
                   onClick={() => setShowAddColModal(false)}
-                  className="h-11 px-5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 hover:text-slate-800 font-bold text-sm cursor-pointer transition-colors"
+                  className="h-8.5 sm:h-11 px-3.5 sm:px-5 rounded-md sm:rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 hover:text-slate-800 font-bold text-xs sm:text-sm cursor-pointer transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleAddColumn}
-                  className="h-11 px-6 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold text-sm rounded-xl transition-all shadow-md shadow-blue-500/25 cursor-pointer flex items-center gap-2"
+                  className="h-8.5 sm:h-11 px-4 sm:px-6 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold text-xs sm:text-sm rounded-md sm:rounded-xl transition-all shadow-xs cursor-pointer flex items-center gap-1.5"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                   <span>Add Column</span>
                 </button>
               </div>
