@@ -125,6 +125,14 @@ const ArrowLeftIcon = ({ className = 'w-5 h-5' }) => (
   </svg>
 );
 
+const ReplyIcon = ({ className = 'w-4 h-4' }) => (
+  <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="9 17 4 12 9 7" />
+    <path d="M20 18v-2a4 4 0 0 0-4-4H4" />
+  </svg>
+);
+
 // ─── Status / Delivery Ticks Component ─────────────────────────────────
 const MessageTicks = ({ message, currentUsn, isMe = false }) => {
   const tickColor = isMe ? 'text-blue-200' : 'text-slate-400';
@@ -245,6 +253,32 @@ const ChatRoom = () => {
   const [studentNameFilter, setStudentNameFilter] = useState('');
   const [isCreatingGroup, setIsCreatingGroup] = useState(false);
   const [loadingStudents, setLoadingStudents] = useState(false);
+
+  // ─── WhatsApp Swipe-to-Reply State ────────────────────────────────────
+  const [replyingTo, setReplyingTo] = useState(null); // { _id, sender, content, file, messageType }
+  const [swipingMsgId, setSwipingMsgId] = useState(null);
+  const [swipeOffset, setSwipeOffset] = useState(0);
+  const touchStartXRef = useRef(0);
+  const touchStartYRef = useRef(0);
+
+  // ─── Multi-Select & Delete State ──────────────────────────────────────
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
+  const [selectedMsgIds, setSelectedMsgIds] = useState([]);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isDeletingMessages, setIsDeletingMessages] = useState(false);
+  const longPressTimerRef = useRef(null);
+
+  // ─── Add Members to Existing Group State (Lecturer) ───────────────────
+  const [showAddMembersModal, setShowAddMembersModal] = useState(false);
+  const [nonMemberStudents, setNonMemberStudents] = useState([]);
+  const [selectedAddUsns, setSelectedAddUsns] = useState([]);
+  const [addMemberSearch, setAddMemberSearch] = useState('');
+  const [loadingNonMembers, setLoadingNonMembers] = useState(false);
+  const [isAddingMembers, setIsAddingMembers] = useState(false);
+
+  // ─── Delete Group Modal State (Lecturer) ──────────────────────────────
+  const [showDeleteGroupModal, setShowDeleteGroupModal] = useState(false);
+  const [isDeletingGroup, setIsDeletingGroup] = useState(false);
 
   // Refs
   const socketRef = useRef(null);
@@ -422,6 +456,37 @@ const ChatRoom = () => {
       );
     });
 
+    // Messages deleted event (Real-time Delete for Everyone)
+    socket.on('messages_deleted', ({ groupId, messageIds, deleteType }) => {
+      if (deleteType === 'for_everyone') {
+        setMessages((prev) =>
+          prev.map((m) =>
+            messageIds.includes(m._id)
+              ? {
+                  ...m,
+                  isDeletedForEveryone: true,
+                  content: '🚫 This message was deleted',
+                  file: null,
+                }
+              : m
+          )
+        );
+      }
+    });
+
+    // Group deleted event
+    socket.on('group_deleted', ({ groupId }) => {
+      setGroups((prev) => prev.filter((g) => g._id !== groupId));
+      setActiveGroup((prev) => (prev?._id === groupId ? null : prev));
+      toast.error('This group was deleted by the lecturer');
+    });
+
+    // Group members updated event
+    socket.on('group_members_updated', ({ groupId, group }) => {
+      setGroups((prev) => prev.map((g) => (g._id === groupId ? group : g)));
+      setActiveGroup((prev) => (prev?._id === groupId ? group : prev));
+    });
+
     // Live typing indicators
     socket.on('user_typing', ({ userName }) => {
       if (userName === currentUserName) return;
@@ -552,6 +617,15 @@ const ChatRoom = () => {
       };
     }
 
+    // Prepare reply payload if replying
+    const pendingReplyTo = replyingTo ? {
+      messageId: replyingTo._id,
+      senderName: replyingTo.sender?.name || 'User',
+      content: replyingTo.content || replyingTo.file?.fileName || 'Attachment',
+      messageType: replyingTo.messageType || 'text',
+      fileName: replyingTo.file?.fileName || '',
+    } : null;
+
     // Step A: Optimistically insert message into UI right now!
     // Shows WhatsApp Clock Icon (🕒) immediately
     const optimisticMessage = {
@@ -566,6 +640,7 @@ const ChatRoom = () => {
       content: content || (pendingFile ? pendingFile.name : ''),
       messageType: tempMessageType,
       file: tempFileData,
+      replyTo: pendingReplyTo,
       status: 'sending', // <--- Renders the Clock icon (🕒)
       createdAt: new Date().toISOString(),
       readBy: [],
@@ -592,9 +667,10 @@ const ChatRoom = () => {
       })
     );
 
-    // Clear input & file immediately so user is not blocked
+    // Clear input, file & reply immediately so user is not blocked
     setInput('');
     setSelectedFile(null);
+    setReplyingTo(null);
     if (fileInputRef.current) fileInputRef.current.value = '';
     socketRef.current?.emit('stop_typing', { groupId: activeGroup._id });
 
@@ -643,7 +719,7 @@ const ChatRoom = () => {
       finalMessageType = fileData.fileType || 'document';
     }
 
-    // Step C: Emit through socket with clientTempId
+    // Step C: Emit through socket with clientTempId & replyTo
     socketRef.current?.emit('send_message', {
       groupId: activeGroup._id,
       clientTempId,
@@ -655,6 +731,7 @@ const ChatRoom = () => {
       content: content || (fileData ? fileData.fileName : ''),
       messageType: finalMessageType,
       file: fileData,
+      replyTo: pendingReplyTo,
     });
   };
 
@@ -820,6 +897,222 @@ const ChatRoom = () => {
     }
   };
 
+  // ─── 10. Swipe-to-Reply & Long-Press Selection Handlers ───────────────────
+  const handleTouchStart = (e, msg) => {
+    touchStartXRef.current = e.touches[0].clientX;
+    touchStartYRef.current = e.touches[0].clientY;
+
+    if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current);
+    longPressTimerRef.current = setTimeout(() => {
+      setIsSelectionMode(true);
+      setSelectedMsgIds((prev) => (prev.includes(msg._id) ? prev : [...prev, msg._id]));
+      if (window.navigator?.vibrate) window.navigator.vibrate(40);
+    }, 450);
+  };
+
+  const handleTouchMove = (e, msg) => {
+    const diffX = e.touches[0].clientX - touchStartXRef.current;
+    const diffY = Math.abs(e.touches[0].clientY - touchStartYRef.current);
+
+    if (Math.abs(diffX) > 10 || diffY > 10) {
+      if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current);
+    }
+
+    if (!isSelectionMode && diffX > 8 && diffY < 30) {
+      setSwipingMsgId(msg._id);
+      setSwipeOffset(Math.min(diffX * 0.55, 60));
+    }
+  };
+
+  const handleTouchEnd = (e, msg) => {
+    if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current);
+
+    if (swipingMsgId === msg._id && swipeOffset >= 35) {
+      setReplyingTo(msg);
+      if (window.navigator?.vibrate) window.navigator.vibrate(25);
+    }
+    setSwipingMsgId(null);
+    setSwipeOffset(0);
+  };
+
+  const handleMouseDown = (msg) => {
+    if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current);
+    longPressTimerRef.current = setTimeout(() => {
+      setIsSelectionMode(true);
+      setSelectedMsgIds((prev) => (prev.includes(msg._id) ? prev : [...prev, msg._id]));
+    }, 500);
+  };
+
+  const handleMouseUp = () => {
+    if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current);
+  };
+
+  const handleMessageClick = (msg) => {
+    if (isSelectionMode) {
+      setSelectedMsgIds((prev) => {
+        if (prev.includes(msg._id)) {
+          const next = prev.filter((id) => id !== msg._id);
+          if (next.length === 0) setIsSelectionMode(false);
+          return next;
+        } else {
+          return [...prev, msg._id];
+        }
+      });
+    }
+  };
+
+  // ─── 11. Delete Messages Handler (Delete for Me vs Delete for Everyone) ─────
+  const handleDeleteMessages = async (deleteType) => {
+    if (!activeGroup || selectedMsgIds.length === 0) return;
+    try {
+      setIsDeletingMessages(true);
+      const res = await fetch(`${API_BASE_URL}/api/chat/groups/${activeGroup._id}/delete-messages`, {
+        method: 'POST',
+        headers: {
+          ...getAuthHeaders(),
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          messageIds: selectedMsgIds,
+          deleteType,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success(data.message || 'Messages deleted');
+        if (deleteType === 'for_me') {
+          setMessages((prev) => prev.filter((m) => !selectedMsgIds.includes(m._id)));
+        } else {
+          setMessages((prev) =>
+            prev.map((m) =>
+              selectedMsgIds.includes(m._id)
+                ? {
+                    ...m,
+                    isDeletedForEveryone: true,
+                    content: '🚫 This message was deleted',
+                    file: null,
+                  }
+                : m
+            )
+          );
+          socketRef.current?.emit('messages_deleted', {
+            groupId: activeGroup._id,
+            messageIds: selectedMsgIds,
+            deleteType: 'for_everyone',
+          });
+        }
+        setIsSelectionMode(false);
+        setSelectedMsgIds([]);
+        setShowDeleteModal(false);
+      } else {
+        toast.error(data.message || 'Failed to delete messages');
+      }
+    } catch (err) {
+      console.error('Error deleting messages:', err);
+      toast.error('Server error deleting messages');
+    } finally {
+      setIsDeletingMessages(false);
+    }
+  };
+
+  // ─── 12. Delete Group Handler (Lecturer) ──────────────────────────────────
+  const confirmDeleteGroup = async () => {
+    if (!activeGroup) return;
+    try {
+      setIsDeletingGroup(true);
+      const res = await fetch(`${API_BASE_URL}/api/chat/groups/${activeGroup._id}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders(),
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success(`Group "${activeGroup.name}" deleted`);
+        socketRef.current?.emit('group_deleted', { groupId: activeGroup._id });
+        setShowDeleteGroupModal(false);
+        setShowMembersDrawer(false);
+        const remaining = groups.filter((g) => g._id !== activeGroup._id);
+        setGroups(remaining);
+        setActiveGroup(remaining.length > 0 ? remaining[0] : null);
+      } else {
+        toast.error(data.message || 'Failed to delete group');
+      }
+    } catch (err) {
+      console.error('Error deleting group:', err);
+      toast.error('Server error deleting group');
+    } finally {
+      setIsDeletingGroup(false);
+    }
+  };
+
+  // ─── 13. Add Members to Existing Group (Lecturer) ─────────────────────────
+  const openAddMembersModal = async () => {
+    if (!activeGroup) return;
+    setShowAddMembersModal(true);
+    setSelectedAddUsns([]);
+    setAddMemberSearch('');
+    setLoadingNonMembers(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/chat/groups/${activeGroup._id}/non-members`, {
+        headers: getAuthHeaders(),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setNonMemberStudents(data.nonMembers || []);
+      } else {
+        toast.error(data.message || 'Failed to load students');
+      }
+    } catch (err) {
+      console.error('Error fetching non-members:', err);
+      toast.error('Server error loading students');
+    } finally {
+      setLoadingNonMembers(false);
+    }
+  };
+
+  const confirmAddMembers = async () => {
+    if (!activeGroup || selectedAddUsns.length === 0) return;
+    try {
+      setIsAddingMembers(true);
+      const res = await fetch(`${API_BASE_URL}/api/chat/groups/${activeGroup._id}/add-members`, {
+        method: 'POST',
+        headers: {
+          ...getAuthHeaders(),
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ selectedStudents: selectedAddUsns }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success(data.message || 'Members added successfully');
+        setShowAddMembersModal(false);
+        setActiveGroup(data.group);
+        setGroups((prev) => prev.map((g) => (g._id === data.group._id ? data.group : g)));
+        if (data.systemMessage) {
+          setMessages((prev) => [...prev, data.systemMessage]);
+        }
+        socketRef.current?.emit('members_updated', { groupId: activeGroup._id, group: data.group });
+      } else {
+        toast.error(data.message || 'Failed to add members');
+      }
+    } catch (err) {
+      console.error('Error adding members:', err);
+      toast.error('Server error adding members');
+    } finally {
+      setIsAddingMembers(false);
+    }
+  };
+
+  // Check if all selected messages belong to current user for "Delete for Everyone"
+  const selectedMsgs = messages.filter((m) => selectedMsgIds.includes(m._id));
+  const canDeleteForEveryone =
+    selectedMsgs.length > 0 &&
+    selectedMsgs.every(
+      (m) =>
+        m.sender?.id === currentUsn ||
+        m.sender?.name === currentUserName ||
+        (!isStudent && m.sender?.role === 'lecture')
+    );
+
   // Filters
   const filteredGroups = groups.filter((g) =>
     g.name.toLowerCase().includes(groupSearch.toLowerCase())
@@ -834,6 +1127,12 @@ const ChatRoom = () => {
     (s) =>
       s.username.toLowerCase().includes(studentNameFilter.toLowerCase()) ||
       s.usn.toLowerCase().includes(studentNameFilter.toLowerCase())
+  );
+
+  const filteredNonMembers = nonMemberStudents.filter(
+    (s) =>
+      s.username.toLowerCase().includes(addMemberSearch.toLowerCase()) ||
+      s.usn.toLowerCase().includes(addMemberSearch.toLowerCase())
   );
 
   // Time & Date format helpers (WhatsApp Web style)
@@ -1052,61 +1351,107 @@ const ChatRoom = () => {
         >
           {activeGroup ? (
             <>
-              {/* Chat Header */}
-              <div className="px-3 sm:px-4 py-2 sm:py-2.5 bg-white border-b border-slate-200 flex items-center justify-between shadow-2xs z-20 min-w-0 shrink-0">
-                <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
-                  <button
-                    type="button"
-                    onClick={() => setShowSidebar(true)}
-                    className="md:hidden p-1.5 -ml-1 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors shrink-0 flex items-center cursor-pointer"
-                    title="Back to conversations"
-                    aria-label="Back to conversations"
-                  >
-                    <ArrowLeftIcon className="w-5 h-5 text-slate-700" />
-                  </button>
-
-                  {/* Channel Avatar */}
-                  <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold text-xs sm:text-sm shadow-xs shrink-0">
-                    {activeGroup.name[0]?.toUpperCase()}
-                  </div>
-
-                  <div className="min-w-0 flex-1">
-                    <h2 className="text-slate-900 font-bold text-sm sm:text-base truncate leading-tight">
-                      {activeGroup.name}
+              {/* Chat Header / Multi-Select Mode Bar */}
+              {isSelectionMode ? (
+                <div className="px-3 sm:px-4 py-2 sm:py-2.5 bg-blue-50 border-b border-blue-200 flex items-center justify-between shadow-2xs z-20 min-w-0 shrink-0">
+                  <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsSelectionMode(false);
+                        setSelectedMsgIds([]);
+                      }}
+                      className="p-1.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-blue-100 transition-colors cursor-pointer"
+                      title="Cancel selection"
+                    >
+                      <CloseIcon className="w-5 h-5 text-slate-700" />
+                    </button>
+                    <h2 className="text-slate-900 font-extrabold text-sm sm:text-base">
+                      {selectedMsgIds.length} Selected
                     </h2>
-                    {/* Participant Subtitle */}
-                    <p className="text-[11px] sm:text-xs truncate leading-none mt-0.5 text-slate-500">
-                      {typingUsers.length > 0 ? (
-                        <span className="text-blue-600 font-medium animate-pulse">
-                          {typingUsers.join(', ')} typing...
-                        </span>
-                      ) : (
-                        <span>
-                          {activeGroup.members && activeGroup.members.length > 0
-                            ? activeGroup.members
-                                .map((m) => (m.usn === currentUsn || m.name === currentUserName ? 'You' : m.name))
-                                .slice(0, 4)
-                                .join(', ') +
-                              (activeGroup.members.length > 4 ? `, +${activeGroup.members.length - 4}` : '')
-                            : `${activeGroup.members?.length || 0} participants`}
-                        </span>
-                      )}
-                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-1 sm:gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setShowDeleteModal(true)}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 shadow-xs transition-colors cursor-pointer"
+                      title="Delete selected messages"
+                    >
+                      <TrashIcon className="w-4 h-4" />
+                      <span>Delete</span>
+                    </button>
                   </div>
                 </div>
+              ) : (
+                <div className="px-3 sm:px-4 py-2 sm:py-2.5 bg-white border-b border-slate-200 flex items-center justify-between shadow-2xs z-20 min-w-0 shrink-0">
+                  <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                    <button
+                      type="button"
+                      onClick={() => setShowSidebar(true)}
+                      className="md:hidden p-1.5 -ml-1 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors shrink-0 flex items-center cursor-pointer"
+                      title="Back to conversations"
+                      aria-label="Back to conversations"
+                    >
+                      <ArrowLeftIcon className="w-5 h-5 text-slate-700" />
+                    </button>
 
-                <div className="flex items-center gap-1 sm:gap-2 shrink-0 ml-2">
-                  <button
-                    type="button"
-                    onClick={() => setShowMembersDrawer((p) => !p)}
-                    className="inline-flex items-center gap-1 px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg text-xs font-semibold text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 shadow-2xs transition-colors cursor-pointer"
-                    title="Group details & participants"
-                  >
-                    <UsersIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-600" />
-                    <span className="hidden sm:inline">Details</span>
-                  </button>
+                    {/* Channel Avatar */}
+                    <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold text-xs sm:text-sm shadow-xs shrink-0">
+                      {activeGroup.name[0]?.toUpperCase()}
+                    </div>
+
+                    <div className="min-w-0 flex-1">
+                      <h2 className="text-slate-900 font-bold text-sm sm:text-base truncate leading-tight">
+                        {activeGroup.name}
+                      </h2>
+                      {/* Participant Subtitle */}
+                      <p className="text-[11px] sm:text-xs truncate leading-none mt-0.5 text-slate-500">
+                        {typingUsers.length > 0 ? (
+                          <span className="text-blue-600 font-medium animate-pulse">
+                            {typingUsers.join(', ')} typing...
+                          </span>
+                        ) : (
+                          <span>
+                            {activeGroup.members && activeGroup.members.length > 0
+                              ? activeGroup.members
+                                  .map((m) => (m.usn === currentUsn || m.name === currentUserName ? 'You' : m.name))
+                                  .slice(0, 4)
+                                  .join(', ') +
+                                (activeGroup.members.length > 4 ? `, +${activeGroup.members.length - 4}` : '')
+                              : `${activeGroup.members?.length || 0} participants`}
+                          </span>
+                        )}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-1 sm:gap-2 shrink-0 ml-2">
+                    {/* Add Members Button (Lecturers only) */}
+                    {!isStudent && (
+                      <button
+                        type="button"
+                        onClick={openAddMembersModal}
+                        className="inline-flex items-center gap-1 px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 shadow-2xs transition-colors cursor-pointer"
+                        title="Add members to group"
+                      >
+                        <PlusIcon className="w-3.5 h-3.5 text-blue-600" />
+                        <span className="hidden sm:inline">Add Members</span>
+                      </button>
+                    )}
+
+                    <button
+                      type="button"
+                      onClick={() => setShowMembersDrawer((p) => !p)}
+                      className="inline-flex items-center gap-1 px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg text-xs font-semibold text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 shadow-2xs transition-colors cursor-pointer"
+                      title="Group details & participants"
+                    >
+                      <UsersIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-600" />
+                      <span className="hidden sm:inline">Details</span>
+                    </button>
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Messages Scroll Flow Area with Date Dividers */}
               <div className="flex-1 overflow-y-auto px-2.5 sm:px-6 py-2.5 sm:py-4 space-y-2.5 sm:space-y-3 min-w-0">
@@ -1195,198 +1540,332 @@ const ChatRoom = () => {
                         )}
 
                         {/* Message Bubble Row */}
-                        <div className={`flex ${isMe ? 'justify-end' : 'justify-start'} w-full min-w-0`}>
-                          <div
-                            className={`relative max-w-[85%] sm:max-w-[70%] min-w-0 p-2.5 sm:p-3.5 shadow-xs text-sm sm:text-[14px] leading-normal sm:leading-relaxed break-words [overflow-wrap:anywhere] [word-break:break-word] rounded-lg overflow-hidden ${
-                              isMe
-                                ? 'bg-blue-600 text-white shadow-blue-500/10'
-                                : 'bg-white text-slate-900 border border-slate-200/90 shadow-2xs'
-                            }`}
-                          >
-                            {/* Sender Name in Incoming Bubble */}
-                            {!isMe && (
-                              <div className="flex items-center gap-1.5 mb-1 px-0.5 min-w-0">
-                                <span className={`text-[11px] sm:text-xs font-bold truncate flex-1 min-w-0 ${msg.sender?.role === 'lecture' ? 'text-indigo-600' : 'text-blue-600'}`}>
-                                  {msg.sender?.name || 'User'}
-                                </span>
-                                <span
-                                  className={`text-[8px] sm:text-[9px] font-bold px-1 py-0.2 sm:px-1.5 sm:py-0.5 rounded uppercase tracking-wider shrink-0 ${
-                                    msg.sender?.role === 'lecture'
-                                      ? 'bg-indigo-50 text-indigo-700 border border-indigo-200/60'
-                                      : 'bg-blue-50 text-blue-700 border border-blue-200/60'
-                                  }`}
-                                >
-                                  {msg.sender?.role === 'lecture' ? 'Lecturer' : 'Student'}
-                                </span>
-                              </div>
-                            )}
+                        {(() => {
+                          const isSelected = selectedMsgIds.includes(msg._id);
+                          const isSwipingThis = swipingMsgId === msg._id;
+                          const isDeletedForEveryone = Boolean(msg.isDeletedForEveryone);
 
-                            {/* Media Attachments */}
-                            {fileObj && fileUrl && (
-                              <div className="mb-1.5 sm:mb-2 w-full max-w-full min-w-0 overflow-hidden">
-                                {/* Image Attachment with Lightbox & Download */}
-                                {isImage && (
-                                  <div className="w-full max-w-full min-w-0 overflow-hidden">
-                                    <div
-                                      onClick={() => setPreviewModalImage({ url: fileUrl, fileName: fileObj.fileName || 'image.png' })}
-                                      className="rounded-md overflow-hidden border border-slate-200/80 cursor-pointer shadow-2xs hover:opacity-95 transition-all group relative bg-slate-100 max-w-full"
-                                    >
-                                      <img
-                                        src={fileUrl}
-                                        alt={fileObj.fileName || 'Attached Image'}
-                                        className="max-h-48 sm:max-h-80 w-full object-cover rounded-md transition-transform duration-200 group-hover:scale-[1.01]"
-                                        loading="lazy"
-                                      />
-                                      <div className="absolute inset-0 bg-slate-900/30 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100 gap-2">
-                                        <span className="bg-slate-900/85 text-white text-[10px] sm:text-xs px-2.5 py-1 rounded-full font-medium backdrop-blur-xs flex items-center gap-1 shadow-md">
-                                          <SearchIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> Enlarge
-                                        </span>
-                                        <button
-                                          type="button"
-                                          onClick={(e) => downloadFile(fileObj, e)}
-                                          className="bg-white hover:bg-slate-100 text-slate-900 p-1.5 rounded-full font-bold shadow-md flex items-center justify-center active:scale-90 cursor-pointer"
-                                          title={`Download ${fileObj.fileName || 'image'}`}
-                                          aria-label="Download image"
-                                        >
-                                          <DownloadIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                                        </button>
-                                      </div>
-                                    </div>
-                                    <div className={`flex items-center justify-between text-[10px] sm:text-xs mt-1 px-0.5 gap-2 min-w-0 ${isMe ? 'text-blue-100' : 'text-slate-500'}`}>
-                                      <span className="truncate flex-1 min-w-0 font-medium">{fileObj.fileName}</span>
-                                      <div className="flex items-center gap-1 shrink-0">
-                                        {fileObj.fileSize && <span className="opacity-80">{fileObj.fileSize}</span>}
-                                        <button
-                                          type="button"
-                                          onClick={(e) => downloadFile(fileObj, e)}
-                                          className={`p-0.5 rounded-md transition-colors cursor-pointer flex items-center justify-center ${isMe ? 'hover:bg-white/20 text-white' : 'hover:bg-slate-100 text-slate-600'}`}
-                                          title={`Download ${fileObj.fileName || 'image'}`}
-                                          aria-label="Download image"
-                                        >
-                                          <DownloadIcon className="w-3.5 h-3.5 sm:w-3.5 sm:h-3.5" />
-                                        </button>
-                                      </div>
-                                    </div>
-                                  </div>
-                                )}
-
-                                {/* Video Attachment */}
-                                {isVideo && (
-                                  <div className="rounded-md overflow-hidden border border-slate-200 bg-black shadow-xs w-full max-w-full min-w-0">
-                                    <video
-                                      src={fileUrl}
-                                      controls
-                                      className="max-h-60 sm:max-h-72 w-full"
-                                    />
-                                    {fileObj.fileName && (
-                                      <div className="flex items-center justify-between text-[10px] sm:text-xs p-1.5 text-slate-300 gap-2 min-w-0">
-                                        <span className="truncate flex-1 min-w-0">{fileObj.fileName}</span>
-                                        <button
-                                          type="button"
-                                          onClick={(e) => downloadFile(fileObj, e)}
-                                          className="p-1 rounded-md hover:bg-slate-800 text-slate-300 hover:text-white transition-colors cursor-pointer flex items-center justify-center shrink-0"
-                                          title={`Download ${fileObj.fileName || 'video'}`}
-                                          aria-label="Download video"
-                                        >
-                                          <DownloadIcon className="w-3.5 h-3.5" />
-                                        </button>
-                                      </div>
-                                    )}
-                                  </div>
-                                )}
-
-                                {/* Document / PDF Card */}
-                                {(isPdf || isDoc) && (
+                          return (
+                            <div
+                              id={`msg_${msg._id}`}
+                              onTouchStart={(e) => handleTouchStart(e, msg)}
+                              onTouchMove={(e) => handleTouchMove(e, msg)}
+                              onTouchEnd={(e) => handleTouchEnd(e, msg)}
+                              onMouseDown={() => handleMouseDown(msg)}
+                              onMouseUp={handleMouseUp}
+                              onContextMenu={(e) => {
+                                e.preventDefault();
+                                setIsSelectionMode(true);
+                                setSelectedMsgIds((prev) => (prev.includes(msg._id) ? prev : [...prev, msg._id]));
+                              }}
+                              onClick={() => handleMessageClick(msg)}
+                              className={`relative flex items-center ${isMe ? 'justify-end' : 'justify-start'} w-full min-w-0 transition-colors select-none py-0.5 group ${
+                                isSelected ? 'bg-blue-500/10 -mx-1.5 px-1.5 rounded-lg' : ''
+                              }`}
+                            >
+                              {/* Multi-Select Checkbox Indicator */}
+                              {isSelectionMode && (
+                                <div className="mr-2 flex items-center justify-center shrink-0">
                                   <div
-                                    className={`flex items-center gap-2 p-2 sm:p-2.5 rounded-md border transition-all w-full max-w-full min-w-0 overflow-hidden ${
-                                      isMe
-                                        ? 'bg-blue-700/60 border-blue-500/60 text-white'
-                                        : 'bg-slate-50 border-slate-200 text-slate-900'
+                                    className={`w-4 h-4 sm:w-5 sm:h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
+                                      isSelected
+                                        ? 'bg-blue-600 border-blue-600 text-white'
+                                        : 'border-slate-300 bg-white'
                                     }`}
                                   >
-                                    <div className={`p-1.5 rounded shrink-0 ${
+                                    {isSelected && <CheckIcon className="w-2.5 h-2.5 sm:w-3 sm:h-3 stroke-[3]" />}
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Swipe-to-reply reveal curved icon */}
+                              {isSwipingThis && swipeOffset > 8 && (
+                                <div
+                                  className="absolute left-1 top-1/2 -translate-y-1/2 flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-blue-100 text-blue-600 shadow-xs z-10"
+                                  style={{ opacity: Math.min(swipeOffset / 30, 1) }}
+                                >
+                                  <ReplyIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                                </div>
+                              )}
+
+                              <div
+                                style={{
+                                  transform: isSwipingThis ? `translateX(${swipeOffset}px)` : 'none',
+                                  transition: isSwipingThis ? 'none' : 'transform 0.18s ease-out',
+                                }}
+                                className={`relative max-w-[85%] sm:max-w-[70%] min-w-0 p-2.5 sm:p-3.5 shadow-xs text-sm sm:text-[14px] leading-normal sm:leading-relaxed break-words [overflow-wrap:anywhere] [word-break:break-word] rounded-lg overflow-hidden ${
+                                  isDeletedForEveryone
+                                    ? 'bg-slate-100 text-slate-500 border border-slate-200/90 shadow-2xs'
+                                    : isMe
+                                    ? 'bg-blue-600 text-white shadow-blue-500/10'
+                                    : 'bg-white text-slate-900 border border-slate-200/90 shadow-2xs'
+                                }`}
+                              >
+                                {/* Quoted Reply Block (WhatsApp Style) */}
+                                {msg.replyTo && msg.replyTo.senderName && !isDeletedForEveryone && (
+                                  <div
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      if (msg.replyTo.messageId) {
+                                        const target = document.getElementById(`msg_${msg.replyTo.messageId}`);
+                                        if (target) {
+                                          target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                          target.classList.add('ring-2', 'ring-blue-400');
+                                          setTimeout(() => target.classList.remove('ring-2', 'ring-blue-400'), 1500);
+                                        }
+                                      }
+                                    }}
+                                    className={`mb-1.5 p-1.5 sm:p-2 rounded-md border-l-4 text-xs cursor-pointer select-none transition-opacity hover:opacity-90 ${
                                       isMe
-                                        ? 'bg-white/15 text-white border border-white/20'
-                                        : (isPdf ? 'bg-rose-50 text-rose-600 border border-rose-200' : 'bg-blue-50 text-blue-600 border border-blue-200')
-                                    }`}>
-                                      <FileIcon className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
+                                        ? 'bg-blue-700/60 border-sky-300 text-blue-50'
+                                        : 'bg-slate-100 border-blue-600 text-slate-700'
+                                    }`}
+                                  >
+                                    <div className="flex items-center gap-1 mb-0.5">
+                                      <ReplyIcon className="w-2.5 h-2.5 shrink-0 opacity-80" />
+                                      <span className={`font-bold text-[10px] sm:text-[11px] truncate ${isMe ? 'text-sky-200' : 'text-blue-600'}`}>
+                                        {msg.replyTo.senderName}
+                                      </span>
                                     </div>
-                                    <div className="flex-1 min-w-0">
-                                      <div className="flex items-center gap-1.5 min-w-0">
-                                        <span className={`text-[9px] font-bold uppercase px-1.5 py-0.5 rounded shrink-0 ${
-                                          isMe
-                                            ? 'bg-white/20 text-white'
-                                            : (isPdf ? 'bg-rose-100 text-rose-700' : 'bg-blue-100 text-blue-700')
-                                        }`}>
-                                          {isPdf ? 'PDF' : 'DOC'}
-                                        </span>
-                                        <p className={`text-xs sm:text-sm font-semibold truncate ${isMe ? 'text-white' : 'text-slate-900'}`}>
-                                          {fileObj.fileName || (isPdf ? 'Document.pdf' : 'Attachment')}
-                                        </p>
-                                      </div>
-                                      <p className={`text-[10px] mt-0.5 truncate ${isMe ? 'text-blue-100' : 'text-slate-500'}`}>
-                                        {fileObj.fileSize || 'Document File'}
-                                      </p>
-                                    </div>
-
-                                    <div className="flex items-center gap-1 shrink-0 ml-1">
-                                      {/* In-App PDF Reader Modal */}
-                                      {isPdf && (
-                                        <button
-                                          type="button"
-                                          onClick={() => {
-                                            const accessibleUrl = getFileViewUrl(fileObj);
-                                            setPdfModalPreview({
-                                              url: accessibleUrl,
-                                              title: fileObj.fileName || 'PDF Document',
-                                            });
-                                          }}
-                                          className={`p-1.5 rounded-lg font-medium text-xs flex items-center justify-center transition-all cursor-pointer ${
-                                            isMe
-                                              ? 'bg-white/20 hover:bg-white/30 text-white border border-white/30'
-                                              : 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 shadow-2xs'
-                                          }`}
-                                          title="Preview PDF"
-                                          aria-label="Preview PDF"
-                                        >
-                                          <EyeIcon className="w-3.5 h-3.5" />
-                                        </button>
-                                      )}
-
-                                      {/* Download Button */}
-                                      <button
-                                        type="button"
-                                        onClick={(e) => downloadFile(fileObj, e)}
-                                        className={`p-1.5 rounded-lg font-medium text-xs flex items-center justify-center transition-all cursor-pointer ${
-                                          isMe
-                                            ? 'bg-white hover:bg-blue-50 text-blue-600 shadow-xs'
-                                            : 'bg-slate-900 hover:bg-slate-800 text-white shadow-xs'
-                                        }`}
-                                        title={`Download ${fileObj.fileName || 'file'}`}
-                                        aria-label="Download file"
-                                      >
-                                        <DownloadIcon className="w-3.5 h-3.5" />
-                                      </button>
-                                    </div>
+                                    <p className="truncate text-[10px] sm:text-[11px] opacity-90 pl-3.5">
+                                      {msg.replyTo.content || msg.replyTo.fileName || 'Attachment'}
+                                    </p>
                                   </div>
                                 )}
-                              </div>
-                            )}
 
-                            {/* Message Text */}
-                            {hasUserText && (
-                              <div className={`whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] text-sm sm:text-[14px] leading-relaxed ${isMe ? 'text-white' : 'text-slate-900'}`}>
-                                {msg.content}
-                              </div>
-                            )}
+                                {/* Sender Name in Incoming Bubble */}
+                                {!isMe && !isDeletedForEveryone && (
+                                  <div className="flex items-center gap-1.5 mb-1 px-0.5 min-w-0">
+                                    <span className={`text-[11px] sm:text-xs font-bold truncate flex-1 min-w-0 ${msg.sender?.role === 'lecture' ? 'text-indigo-600' : 'text-blue-600'}`}>
+                                      {msg.sender?.name || 'User'}
+                                    </span>
+                                    <span
+                                      className={`text-[8px] sm:text-[9px] font-bold px-1 py-0.2 sm:px-1.5 sm:py-0.5 rounded uppercase tracking-wider shrink-0 ${
+                                        msg.sender?.role === 'lecture'
+                                          ? 'bg-indigo-50 text-indigo-700 border border-indigo-200/60'
+                                          : 'bg-blue-50 text-blue-700 border border-blue-200/60'
+                                      }`}
+                                    >
+                                      {msg.sender?.role === 'lecture' ? 'Lecturer' : 'Student'}
+                                    </span>
+                                  </div>
+                                )}
 
-                            {/* Timestamp & Status Icons - Securely contained inside bubble */}
-                            <div className={`flex items-center justify-end gap-1 mt-1 pt-0.5 text-[10px] sm:text-[11px] select-none ${isMe ? 'text-blue-200' : 'text-slate-400'}`}>
-                              <span>{formatTime(msg.createdAt)}</span>
-                              {isMe && <MessageTicks message={msg} currentUsn={currentUsn} isMe={true} />}
+                                {/* Deleted For Everyone Notice */}
+                                {isDeletedForEveryone ? (
+                                  <div className="flex items-center gap-1.5 italic text-xs py-0.5 text-slate-500">
+                                    <svg className="w-3.5 h-3.5 text-slate-400 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+                                    <span>This message was deleted</span>
+                                  </div>
+                                ) : (
+                                  <>
+                                    {/* Media Attachments */}
+                                    {fileObj && fileUrl && (
+                                      <div className="mb-1.5 sm:mb-2 w-full max-w-full min-w-0 overflow-hidden">
+                                        {/* Image Attachment with Lightbox & Download */}
+                                        {isImage && (
+                                          <div className="w-full max-w-full min-w-0 overflow-hidden">
+                                            <div
+                                              onClick={(e) => {
+                                                if (isSelectionMode) return;
+                                                setPreviewModalImage({ url: fileUrl, fileName: fileObj.fileName || 'image.png' });
+                                              }}
+                                              className="rounded-md overflow-hidden border border-slate-200/80 cursor-pointer shadow-2xs hover:opacity-95 transition-all group relative bg-slate-100 max-w-full"
+                                            >
+                                              <img
+                                                src={fileUrl}
+                                                alt={fileObj.fileName || 'Attached Image'}
+                                                className="max-h-48 sm:max-h-80 w-full object-cover rounded-md transition-transform duration-200 group-hover:scale-[1.01]"
+                                                loading="lazy"
+                                              />
+                                              <div className="absolute inset-0 bg-slate-900/30 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100 gap-2">
+                                                <span className="bg-slate-900/85 text-white text-[10px] sm:text-xs px-2.5 py-1 rounded-full font-medium backdrop-blur-xs flex items-center gap-1 shadow-md">
+                                                  <SearchIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> Enlarge
+                                                </span>
+                                                <button
+                                                  type="button"
+                                                  onClick={(e) => downloadFile(fileObj, e)}
+                                                  className="bg-white hover:bg-slate-100 text-slate-900 p-1.5 rounded-full font-bold shadow-md flex items-center justify-center active:scale-90 cursor-pointer"
+                                                  title={`Download ${fileObj.fileName || 'image'}`}
+                                                  aria-label="Download image"
+                                                >
+                                                  <DownloadIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                                                </button>
+                                              </div>
+                                            </div>
+                                            <div className={`flex items-center justify-between text-[10px] sm:text-xs mt-1 px-0.5 gap-2 min-w-0 ${isMe ? 'text-blue-100' : 'text-slate-500'}`}>
+                                              <span className="truncate flex-1 min-w-0 font-medium">{fileObj.fileName}</span>
+                                              <div className="flex items-center gap-1 shrink-0">
+                                                {fileObj.fileSize && <span className="opacity-80">{fileObj.fileSize}</span>}
+                                                <button
+                                                  type="button"
+                                                  onClick={(e) => downloadFile(fileObj, e)}
+                                                  className={`p-0.5 rounded-md transition-colors cursor-pointer flex items-center justify-center ${isMe ? 'hover:bg-white/20 text-white' : 'hover:bg-slate-100 text-slate-600'}`}
+                                                  title={`Download ${fileObj.fileName || 'image'}`}
+                                                  aria-label="Download image"
+                                                >
+                                                  <DownloadIcon className="w-3.5 h-3.5 sm:w-3.5 sm:h-3.5" />
+                                                </button>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        )}
+
+                                        {/* Video Attachment */}
+                                        {isVideo && (
+                                          <div className="rounded-md overflow-hidden border border-slate-200 bg-black shadow-xs w-full max-w-full min-w-0">
+                                            <video
+                                              src={fileUrl}
+                                              controls
+                                              className="max-h-60 sm:max-h-72 w-full"
+                                            />
+                                            {fileObj.fileName && (
+                                              <div className="flex items-center justify-between text-[10px] sm:text-xs p-1.5 text-slate-300 gap-2 min-w-0">
+                                                <span className="truncate flex-1 min-w-0">{fileObj.fileName}</span>
+                                                <button
+                                                  type="button"
+                                                  onClick={(e) => downloadFile(fileObj, e)}
+                                                  className="p-1 rounded-md hover:bg-slate-800 text-slate-300 hover:text-white transition-colors cursor-pointer flex items-center justify-center shrink-0"
+                                                  title={`Download ${fileObj.fileName || 'video'}`}
+                                                  aria-label="Download video"
+                                                >
+                                                  <DownloadIcon className="w-3.5 h-3.5" />
+                                                </button>
+                                              </div>
+                                            )}
+                                          </div>
+                                        )}
+
+                                        {/* Document / PDF Card */}
+                                        {(isPdf || isDoc) && (
+                                          <div
+                                            className={`flex items-center gap-2 p-2 sm:p-2.5 rounded-md border transition-all w-full max-w-full min-w-0 overflow-hidden ${
+                                              isMe
+                                                ? 'bg-blue-700/60 border-blue-500/60 text-white'
+                                                : 'bg-slate-50 border-slate-200 text-slate-900'
+                                            }`}
+                                          >
+                                            <div className={`p-1.5 rounded shrink-0 ${
+                                              isMe
+                                                ? 'bg-white/15 text-white border border-white/20'
+                                                : (isPdf ? 'bg-rose-50 text-rose-600 border border-rose-200' : 'bg-blue-50 text-blue-600 border border-blue-200')
+                                            }`}>
+                                              <FileIcon className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                              <div className="flex items-center gap-1.5 min-w-0">
+                                                <span className={`text-[9px] font-bold uppercase px-1.5 py-0.5 rounded shrink-0 ${
+                                                  isMe
+                                                    ? 'bg-white/20 text-white'
+                                                    : (isPdf ? 'bg-rose-100 text-rose-700' : 'bg-blue-100 text-blue-700')
+                                                }`}>
+                                                  {isPdf ? 'PDF' : 'DOC'}
+                                                </span>
+                                                <p className={`text-xs sm:text-sm font-semibold truncate ${isMe ? 'text-white' : 'text-slate-900'}`}>
+                                                  {fileObj.fileName || (isPdf ? 'Document.pdf' : 'Attachment')}
+                                                </p>
+                                              </div>
+                                              <p className={`text-[10px] mt-0.5 truncate ${isMe ? 'text-blue-100' : 'text-slate-500'}`}>
+                                                {fileObj.fileSize || 'Document File'}
+                                              </p>
+                                            </div>
+
+                                            <div className="flex items-center gap-1 shrink-0 ml-1">
+                                              {/* In-App PDF Reader Modal */}
+                                              {isPdf && (
+                                                <button
+                                                  type="button"
+                                                  onClick={() => {
+                                                    const accessibleUrl = getFileViewUrl(fileObj);
+                                                    setPdfModalPreview({
+                                                      url: accessibleUrl,
+                                                      title: fileObj.fileName || 'PDF Document',
+                                                    });
+                                                  }}
+                                                  className={`p-1.5 rounded-lg font-medium text-xs flex items-center justify-center transition-all cursor-pointer ${
+                                                    isMe
+                                                      ? 'bg-white/20 hover:bg-white/30 text-white border border-white/30'
+                                                      : 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 shadow-2xs'
+                                                  }`}
+                                                  title="Preview PDF"
+                                                  aria-label="Preview PDF"
+                                                >
+                                                  <EyeIcon className="w-3.5 h-3.5" />
+                                                </button>
+                                              )}
+
+                                              {/* Download Button */}
+                                              <button
+                                                type="button"
+                                                onClick={(e) => downloadFile(fileObj, e)}
+                                                className={`p-1.5 rounded-lg font-medium text-xs flex items-center justify-center transition-all cursor-pointer ${
+                                                  isMe
+                                                    ? 'bg-white hover:bg-blue-50 text-blue-600 shadow-xs'
+                                                    : 'bg-slate-900 hover:bg-slate-800 text-white shadow-xs'
+                                                }`}
+                                                title={`Download ${fileObj.fileName || 'file'}`}
+                                                aria-label="Download file"
+                                              >
+                                                <DownloadIcon className="w-3.5 h-3.5" />
+                                              </button>
+                                            </div>
+                                          </div>
+                                        )}
+                                      </div>
+                                    )}
+
+                                    {/* Message Text */}
+                                    {hasUserText && (
+                                      <div className={`whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] text-sm sm:text-[14px] leading-relaxed ${isMe ? 'text-white' : 'text-slate-900'}`}>
+                                        {msg.content}
+                                      </div>
+                                    )}
+                                  </>
+                                )}
+
+                                {/* Timestamp & Status Icons - Securely contained inside bubble */}
+                                <div className={`flex items-center justify-end gap-1 mt-1 pt-0.5 text-[10px] sm:text-[11px] select-none ${isMe ? 'text-blue-200' : 'text-slate-400'}`}>
+                                  <span>{formatTime(msg.createdAt)}</span>
+                                  {isMe && !isDeletedForEveryone && <MessageTicks message={msg} currentUsn={currentUsn} isMe={true} />}
+                                </div>
+                              </div>
+
+                              {/* Desktop Hover Quick Actions (Reply & Delete) */}
+                              {!isSelectionMode && !isDeletedForEveryone && (
+                                <div
+                                  className={`opacity-0 group-hover:opacity-100 flex items-center gap-0.5 transition-all self-center shrink-0 ${
+                                    isMe ? 'mr-1 order-first' : 'ml-1'
+                                  }`}
+                                >
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setReplyingTo(msg);
+                                    }}
+                                    className="p-1 rounded-full hover:bg-slate-200/80 text-slate-400 hover:text-slate-700 transition-colors cursor-pointer"
+                                    title="Reply"
+                                  >
+                                    <ReplyIcon className="w-3.5 h-3.5" />
+                                  </button>
+
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setSelectedMsgIds([msg._id]);
+                                      setShowDeleteModal(true);
+                                    }}
+                                    className="p-1 rounded-full hover:bg-rose-100 text-slate-400 hover:text-rose-600 transition-colors cursor-pointer"
+                                    title="Delete message"
+                                  >
+                                    <TrashIcon className="w-3.5 h-3.5" />
+                                  </button>
+                                </div>
+                              )}
                             </div>
-                          </div>
-                        </div>
+                          );
+                        })()}
                       </React.Fragment>
                     );
                   })
@@ -1409,6 +1888,32 @@ const ChatRoom = () => {
 
               {/* ── Input Bar ── */}
               <div className="p-2.5 sm:p-3 bg-white border-t border-slate-200 shadow-xs z-20 shrink-0 w-full">
+                {/* WhatsApp Style Reply Preview Bar */}
+                {replyingTo && (
+                  <div className="mb-2 bg-slate-50 border border-slate-200 border-l-4 border-l-blue-600 p-2 sm:p-2.5 rounded-xl shadow-xs flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2 min-w-0 flex-1">
+                      <div className="w-7 h-7 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
+                        <ReplyIcon className="w-3.5 h-3.5" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs font-bold text-blue-600 truncate">
+                          Replying to {replyingTo.sender?.name || 'User'}
+                        </p>
+                        <p className="text-[11px] text-slate-500 truncate">
+                          {replyingTo.content || replyingTo.file?.fileName || 'Attachment'}
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setReplyingTo(null)}
+                      className="text-slate-400 hover:text-slate-700 p-1 rounded-lg hover:bg-slate-200 transition-colors cursor-pointer shrink-0"
+                      title="Cancel reply"
+                    >
+                      <CloseIcon className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
                 {/* Pending Attachment Card & Sender Live Preview */}
                 {selectedFile && (
                   <div className="mb-2 bg-slate-50 border border-slate-200 p-2 sm:p-2.5 rounded-xl shadow-xs">
@@ -1597,6 +2102,19 @@ const ChatRoom = () => {
               </div>
             </div>
 
+            {!isStudent && (
+              <div className="p-3 border-b border-slate-100 bg-slate-50/60">
+                <button
+                  type="button"
+                  onClick={openAddMembersModal}
+                  className="w-full py-2 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer shadow-xs"
+                >
+                  <PlusIcon className="w-4 h-4 text-white" />
+                  <span>Add Members to Group</span>
+                </button>
+              </div>
+            )}
+
             <div className="flex-1 overflow-y-auto p-3 divide-y divide-slate-100">
               {filteredMembers.map((member) => (
                 <div
@@ -1634,17 +2152,31 @@ const ChatRoom = () => {
               ))}
             </div>
 
-            {isStudent && (
-              <div className="p-4 border-t border-slate-200 bg-slate-50">
+            <div className="p-3.5 border-t border-slate-200 bg-slate-50 space-y-2">
+              <button
+                type="button"
+                onClick={handleLeaveGroup}
+                className="w-full py-2.5 rounded text-xs sm:text-sm font-bold text-red-600 bg-white hover:bg-red-50 border border-red-200 transition-colors cursor-pointer shadow-2xs flex items-center justify-center gap-2"
+              >
+                <svg className="w-4 h-4 text-red-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                  <polyline points="16 17 21 12 16 7" />
+                  <line x1="21" y1="12" x2="9" y2="12" />
+                </svg>
+                <span>Leave Group</span>
+              </button>
+
+              {!isStudent && (
                 <button
                   type="button"
-                  onClick={handleLeaveGroup}
-                  className="w-full py-2.5 rounded-lg text-sm font-bold text-red-600 bg-white hover:bg-red-50 border border-red-200 transition-colors cursor-pointer shadow-2xs"
+                  onClick={() => setShowDeleteGroupModal(true)}
+                  className="w-full py-2.5 rounded text-xs sm:text-sm font-bold text-white bg-red-600 hover:bg-red-700 transition-colors cursor-pointer shadow-2xs flex items-center justify-center gap-2"
                 >
-                  Leave Group
+                  <TrashIcon className="w-4 h-4 text-white" />
+                  <span>Delete Group</span>
                 </button>
-              </div>
-            )}
+              )}
+            </div>
           </aside>
         )}
       </div>
@@ -2091,6 +2623,271 @@ const ChatRoom = () => {
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 ) : (
                   <span>Remove</span>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── WhatsApp-Style Delete Messages Modal (Delete for Me / Delete for Everyone) ── */}
+      {showDeleteModal && (
+        <div
+          className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 animate-in fade-in duration-200"
+          onClick={() => !isDeletingMessages && setShowDeleteModal(false)}
+        >
+          <div
+            className="bg-white rounded-lg border border-slate-200 shadow-2xl max-w-sm w-full overflow-hidden p-6 text-center transform transition-all"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="w-12 h-12 rounded bg-rose-50 text-rose-600 border border-rose-200/80 flex items-center justify-center mx-auto mb-3 shadow-2xs">
+              <TrashIcon className="w-6 h-6" />
+            </div>
+
+            <h3 className="text-base font-bold text-slate-900 mb-1">
+              Delete {selectedMsgIds.length} {selectedMsgIds.length === 1 ? 'Message' : 'Messages'}?
+            </h3>
+            <p className="text-xs text-slate-500 mb-5">
+              Choose how you want to remove the selected message(s).
+            </p>
+
+            <div className="space-y-2.5">
+              {canDeleteForEveryone && (
+                <button
+                  type="button"
+                  disabled={isDeletingMessages}
+                  onClick={() => handleDeleteMessages('for_everyone')}
+                  className="w-full py-2.5 px-4 rounded text-xs sm:text-sm font-bold text-white bg-rose-600 hover:bg-rose-700 active:scale-95 transition-all shadow-sm cursor-pointer flex items-center justify-center gap-2"
+                >
+                  {isDeletingMessages ? (
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <span>Delete for everyone</span>
+                  )}
+                </button>
+              )}
+
+              <button
+                type="button"
+                disabled={isDeletingMessages}
+                onClick={() => handleDeleteMessages('for_me')}
+                className="w-full py-2.5 px-4 rounded text-xs sm:text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition-colors cursor-pointer flex items-center justify-center gap-2"
+              >
+                <span>Delete for me</span>
+              </button>
+
+              {!canDeleteForEveryone && (
+                <p className="text-[11px] text-slate-400 italic">
+                  Note: &ldquo;Delete for everyone&rdquo; is only available when all selected messages were sent by you.
+                </p>
+              )}
+
+              <button
+                type="button"
+                disabled={isDeletingMessages}
+                onClick={() => setShowDeleteModal(false)}
+                className="w-full py-2 px-4 rounded text-xs font-medium text-slate-500 hover:text-slate-800 hover:bg-slate-50 transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Add Members to Existing Group Modal (Lecturer) ── */}
+      {showAddMembersModal && activeGroup && (
+        <div
+          className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto"
+          onClick={() => !isAddingMembers && setShowAddMembersModal(false)}
+        >
+          <div
+            className="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[85vh]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="px-5 py-4 border-b border-slate-200 bg-white flex items-center justify-between">
+              <div>
+                <h3 className="text-base sm:text-lg font-bold text-slate-900">
+                  Add Members to &ldquo;{activeGroup.name}&rdquo;
+                </h3>
+                <p className="text-slate-500 text-xs mt-0.5">
+                  Select students to add them to this discussion group
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowAddMembersModal(false)}
+                disabled={isAddingMembers}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+                title="Close"
+              >
+                <CloseIcon className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="p-4 flex-1 overflow-y-auto space-y-3">
+              {/* Search & Selection Controls */}
+              <div className="flex items-center gap-2">
+                <div className="flex-1 flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 focus-within:bg-white focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/10 transition-all">
+                  <SearchIcon className="w-4 h-4 text-slate-400 shrink-0" />
+                  <input
+                    type="text"
+                    value={addMemberSearch}
+                    onChange={(e) => setAddMemberSearch(e.target.value)}
+                    placeholder="Search by student name or USN..."
+                    className="w-full bg-transparent text-xs sm:text-sm text-slate-800 placeholder:text-slate-400 outline-none border-none p-0"
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setSelectedAddUsns(filteredNonMembers.map((s) => s.usn))}
+                  className="px-2.5 py-1.5 text-xs font-semibold text-blue-600 hover:bg-blue-50 border border-blue-200 rounded-xl transition-colors cursor-pointer shrink-0"
+                >
+                  Select All
+                </button>
+                {selectedAddUsns.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setSelectedAddUsns([])}
+                    className="px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-100 border border-slate-200 rounded-xl transition-colors cursor-pointer shrink-0"
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
+
+              {/* Status or counter */}
+              <div className="text-xs text-slate-500 flex items-center justify-between px-1">
+                <span>{filteredNonMembers.length} available students</span>
+                <span className="font-semibold text-blue-600">
+                  {selectedAddUsns.length} selected
+                </span>
+              </div>
+
+              {/* Students List */}
+              {loadingNonMembers ? (
+                <div className="py-12 flex flex-col items-center justify-center text-slate-400 text-xs gap-2">
+                  <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                  <span>Loading available students...</span>
+                </div>
+              ) : filteredNonMembers.length === 0 ? (
+                <div className="py-12 text-center text-slate-400 text-xs">
+                  {nonMemberStudents.length === 0
+                    ? 'All registered students are already members of this group!'
+                    : 'No matching students found.'}
+                </div>
+              ) : (
+                <div className="border border-slate-200 rounded-xl overflow-hidden divide-y divide-slate-100 max-h-60 overflow-y-auto">
+                  {filteredNonMembers.map((student) => {
+                    const isChecked = selectedAddUsns.includes(student.usn);
+                    return (
+                      <label
+                        key={student.usn}
+                        className={`flex items-center justify-between p-2.5 hover:bg-slate-50 cursor-pointer transition-colors ${
+                          isChecked ? 'bg-blue-50/60' : ''
+                        }`}
+                      >
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <input
+                            type="checkbox"
+                            checked={isChecked}
+                            onChange={() => {
+                              setSelectedAddUsns((prev) =>
+                                prev.includes(student.usn)
+                                  ? prev.filter((id) => id !== student.usn)
+                                  : [...prev, student.usn]
+                              );
+                            }}
+                            className="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 cursor-pointer"
+                          />
+                          <div className="min-w-0">
+                            <p className="text-xs sm:text-sm font-semibold text-slate-900 truncate">
+                              {student.username}
+                            </p>
+                            <p className="text-[11px] font-mono text-slate-400 truncate">
+                              {student.usn} {student.email ? `· ${student.email}` : ''}
+                            </p>
+                          </div>
+                        </div>
+                      </label>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="px-5 py-3 border-t border-slate-200 bg-slate-50 flex items-center justify-end gap-2.5">
+              <button
+                type="button"
+                onClick={() => setShowAddMembersModal(false)}
+                disabled={isAddingMembers}
+                className="py-2 px-4 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-200 border border-slate-200 transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={confirmAddMembers}
+                disabled={isAddingMembers || selectedAddUsns.length === 0}
+                className="py-2 px-4 rounded-xl text-xs sm:text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 transition-all shadow-sm cursor-pointer flex items-center gap-2"
+              >
+                {isAddingMembers ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <span>Adding...</span>
+                  </>
+                ) : (
+                  <span>Add {selectedAddUsns.length > 0 ? `(${selectedAddUsns.length}) ` : ''}Members</span>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Delete Group Confirmation Modal (Lecturer) ── */}
+      {showDeleteGroupModal && activeGroup && (
+        <div
+          className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 animate-in fade-in duration-200"
+          onClick={() => !isDeletingGroup && setShowDeleteGroupModal(false)}
+        >
+          <div
+            className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-md w-full overflow-hidden p-6 text-center transform transition-all"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="w-14 h-14 rounded-full bg-rose-50 text-rose-600 border border-rose-100 flex items-center justify-center mx-auto mb-4 shadow-xs">
+              <TrashIcon className="w-7 h-7" />
+            </div>
+
+            <h3 className="text-lg font-bold text-slate-900 mb-1.5">
+              Delete Group &ldquo;{activeGroup.name}&rdquo;?
+            </h3>
+            <p className="text-sm text-slate-500 leading-relaxed mb-6">
+              This will permanently delete this discussion group and all its messages, shared files, and history for everyone. This action cannot be reversed.
+            </p>
+
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setShowDeleteGroupModal(false)}
+                disabled={isDeletingGroup}
+                className="flex-1 py-2.5 px-4 rounded text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={confirmDeleteGroup}
+                disabled={isDeletingGroup}
+                className="flex-1 py-2.5 px-4 rounded text-sm font-bold text-white bg-rose-600 hover:bg-rose-700 active:scale-95 transition-all shadow-md cursor-pointer flex items-center justify-center gap-2"
+              >
+                {isDeletingGroup ? (
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <span>Delete Group</span>
                 )}
               </button>
             </div>

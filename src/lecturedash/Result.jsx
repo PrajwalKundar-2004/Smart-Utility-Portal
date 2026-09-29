@@ -220,7 +220,7 @@ const Result = () => {
         <Navbar1 />
       </div>
 
-      <div className="max-w-7xl mx-auto px-3 sm:px-8 py-4 sm:py-8 flex flex-col gap-4 sm:gap-6">
+      <div className="w-[90%] max-w-sm sm:w-full sm:max-w-7xl px-1 sm:px-8 py-3 sm:py-8 flex flex-col gap-2.5 sm:gap-6 mobile-center">
         
         {/* ── Header Bar ── */}
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 sm:gap-6 bg-white/80 backdrop-blur-md p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl border border-white shadow-xs">

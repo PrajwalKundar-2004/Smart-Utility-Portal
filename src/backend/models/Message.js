@@ -34,6 +34,18 @@ const messageSchema = new mongoose.Schema(
       fileSize: { type: String, default: null },
       fileType: { type: String, default: null }, // 'image' | 'pdf' | 'video' | 'document'
     },
+    // ─── WhatsApp Reply / Quote Tracking ─────────────────────────────────
+    replyTo: {
+      messageId: { type: mongoose.Schema.Types.ObjectId, ref: "Message", default: null },
+      senderName: { type: String, default: "" },
+      content: { type: String, default: "" },
+      messageType: { type: String, default: "text" },
+      fileName: { type: String, default: "" },
+    },
+    // ─── Message Deletion Tracking (Delete for Me & Delete for Everyone) ──
+    deletedFor: [{ type: String }], // USNs or user IDs who deleted this message for themselves
+    isDeletedForEveryone: { type: Boolean, default: false },
+    deletedAt: { type: Date, default: null },
     // ─── WhatsApp Ticks Tracking ──────────────────────────────────────────
     // 1. Single Tick (✓): Exists automatically because the message is saved (createdAt).
     // 2. Double Tick (✓✓ gray): Users whose device received the message.

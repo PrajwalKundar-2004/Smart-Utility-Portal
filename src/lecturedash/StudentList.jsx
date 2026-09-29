@@ -128,7 +128,7 @@ const StudentList = () => {
         <Navbar1 />
       </div>
 
-      <div className="w-full max-w-lg sm:max-w-7xl mx-auto px-2.5 sm:px-6 lg:px-8 py-3 sm:py-8 flex flex-col gap-2.5 sm:gap-6">
+      <div className="w-[90%] max-w-sm sm:w-full sm:max-w-7xl px-1 sm:px-6 lg:px-8 py-3 sm:py-8 flex flex-col gap-2.5 sm:gap-6 mobile-center">
 
         {/* ── Header Bar ── */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 sm:gap-6 bg-white/80 backdrop-blur-md p-3 sm:p-6 lg:p-8 rounded-xl sm:rounded-2xl border border-white shadow-xs">

@@ -257,8 +257,8 @@ const Notice = () => {
         <Navbar1 />
       </div>
 
-      {/* ── Outer Page Container: max-w-7xl on laptop, neat & scaled on mobile ── */}
-      <div className="w-full max-w-lg sm:max-w-7xl mx-auto px-2.5 sm:px-6 lg:px-8 py-3 sm:py-7 flex flex-col gap-3 sm:gap-6">
+      {/* ── Outer Page Container: max-w-7xl on laptop, neat & centered on mobile ── */}
+      <div className="w-[90%] max-w-sm sm:w-full sm:max-w-7xl px-1 sm:px-6 lg:px-8 py-3 sm:py-7 flex flex-col gap-3 sm:gap-6 mobile-center">
 
         {/* ── Header Bar ── */}
         <div className="bg-white/80 backdrop-blur-md p-3 sm:p-7 rounded-xl sm:rounded-3xl border border-white shadow-xs">

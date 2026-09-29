@@ -203,8 +203,7 @@ const Attendance = () => {
         <Navbar1 />
       </div>
 
-      {/* ── Outer Page Container: max-w-7xl on laptop, neat & scaled on mobile ── */}
-      <div className="w-full max-w-lg sm:max-w-7xl mx-auto px-2.5 sm:px-6 lg:px-8 py-3 sm:py-8 flex flex-col gap-2.5 sm:gap-6">
+      <div className="w-[90%] max-w-sm sm:w-full sm:max-w-7xl px-1 sm:px-6 lg:px-8 py-3 sm:py-8 flex flex-col gap-2.5 sm:gap-6 mobile-center">
         
         {/* ── Header Bar ── */}
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 sm:gap-6 bg-white p-3 sm:p-6 lg:p-7 rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-2xs">

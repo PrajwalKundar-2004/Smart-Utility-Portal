@@ -15,10 +15,18 @@ export const initChatSocket = (io) => {
       socket.leave(groupId);
     });
 
-    // ─── 3. Send Message (Text or Media) ──────────────────────────────────
+    // ─── 3. Send Message (Text, Media, Reply) ───────────────────────────
     socket.on("send_message", async (data) => {
       try {
-        const { groupId, sender, content, messageType = "text", file = null, clientTempId = null } = data;
+        const {
+          groupId,
+          sender,
+          content,
+          messageType = "text",
+          file = null,
+          clientTempId = null,
+          replyTo = null,
+        } = data;
         if (!groupId || !sender) return;
 
         // Save message in MongoDB (This triggers Single Tick ✓)
@@ -32,6 +40,16 @@ export const initChatSocket = (io) => {
           content: content || "",
           messageType,
           file,
+          replyTo:
+            replyTo && replyTo.messageId
+              ? {
+                  messageId: replyTo.messageId,
+                  senderName: replyTo.senderName || "",
+                  content: replyTo.content || "",
+                  messageType: replyTo.messageType || "text",
+                  fileName: replyTo.fileName || "",
+                }
+              : undefined,
         });
 
         // Update Group's lastMessage for the chat list preview
@@ -56,6 +74,24 @@ export const initChatSocket = (io) => {
       } catch (err) {
         console.error("Error sending socket message:", err);
       }
+    });
+
+    // ─── 3b. Broadcast Message Deletion Event ─────────────────────────────
+    socket.on("messages_deleted", ({ groupId, messageIds, deleteType }) => {
+      if (!groupId || !messageIds) return;
+      io.to(groupId).emit("messages_deleted", { groupId, messageIds, deleteType });
+    });
+
+    // ─── 3c. Broadcast Group Deleted Event ────────────────────────────────
+    socket.on("group_deleted", ({ groupId }) => {
+      if (!groupId) return;
+      io.to(groupId).emit("group_deleted", { groupId });
+    });
+
+    // ─── 3d. Broadcast Group Members Updated Event ────────────────────────
+    socket.on("members_updated", ({ groupId, group }) => {
+      if (!groupId) return;
+      io.to(groupId).emit("group_members_updated", { groupId, group });
     });
 
     // ─── 4. Double Gray Tick (✓✓ Delivered) ────────────────────────────────
