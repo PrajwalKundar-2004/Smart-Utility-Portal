@@ -14,8 +14,13 @@ import { checkRateLimit, recordFailedAttempt, clearFailedAttempts } from '../mid
 router.post('/signup', async (req, res) => {
     try {
         const { usn, create_password, username } = req.body;
+        // Normalize USN to uppercase so login always matches regardless of how user typed it
+        const normalizedUsn = (usn || '').trim().toUpperCase();
+        if (!normalizedUsn) {
+            return res.status(400).json({ success: false, message: "USN is required" });
+        }
         // Check if the user already exists
-        const existing = await Student.findOne({ usn });
+        const existing = await Student.findOne({ usn: normalizedUsn });
         if (existing) {
             return res.status(400).json({
                 success: false,
@@ -25,8 +30,8 @@ router.post('/signup', async (req, res) => {
         const hashedPassword = await bcrypt.hash(create_password, 10);
         // create student
         const student = new Student({
-            usn: usn,
-            username:username,
+            usn: normalizedUsn,
+            username: username,
             password: hashedPassword
         });
         await student.save();
@@ -46,7 +51,8 @@ router.post('/signup', async (req, res) => {
 // login route
 router.post('/login', checkRateLimit, async (req, res) => {
     try {
-        const { username, usn, password } = req.body;
+        const { username, password } = req.body;
+        const usn = (req.body.usn || '').trim().toUpperCase();
         // check if student exists
         const student = await Student.findOne({ usn: usn });
         if (!student) {
