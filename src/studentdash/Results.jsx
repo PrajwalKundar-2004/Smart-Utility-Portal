@@ -44,7 +44,8 @@ const Results = () => {
     }
   };
 
-  const studentName = result?.studentName || localStorage.getItem('username') || '';
+  // Always use the logged-in student's own username — result.studentName may differ from what lecturer typed
+  const studentName = localStorage.getItem('username') || result?.studentName || '';
 
   useEffect(() => {
     fetchResult();
@@ -175,25 +176,25 @@ const Results = () => {
             <button
               onClick={fetchResult}
               disabled={loading}
-              className="h-8 sm:h-9 px-2.5 sm:px-3.5 rounded-md bg-white hover:bg-slate-50 text-slate-700 text-xs sm:text-sm font-medium border border-slate-300 transition-colors cursor-pointer flex items-center gap-1.5 shadow-2xs disabled:opacity-50"
+              className="p-1.5 text-blue-600 hover:text-blue-800 transition-colors cursor-pointer flex items-center disabled:opacity-50"
+              title="Refresh"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={loading ? 'animate-spin' : ''}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={loading ? 'animate-spin' : ''}>
                 <polyline points="23 4 23 10 17 10"></polyline>
                 <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
               </svg>
-              <span>Refresh</span>
             </button>
 
             <button
               onClick={handlePrint}
-              className="h-8 sm:h-9 px-2.5 sm:px-3.5 rounded-md bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-medium transition-colors cursor-pointer flex items-center gap-1.5 shadow-2xs"
+              className="p-1.5 text-blue-600 hover:text-blue-800 transition-colors cursor-pointer flex items-center"
+              title="Print Result"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="6 9 6 2 18 2 18 9"></polyline>
                 <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
                 <rect x="6" y="14" width="12" height="8"></rect>
               </svg>
-              <span>Print</span>
             </button>
           </div>
         </div>
@@ -213,7 +214,7 @@ const Results = () => {
             <p className="text-slate-500 text-xs mb-4">Results have not been entered yet.</p>
             <button
               onClick={fetchResult}
-              className="px-3.5 py-1.5 rounded-md bg-blue-600 text-white text-xs font-semibold cursor-pointer hover:bg-blue-700"
+              className="px-3.5 py-1.5 rounded-none bg-blue-600 text-white text-xs font-semibold cursor-pointer hover:bg-blue-700"
             >
               Try Again
             </button>
@@ -323,10 +324,8 @@ const Results = () => {
                             {/* Status */}
                             <td className="py-3.5 px-4 text-right">
                               <span
-                                className={`inline-block px-2.5 py-0.5 rounded-md text-xs font-semibold border ${
-                                  isPassed
-                                    ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                                    : 'bg-rose-50 text-rose-700 border-rose-200'
+                                className={`text-xs font-bold ${
+                                  isPassed ? 'text-emerald-600' : 'text-rose-600'
                                 }`}
                               >
                                 {isPassed ? 'Pass' : 'Fail'}
@@ -359,10 +358,8 @@ const Results = () => {
                             {idx + 1}. {sub.subject}
                           </span>
                           <span
-                            className={`px-2 py-0.5 rounded text-[11px] font-bold border ${
-                              isPassed
-                                ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                                : 'bg-rose-50 text-rose-700 border-rose-200'
+                            className={`text-[11px] font-bold ${
+                              isPassed ? 'text-emerald-600' : 'text-rose-600'
                             }`}
                           >
                             {isPassed ? 'Pass' : 'Fail'}
@@ -439,10 +436,8 @@ const Results = () => {
                             </td>
                             <td className="py-3.5 px-4 text-right">
                               <span
-                                className={`inline-block px-2.5 py-0.5 rounded-md text-xs font-semibold border ${
-                                  isPassed
-                                    ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                                    : 'bg-rose-50 text-rose-700 border-rose-200'
+                                className={`text-xs font-bold ${
+                                  isPassed ? 'text-emerald-600' : 'text-rose-600'
                                 }`}
                               >
                                 {isPassed ? 'Pass' : 'Fail'}
@@ -468,10 +463,8 @@ const Results = () => {
                             {sub.replace(/_/g, ' ')}
                           </span>
                           <span
-                            className={`px-2 py-0.5 rounded text-[11px] font-bold border ${
-                              isPassed
-                                ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                                : 'bg-rose-50 text-rose-700 border-rose-200'
+                            className={`text-[11px] font-bold ${
+                              isPassed ? 'text-emerald-600' : 'text-rose-600'
                             }`}
                           >
                             {isPassed ? 'Pass' : 'Fail'}

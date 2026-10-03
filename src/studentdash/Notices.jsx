@@ -118,16 +118,17 @@ const Notices = () => {
           <button
             onClick={fetchNotices}
             disabled={loading}
-            className="h-8 sm:h-9 px-2.5 sm:px-3.5 rounded-lg bg-white hover:bg-slate-50 active:bg-slate-100 text-slate-700 text-xs sm:text-sm font-medium border border-slate-200/90 hover:border-slate-300 transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs disabled:opacity-50"
+            className="p-1.5 text-blue-600 hover:text-blue-800 transition-colors cursor-pointer flex items-center disabled:opacity-50"
+            title="Refresh"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="13"
-              height="13"
+              width="18"
+              height="18"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              strokeWidth="2.5"
+              strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
               className={loading ? 'animate-spin' : ''}
@@ -135,14 +136,13 @@ const Notices = () => {
               <polyline points="23 4 23 10 17 10"></polyline>
               <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
             </svg>
-            <span>Refresh</span>
           </button>
         </div>
 
         {/* ── Header Card ── */}
-        <div className="w-full bg-white rounded-2xl border border-slate-200/90 shadow-2xs p-3.5 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="w-full bg-white rounded-lg border border-slate-200/90 shadow-2xs p-3.5 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 border border-blue-100">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-md bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 border border-blue-100">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
                 <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
@@ -159,17 +159,17 @@ const Notices = () => {
           </div>
 
           <div className="flex items-center gap-1.5 text-[10px] sm:text-xs font-semibold flex-wrap">
-            <span className="px-2.5 py-0.5 sm:py-1 rounded-full bg-slate-100 text-slate-700 border border-slate-200/80">
+            <span className="px-2.5 py-0.5 sm:py-1 rounded bg-slate-100 text-slate-700 border border-slate-200/80">
               Total: {notices.length}
             </span>
             {urgentCount > 0 && (
-              <span className="px-2.5 py-0.5 sm:py-1 rounded-full bg-rose-50 text-rose-700 border border-rose-200 flex items-center gap-1">
+              <span className="px-2.5 py-0.5 sm:py-1 rounded bg-rose-50 text-rose-700 border border-rose-200 flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>
                 {urgentCount} Urgent
               </span>
             )}
             {importantCount > 0 && (
-              <span className="px-2.5 py-0.5 sm:py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200 flex items-center gap-1">
+              <span className="px-2.5 py-0.5 sm:py-1 rounded bg-amber-50 text-amber-700 border border-amber-200 flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
                 {importantCount} Important
               </span>
@@ -242,8 +242,8 @@ const Notices = () => {
             <p className="text-slate-600 text-xs sm:text-sm font-medium">Loading notices...</p>
           </div>
         ) : filteredNotices.length === 0 ? (
-          <div className="w-full bg-white py-10 px-4 rounded-2xl border border-slate-200/90 text-center shadow-2xs">
-            <div className="w-10 h-10 rounded-full bg-slate-100 text-slate-400 mx-auto flex items-center justify-center mb-2.5">
+          <div className="w-full bg-white py-10 px-4 rounded-lg border border-slate-200/90 text-center shadow-2xs">
+            <div className="w-10 h-10 rounded-md bg-slate-100 text-slate-400 mx-auto flex items-center justify-center mb-2.5">
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="10"></circle>
                 <line x1="12" y1="8" x2="12" y2="12"></line>
@@ -262,7 +262,7 @@ const Notices = () => {
                   setSearchQuery('');
                   setSelectedPriority('all');
                 }}
-                className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold cursor-pointer transition-colors"
+                className="px-3 py-1.5 rounded-none bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold cursor-pointer transition-colors"
               >
                 Clear Filters
               </button>
@@ -277,7 +277,7 @@ const Notices = () => {
               return (
                 <article
                   key={notice._id}
-                  className={`w-full bg-white rounded-2xl border shadow-2xs hover:shadow-xs transition-all p-3.5 sm:p-5 flex flex-col gap-2.5 ${style.border}`}
+                  className={`w-full bg-white rounded-lg border shadow-2xs hover:shadow-xs transition-all p-3.5 sm:p-5 flex flex-col gap-2.5 ${style.border}`}
                 >
                   {/* Notice Top Meta Header */}
                   <div className="flex items-center justify-between gap-2">

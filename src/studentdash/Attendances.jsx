@@ -155,16 +155,17 @@ const Attendances = () => {
           <button
             onClick={fetchAttendance}
             disabled={loading}
-            className="h-8 sm:h-9 px-2.5 sm:px-3.5 rounded-lg bg-white hover:bg-slate-50 active:bg-slate-100 text-slate-700 text-xs sm:text-sm font-medium border border-slate-200/90 hover:border-slate-300 transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs disabled:opacity-50"
+            className="p-1.5 text-blue-600 hover:text-blue-800 transition-colors cursor-pointer flex items-center disabled:opacity-50"
+            title="Refresh"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="13"
-              height="13"
+              width="18"
+              height="18"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              strokeWidth="2.5"
+              strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
               className={loading ? 'animate-spin' : ''}
@@ -172,14 +173,13 @@ const Attendances = () => {
               <polyline points="23 4 23 10 17 10"></polyline>
               <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
             </svg>
-            <span>Refresh</span>
           </button>
         </div>
 
         {/* ── Header Card ── */}
-        <div className="w-full bg-white rounded-2xl border border-slate-200/90 shadow-2xs p-3.5 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="w-full bg-white rounded-lg border border-slate-200/90 shadow-2xs p-3.5 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 border border-blue-100">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-md bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 border border-blue-100">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
                 <line x1="16" y1="2" x2="16" y2="6"></line>
@@ -198,11 +198,11 @@ const Attendances = () => {
           </div>
 
           <div className="flex items-center gap-1.5 text-[10px] sm:text-xs font-semibold flex-wrap">
-            <span className="px-2.5 py-0.5 sm:py-1 rounded-full bg-slate-100 text-slate-700 border border-slate-200/80">
+            <span className="px-2.5 py-0.5 sm:py-1 rounded bg-slate-100 text-slate-700 border border-slate-200/80">
               Total: {subjectList.length} Subjects
             </span>
             <span
-              className={`px-2.5 py-0.5 sm:py-1 rounded-full border flex items-center gap-1 ${
+              className={`px-2.5 py-0.5 sm:py-1 rounded border flex items-center gap-1 ${
                 summary.isEligible
                   ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
                   : 'bg-rose-50 text-rose-700 border-rose-200'
@@ -221,8 +221,8 @@ const Attendances = () => {
         {/* ── KPI Summary Cards (Compact 3-column row) ── */}
         <div className="grid grid-cols-3 gap-2 sm:gap-3 w-full">
           {/* Card 1: Overall Percentage */}
-          <div className="bg-white rounded-2xl border border-slate-200/90 shadow-2xs p-2.5 sm:p-4 flex flex-col sm:flex-row items-center sm:items-center text-center sm:text-left gap-1 sm:gap-3">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-blue-50 text-blue-700 border border-blue-200/80 flex items-center justify-center font-bold text-xs sm:text-base shrink-0">
+          <div className="bg-white rounded-lg border border-slate-200/90 shadow-2xs p-2.5 sm:p-4 flex flex-col sm:flex-row items-center sm:items-center text-center sm:text-left gap-1 sm:gap-3">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-md bg-blue-50 text-blue-700 border border-blue-200/80 flex items-center justify-center font-bold text-xs sm:text-base shrink-0">
               📊
             </div>
             <div className="min-w-0 flex-1">
@@ -235,7 +235,7 @@ const Attendances = () => {
                 </span>
               </div>
               <span
-                className={`inline-block mt-1 text-[9px] sm:text-[10px] font-bold px-1.5 py-0.2 rounded-full border ${
+                className={`inline-block mt-1 text-[9px] sm:text-[10px] font-bold px-1.5 py-0.2 rounded border ${
                   summary.isEligible
                     ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
                     : 'bg-rose-50 text-rose-700 border-rose-200'
@@ -247,8 +247,8 @@ const Attendances = () => {
           </div>
 
           {/* Card 2: Eligible Subjects */}
-          <div className="bg-white rounded-2xl border border-slate-200/90 shadow-2xs p-2.5 sm:p-4 flex flex-col sm:flex-row items-center sm:items-center text-center sm:text-left gap-1 sm:gap-3">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200/80 flex items-center justify-center font-bold text-xs sm:text-base shrink-0">
+          <div className="bg-white rounded-lg border border-slate-200/90 shadow-2xs p-2.5 sm:p-4 flex flex-col sm:flex-row items-center sm:items-center text-center sm:text-left gap-1 sm:gap-3">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200/80 flex items-center justify-center font-bold text-xs sm:text-base shrink-0">
               🎓
             </div>
             <div className="min-w-0 flex-1">
@@ -263,16 +263,16 @@ const Attendances = () => {
                   / {subjectList.length}
                 </span>
               </div>
-              <span className="inline-block mt-1 text-[9px] sm:text-[10px] font-semibold px-1.5 py-0.2 rounded-full bg-slate-100 text-slate-600 border border-slate-200/80">
+              <span className="inline-block mt-1 text-[9px] sm:text-[10px] font-semibold px-1.5 py-0.2 rounded bg-slate-100 text-slate-600 border border-slate-200/80">
                 ≥ 75%
               </span>
             </div>
           </div>
 
           {/* Card 3: Shortage */}
-          <div className="bg-white rounded-2xl border border-slate-200/90 shadow-2xs p-2.5 sm:p-4 flex flex-col sm:flex-row items-center sm:items-center text-center sm:text-left gap-1 sm:gap-3">
+          <div className="bg-white rounded-lg border border-slate-200/90 shadow-2xs p-2.5 sm:p-4 flex flex-col sm:flex-row items-center sm:items-center text-center sm:text-left gap-1 sm:gap-3">
             <div
-              className={`w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center font-bold text-xs sm:text-base shrink-0 border ${
+              className={`w-8 h-8 sm:w-10 sm:h-10 rounded-md flex items-center justify-center font-bold text-xs sm:text-base shrink-0 border ${
                 summary.shortageCount === 0
                   ? 'bg-emerald-50 text-emerald-700 border-emerald-200/80'
                   : 'bg-rose-50 text-rose-700 border-rose-200/80'
@@ -294,7 +294,7 @@ const Attendances = () => {
                 </span>
               </div>
               <span
-                className={`inline-block mt-1 text-[9px] sm:text-[10px] font-semibold px-1.5 py-0.2 rounded-full border ${
+                className={`inline-block mt-1 text-[9px] sm:text-[10px] font-semibold px-1.5 py-0.2 rounded border ${
                   summary.shortageCount === 0
                     ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
                     : 'bg-rose-50 text-rose-700 border-rose-200'
@@ -370,8 +370,8 @@ const Attendances = () => {
             <p className="text-slate-600 text-xs sm:text-sm font-medium">Loading attendance records...</p>
           </div>
         ) : filteredSubjects.length === 0 ? (
-          <div className="w-full bg-white py-10 px-4 rounded-2xl border border-slate-200/90 text-center flex flex-col items-center justify-center shadow-2xs">
-            <div className="w-10 h-10 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mb-2.5">
+          <div className="w-full bg-white py-10 px-4 rounded-lg border border-slate-200/90 text-center flex flex-col items-center justify-center shadow-2xs">
+            <div className="w-10 h-10 rounded-md bg-slate-100 text-slate-400 flex items-center justify-center mb-2.5">
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="10"></circle>
                 <line x1="12" y1="8" x2="12" y2="12"></line>
@@ -394,7 +394,7 @@ const Attendances = () => {
                   setSearchQuery('');
                   setStatusFilter('all');
                 }}
-                className="mt-3.5 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold cursor-pointer transition-colors"
+                className="mt-3.5 px-3 py-1.5 rounded-none bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold cursor-pointer transition-colors"
               >
                 Clear all filters
               </button>
@@ -423,7 +423,7 @@ const Attendances = () => {
               return (
                 <article
                   key={sub.subject}
-                  className="bg-white rounded-2xl border border-slate-200/90 hover:border-slate-300 transition-all shadow-2xs p-3.5 sm:p-5 flex flex-col gap-3"
+                  className="bg-white rounded-lg border border-slate-200/90 hover:border-slate-300 transition-all shadow-2xs p-3.5 sm:p-5 flex flex-col gap-3"
                 >
                   {/* Row 1: Subject on Left, Percentage & Status Badge on Right */}
                   <div className="flex items-center justify-between gap-2">

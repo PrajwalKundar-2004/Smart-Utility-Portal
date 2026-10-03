@@ -1186,7 +1186,7 @@ const ChatRoom = () => {
             <div className="flex items-center gap-2.5 sm:gap-3">
               {/* User Profile Avatar with Online Status */}
               <div className="relative">
-                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold text-xs sm:text-sm shadow-xs">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-sm bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold text-xs sm:text-sm shadow-xs">
                   {currentUserName[0]?.toUpperCase()}
                 </div>
                 <span
@@ -1212,7 +1212,7 @@ const ChatRoom = () => {
               <button
                 type="button"
                 onClick={openCreateModal}
-                className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 active:scale-95 shadow-xs transition-all cursor-pointer"
+                className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-sm text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 active:scale-95 shadow-xs transition-all cursor-pointer"
                 title="Create a new chat room"
               >
                 <PlusIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -1223,7 +1223,7 @@ const ChatRoom = () => {
 
           {/* Search Bar */}
           <div className="p-2 sm:p-2.5 bg-white border-b border-slate-200 shrink-0">
-            <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-2.5 sm:px-3 py-1.5 sm:py-2 focus-within:bg-white focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/10 transition-all">
+            <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-sm px-2.5 sm:px-3 py-1.5 sm:py-2 focus-within:bg-white focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/10 transition-all">
               <SearchIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-400 shrink-0" />
               <input
                 type="text"
@@ -1278,7 +1278,7 @@ const ChatRoom = () => {
                   >
                     {/* Channel Avatar */}
                     <div
-                      className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center font-bold text-xs sm:text-sm shrink-0 shadow-2xs transition-colors ${
+                      className={`w-10 h-10 sm:w-11 sm:h-11 rounded-sm flex items-center justify-center font-bold text-xs sm:text-sm shrink-0 shadow-2xs transition-colors ${
                         isActive
                           ? 'bg-blue-600 text-white'
                           : 'bg-slate-100 text-slate-600 border border-slate-200'
@@ -1327,7 +1327,7 @@ const ChatRoom = () => {
 
                       {/* Clean Group Audience Pill */}
                       <div className="flex items-center gap-1.5">
-                        <span className="text-[9px] sm:text-[10px] font-medium px-1.5 py-0.2 sm:px-2 sm:py-0.5 rounded-md bg-slate-100 text-slate-600 border border-slate-200/80">
+                        <span className="text-[9px] sm:text-[10px] font-medium px-1.5 py-0.2 sm:px-2 sm:py-0.5 rounded-sm bg-slate-100 text-slate-600 border border-slate-200/80">
                           {group.targetAudience === 'all' ? 'All Students' : `${group.members?.length || 0} participants`}
                         </span>
                       </div>
@@ -1353,7 +1353,7 @@ const ChatRoom = () => {
             <>
               {/* Chat Header / Multi-Select Mode Bar */}
               {isSelectionMode ? (
-                <div className="px-3 sm:px-4 py-2 sm:py-2.5 bg-blue-50 border-b border-blue-200 flex items-center justify-between shadow-2xs z-20 min-w-0 shrink-0">
+                <div className="px-3 sm:px-4 py-2 sm:py-2.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between shadow-2xs z-20 min-w-0 shrink-0">
                   <div className="flex items-center gap-2 sm:gap-3 min-w-0">
                     <button
                       type="button"
@@ -1361,12 +1361,12 @@ const ChatRoom = () => {
                         setIsSelectionMode(false);
                         setSelectedMsgIds([]);
                       }}
-                      className="p-1.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-blue-100 transition-colors cursor-pointer"
+                      className="p-1.5 rounded-sm text-slate-500 hover:text-slate-800 hover:bg-slate-200/70 transition-colors cursor-pointer"
                       title="Cancel selection"
                     >
                       <CloseIcon className="w-5 h-5 text-slate-700" />
                     </button>
-                    <h2 className="text-slate-900 font-extrabold text-sm sm:text-base">
+                    <h2 className="text-slate-900 font-bold text-xs sm:text-sm">
                       {selectedMsgIds.length} Selected
                     </h2>
                   </div>
@@ -1375,10 +1375,10 @@ const ChatRoom = () => {
                     <button
                       type="button"
                       onClick={() => setShowDeleteModal(true)}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 shadow-xs transition-colors cursor-pointer"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-xs font-medium text-white bg-rose-600 hover:bg-rose-700 shadow-xs transition-colors cursor-pointer"
                       title="Delete selected messages"
                     >
-                      <TrashIcon className="w-4 h-4" />
+                      <TrashIcon className="w-3.5 h-3.5" />
                       <span>Delete</span>
                     </button>
                   </div>
@@ -1389,7 +1389,7 @@ const ChatRoom = () => {
                     <button
                       type="button"
                       onClick={() => setShowSidebar(true)}
-                      className="md:hidden p-1.5 -ml-1 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors shrink-0 flex items-center cursor-pointer"
+                      className="md:hidden p-1.5 -ml-1 rounded-sm text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors shrink-0 flex items-center cursor-pointer"
                       title="Back to conversations"
                       aria-label="Back to conversations"
                     >
@@ -1397,7 +1397,7 @@ const ChatRoom = () => {
                     </button>
 
                     {/* Channel Avatar */}
-                    <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold text-xs sm:text-sm shadow-xs shrink-0">
+                    <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-sm bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold text-xs sm:text-sm shadow-xs shrink-0">
                       {activeGroup.name[0]?.toUpperCase()}
                     </div>
 
@@ -1426,24 +1426,24 @@ const ChatRoom = () => {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-1 sm:gap-2 shrink-0 ml-2">
-                    {/* Add Members Button (Lecturers only) */}
+                  <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 ml-2">
+                    {/* Add Participants Button (Lecturers only) */}
                     {!isStudent && (
                       <button
                         type="button"
                         onClick={openAddMembersModal}
-                        className="inline-flex items-center gap-1 px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 shadow-2xs transition-colors cursor-pointer"
-                        title="Add members to group"
+                        className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-sm text-xs font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 shadow-2xs transition-colors cursor-pointer"
+                        title="Add participants to group"
                       >
                         <PlusIcon className="w-3.5 h-3.5 text-blue-600" />
-                        <span className="hidden sm:inline">Add Members</span>
+                        <span className="hidden sm:inline">Add Participants</span>
                       </button>
                     )}
 
                     <button
                       type="button"
                       onClick={() => setShowMembersDrawer((p) => !p)}
-                      className="inline-flex items-center gap-1 px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg text-xs font-semibold text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 shadow-2xs transition-colors cursor-pointer"
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-sm text-xs font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 shadow-2xs transition-colors cursor-pointer"
                       title="Group details & participants"
                     >
                       <UsersIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-600" />
@@ -1462,7 +1462,7 @@ const ChatRoom = () => {
                   </div>
                 ) : messages.length === 0 ? (
                   <div className="flex flex-col items-center justify-center h-full text-center text-slate-500 p-4">
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-white text-blue-600 border border-slate-200 flex items-center justify-center mb-2.5 shadow-2xs">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-sm bg-white text-blue-600 border border-slate-200 flex items-center justify-center mb-2.5 shadow-2xs">
                       <SendIcon className="w-4 h-4 sm:w-5 sm:h-5" />
                     </div>
                     <p className="text-xs sm:text-sm font-bold text-slate-900">No messages yet</p>
@@ -1485,13 +1485,13 @@ const ChatRoom = () => {
                         <React.Fragment key={msg._id || msg.clientTempId || idx}>
                           {isDifferentDay && (
                             <div className="flex justify-center my-2 sm:my-3 sticky top-1 sm:top-2 z-10 pointer-events-none">
-                              <span className="bg-white/95 text-slate-600 text-[10px] sm:text-xs font-medium px-2.5 sm:px-3.5 py-0.5 sm:py-1 rounded-full shadow-2xs border border-slate-200 uppercase tracking-wide pointer-events-auto select-none">
+                              <span className="bg-white/95 text-slate-600 text-[10px] sm:text-xs font-medium px-2.5 sm:px-3.5 py-0.5 sm:py-1 rounded-sm shadow-2xs border border-slate-200 uppercase tracking-wide pointer-events-auto select-none">
                                 {dateBadge}
                               </span>
                             </div>
                           )}
                           <div className="flex justify-center my-1.5 sm:my-2">
-                            <span className="bg-white/95 text-slate-600 text-[11px] sm:text-xs font-medium px-3 sm:px-3.5 py-1 sm:py-1.5 rounded-xl shadow-2xs border border-slate-200">
+                            <span className="bg-white/95 text-slate-600 text-[11px] sm:text-xs font-medium px-3 sm:px-3.5 py-1 sm:py-1.5 rounded-sm shadow-2xs border border-slate-200">
                               ℹ️ {msg.content}
                             </span>
                           </div>
@@ -1533,7 +1533,7 @@ const ChatRoom = () => {
                         {/* Centered Date Divider Pill */}
                         {isDifferentDay && (
                           <div className="flex justify-center my-2 sm:my-3 sticky top-1 sm:top-2 z-10 pointer-events-none">
-                            <span className="bg-white/95 text-slate-600 text-[10px] sm:text-xs font-medium px-2.5 sm:px-3.5 py-0.5 sm:py-1 rounded-full shadow-2xs border border-slate-200 uppercase tracking-wide pointer-events-auto select-none">
+                            <span className="bg-white/95 text-slate-600 text-[10px] sm:text-xs font-medium px-2.5 sm:px-3.5 py-0.5 sm:py-1 rounded-sm shadow-2xs border border-slate-200 uppercase tracking-wide pointer-events-auto select-none">
                               {dateBadge}
                             </span>
                           </div>
@@ -1560,14 +1560,14 @@ const ChatRoom = () => {
                               }}
                               onClick={() => handleMessageClick(msg)}
                               className={`relative flex items-center ${isMe ? 'justify-end' : 'justify-start'} w-full min-w-0 transition-colors select-none py-0.5 group ${
-                                isSelected ? 'bg-blue-500/10 -mx-1.5 px-1.5 rounded-lg' : ''
+                                isSelected ? 'bg-blue-500/10 -mx-1.5 px-1.5 rounded-sm' : ''
                               }`}
                             >
                               {/* Multi-Select Checkbox Indicator */}
                               {isSelectionMode && (
                                 <div className="mr-2 flex items-center justify-center shrink-0">
                                   <div
-                                    className={`w-4 h-4 sm:w-5 sm:h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
+                                    className={`w-4 h-4 sm:w-5 sm:h-5 rounded-sm border-2 flex items-center justify-center transition-colors ${
                                       isSelected
                                         ? 'bg-blue-600 border-blue-600 text-white'
                                         : 'border-slate-300 bg-white'
@@ -1581,7 +1581,7 @@ const ChatRoom = () => {
                               {/* Swipe-to-reply reveal curved icon */}
                               {isSwipingThis && swipeOffset > 8 && (
                                 <div
-                                  className="absolute left-1 top-1/2 -translate-y-1/2 flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-blue-100 text-blue-600 shadow-xs z-10"
+                                  className="absolute left-1 top-1/2 -translate-y-1/2 flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-sm bg-blue-100 text-blue-600 shadow-xs z-10"
                                   style={{ opacity: Math.min(swipeOffset / 30, 1) }}
                                 >
                                   <ReplyIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -1593,7 +1593,9 @@ const ChatRoom = () => {
                                   transform: isSwipingThis ? `translateX(${swipeOffset}px)` : 'none',
                                   transition: isSwipingThis ? 'none' : 'transform 0.18s ease-out',
                                 }}
-                                className={`relative max-w-[85%] sm:max-w-[70%] min-w-0 p-2.5 sm:p-3.5 shadow-xs text-sm sm:text-[14px] leading-normal sm:leading-relaxed break-words [overflow-wrap:anywhere] [word-break:break-word] rounded-lg overflow-hidden ${
+                                className={`relative max-w-[85%] sm:max-w-[70%] min-w-0 ${
+                                  isDeletedForEveryone ? 'py-1.5 px-3' : 'p-2.5 sm:p-3.5'
+                                } shadow-xs text-sm sm:text-[14px] leading-normal sm:leading-relaxed break-words [overflow-wrap:anywhere] [word-break:break-word] rounded-sm overflow-hidden ${
                                   isDeletedForEveryone
                                     ? 'bg-slate-100 text-slate-500 border border-slate-200/90 shadow-2xs'
                                     : isMe
@@ -1615,7 +1617,7 @@ const ChatRoom = () => {
                                         }
                                       }
                                     }}
-                                    className={`mb-1.5 p-1.5 sm:p-2 rounded-md border-l-4 text-xs cursor-pointer select-none transition-opacity hover:opacity-90 ${
+                                    className={`mb-1.5 p-1.5 sm:p-2 rounded-sm border-l-4 text-xs cursor-pointer select-none transition-opacity hover:opacity-90 ${
                                       isMe
                                         ? 'bg-blue-700/60 border-sky-300 text-blue-50'
                                         : 'bg-slate-100 border-blue-600 text-slate-700'
@@ -1640,7 +1642,7 @@ const ChatRoom = () => {
                                       {msg.sender?.name || 'User'}
                                     </span>
                                     <span
-                                      className={`text-[8px] sm:text-[9px] font-bold px-1 py-0.2 sm:px-1.5 sm:py-0.5 rounded uppercase tracking-wider shrink-0 ${
+                                      className={`text-[8px] sm:text-[9px] font-bold px-1.5 py-0.5 rounded-sm uppercase tracking-wider shrink-0 ${
                                         msg.sender?.role === 'lecture'
                                           ? 'bg-indigo-50 text-indigo-700 border border-indigo-200/60'
                                           : 'bg-blue-50 text-blue-700 border border-blue-200/60'
@@ -1670,22 +1672,22 @@ const ChatRoom = () => {
                                                 if (isSelectionMode) return;
                                                 setPreviewModalImage({ url: fileUrl, fileName: fileObj.fileName || 'image.png' });
                                               }}
-                                              className="rounded-md overflow-hidden border border-slate-200/80 cursor-pointer shadow-2xs hover:opacity-95 transition-all group relative bg-slate-100 max-w-full"
+                                              className="rounded-sm overflow-hidden border border-slate-200/80 cursor-pointer shadow-2xs hover:opacity-95 transition-all group relative bg-slate-100 max-w-full"
                                             >
                                               <img
                                                 src={fileUrl}
                                                 alt={fileObj.fileName || 'Attached Image'}
-                                                className="max-h-48 sm:max-h-80 w-full object-cover rounded-md transition-transform duration-200 group-hover:scale-[1.01]"
+                                                className="max-h-48 sm:max-h-80 w-full object-cover rounded-sm transition-transform duration-200 group-hover:scale-[1.01]"
                                                 loading="lazy"
                                               />
                                               <div className="absolute inset-0 bg-slate-900/30 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100 gap-2">
-                                                <span className="bg-slate-900/85 text-white text-[10px] sm:text-xs px-2.5 py-1 rounded-full font-medium backdrop-blur-xs flex items-center gap-1 shadow-md">
+                                                <span className="bg-slate-900/85 text-white text-[10px] sm:text-xs px-2.5 py-1 rounded-sm font-medium backdrop-blur-xs flex items-center gap-1 shadow-md">
                                                   <SearchIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> Enlarge
                                                 </span>
                                                 <button
                                                   type="button"
                                                   onClick={(e) => downloadFile(fileObj, e)}
-                                                  className="bg-white hover:bg-slate-100 text-slate-900 p-1.5 rounded-full font-bold shadow-md flex items-center justify-center active:scale-90 cursor-pointer"
+                                                  className="p-1 rounded-sm text-slate-700 hover:text-blue-600 transition-colors cursor-pointer flex items-center justify-center active:scale-90"
                                                   title={`Download ${fileObj.fileName || 'image'}`}
                                                   aria-label="Download image"
                                                 >
@@ -1700,7 +1702,7 @@ const ChatRoom = () => {
                                                 <button
                                                   type="button"
                                                   onClick={(e) => downloadFile(fileObj, e)}
-                                                  className={`p-0.5 rounded-md transition-colors cursor-pointer flex items-center justify-center ${isMe ? 'hover:bg-white/20 text-white' : 'hover:bg-slate-100 text-slate-600'}`}
+                                                  className={`p-0.5 rounded-sm transition-colors cursor-pointer flex items-center justify-center ${isMe ? 'hover:bg-white/20 text-white' : 'hover:bg-slate-100 text-slate-600'}`}
                                                   title={`Download ${fileObj.fileName || 'image'}`}
                                                   aria-label="Download image"
                                                 >
@@ -1713,7 +1715,7 @@ const ChatRoom = () => {
 
                                         {/* Video Attachment */}
                                         {isVideo && (
-                                          <div className="rounded-md overflow-hidden border border-slate-200 bg-black shadow-xs w-full max-w-full min-w-0">
+                                          <div className="rounded-sm overflow-hidden border border-slate-200 bg-black shadow-xs w-full max-w-full min-w-0">
                                             <video
                                               src={fileUrl}
                                               controls
@@ -1725,7 +1727,7 @@ const ChatRoom = () => {
                                                 <button
                                                   type="button"
                                                   onClick={(e) => downloadFile(fileObj, e)}
-                                                  className="p-1 rounded-md hover:bg-slate-800 text-slate-300 hover:text-white transition-colors cursor-pointer flex items-center justify-center shrink-0"
+                                                  className="p-1 rounded-sm hover:bg-slate-800 text-slate-300 hover:text-white transition-colors cursor-pointer flex items-center justify-center shrink-0"
                                                   title={`Download ${fileObj.fileName || 'video'}`}
                                                   aria-label="Download video"
                                                 >
@@ -1739,13 +1741,13 @@ const ChatRoom = () => {
                                         {/* Document / PDF Card */}
                                         {(isPdf || isDoc) && (
                                           <div
-                                            className={`flex items-center gap-2 p-2 sm:p-2.5 rounded-md border transition-all w-full max-w-full min-w-0 overflow-hidden ${
+                                            className={`flex items-center gap-2 p-2 sm:p-2.5 rounded-sm border transition-all w-full max-w-full min-w-0 overflow-hidden ${
                                               isMe
                                                 ? 'bg-blue-700/60 border-blue-500/60 text-white'
                                                 : 'bg-slate-50 border-slate-200 text-slate-900'
                                             }`}
                                           >
-                                            <div className={`p-1.5 rounded shrink-0 ${
+                                            <div className={`p-1.5 rounded-sm shrink-0 ${
                                               isMe
                                                 ? 'bg-white/15 text-white border border-white/20'
                                                 : (isPdf ? 'bg-rose-50 text-rose-600 border border-rose-200' : 'bg-blue-50 text-blue-600 border border-blue-200')
@@ -1754,7 +1756,7 @@ const ChatRoom = () => {
                                             </div>
                                             <div className="flex-1 min-w-0">
                                               <div className="flex items-center gap-1.5 min-w-0">
-                                                <span className={`text-[9px] font-bold uppercase px-1.5 py-0.5 rounded shrink-0 ${
+                                                <span className={`text-[9px] font-bold uppercase px-1.5 py-0.5 rounded-sm shrink-0 ${
                                                   isMe
                                                     ? 'bg-white/20 text-white'
                                                     : (isPdf ? 'bg-rose-100 text-rose-700' : 'bg-blue-100 text-blue-700')
@@ -1770,7 +1772,7 @@ const ChatRoom = () => {
                                               </p>
                                             </div>
 
-                                            <div className="flex items-center gap-1 shrink-0 ml-1">
+                                            <div className="flex items-center gap-1.5 shrink-0 ml-1">
                                               {/* In-App PDF Reader Modal */}
                                               {isPdf && (
                                                 <button
@@ -1782,10 +1784,10 @@ const ChatRoom = () => {
                                                       title: fileObj.fileName || 'PDF Document',
                                                     });
                                                   }}
-                                                  className={`p-1.5 rounded-lg font-medium text-xs flex items-center justify-center transition-all cursor-pointer ${
+                                                  className={`p-1.5 flex items-center justify-center transition-colors cursor-pointer ${
                                                     isMe
-                                                      ? 'bg-white/20 hover:bg-white/30 text-white border border-white/30'
-                                                      : 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 shadow-2xs'
+                                                      ? 'text-white/80 hover:text-white'
+                                                      : 'text-slate-500 hover:text-blue-600'
                                                   }`}
                                                   title="Preview PDF"
                                                   aria-label="Preview PDF"
@@ -1798,10 +1800,10 @@ const ChatRoom = () => {
                                               <button
                                                 type="button"
                                                 onClick={(e) => downloadFile(fileObj, e)}
-                                                className={`p-1.5 rounded-lg font-medium text-xs flex items-center justify-center transition-all cursor-pointer ${
+                                                className={`p-1.5 flex items-center justify-center transition-colors cursor-pointer ${
                                                   isMe
-                                                    ? 'bg-white hover:bg-blue-50 text-blue-600 shadow-xs'
-                                                    : 'bg-slate-900 hover:bg-slate-800 text-white shadow-xs'
+                                                    ? 'text-white/80 hover:text-white'
+                                                    : 'text-slate-500 hover:text-blue-600'
                                                 }`}
                                                 title={`Download ${fileObj.fileName || 'file'}`}
                                                 aria-label="Download file"
@@ -1843,7 +1845,7 @@ const ChatRoom = () => {
                                       e.stopPropagation();
                                       setReplyingTo(msg);
                                     }}
-                                    className="p-1 rounded-full hover:bg-slate-200/80 text-slate-400 hover:text-slate-700 transition-colors cursor-pointer"
+                                    className="p-1 rounded-sm hover:bg-slate-200/80 text-slate-400 hover:text-slate-700 transition-colors cursor-pointer"
                                     title="Reply"
                                   >
                                     <ReplyIcon className="w-3.5 h-3.5" />
@@ -1856,7 +1858,7 @@ const ChatRoom = () => {
                                       setSelectedMsgIds([msg._id]);
                                       setShowDeleteModal(true);
                                     }}
-                                    className="p-1 rounded-full hover:bg-rose-100 text-slate-400 hover:text-rose-600 transition-colors cursor-pointer"
+                                    className="p-1 rounded-sm hover:bg-rose-100 text-slate-400 hover:text-rose-600 transition-colors cursor-pointer"
                                     title="Delete message"
                                   >
                                     <TrashIcon className="w-3.5 h-3.5" />
@@ -1890,9 +1892,9 @@ const ChatRoom = () => {
               <div className="p-2.5 sm:p-3 bg-white border-t border-slate-200 shadow-xs z-20 shrink-0 w-full">
                 {/* WhatsApp Style Reply Preview Bar */}
                 {replyingTo && (
-                  <div className="mb-2 bg-slate-50 border border-slate-200 border-l-4 border-l-blue-600 p-2 sm:p-2.5 rounded-xl shadow-xs flex items-center justify-between gap-2">
+                  <div className="mb-2 bg-slate-50 border border-slate-200 border-l-4 border-l-blue-600 p-2 sm:p-2.5 rounded-sm shadow-xs flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2 min-w-0 flex-1">
-                      <div className="w-7 h-7 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
+                      <div className="w-7 h-7 rounded-sm bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
                         <ReplyIcon className="w-3.5 h-3.5" />
                       </div>
                       <div className="min-w-0 flex-1">
@@ -1907,7 +1909,7 @@ const ChatRoom = () => {
                     <button
                       type="button"
                       onClick={() => setReplyingTo(null)}
-                      className="text-slate-400 hover:text-slate-700 p-1 rounded-lg hover:bg-slate-200 transition-colors cursor-pointer shrink-0"
+                      className="text-slate-400 hover:text-slate-700 p-1 rounded-sm hover:bg-slate-200 transition-colors cursor-pointer shrink-0"
                       title="Cancel reply"
                     >
                       <CloseIcon className="w-4 h-4" />
@@ -1916,11 +1918,11 @@ const ChatRoom = () => {
                 )}
                 {/* Pending Attachment Card & Sender Live Preview */}
                 {selectedFile && (
-                  <div className="mb-2 bg-slate-50 border border-slate-200 p-2 sm:p-2.5 rounded-xl shadow-xs">
+                  <div className="mb-2 bg-slate-50 border border-slate-200 p-2 sm:p-2.5 rounded-sm shadow-xs">
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-2 min-w-0 flex-1">
                         <span
-                          className={`p-1.5 rounded-lg shrink-0 ${
+                          className={`p-1.5 rounded-sm shrink-0 ${
                             selectedFile.type === 'application/pdf' || selectedFile.name.toLowerCase().endsWith('.pdf')
                               ? 'bg-rose-50 text-rose-600 border border-rose-200'
                               : 'bg-blue-50 text-blue-600 border border-blue-200'
@@ -1947,7 +1949,7 @@ const ChatRoom = () => {
                                 title: selectedFile.name,
                               })
                             }
-                            className="px-2.5 py-1 rounded-lg text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 shadow-2xs transition-colors cursor-pointer"
+                            className="px-2.5 py-1 rounded-sm text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 shadow-2xs transition-colors cursor-pointer"
                             title="Preview PDF"
                           >
                             Preview
@@ -1964,7 +1966,7 @@ const ChatRoom = () => {
                             <img
                               src={selectedFilePreviewUrl}
                               alt="Thumbnail"
-                              className="w-8 h-8 rounded-lg object-cover border border-slate-300 shadow-2xs"
+                              className="w-8 h-8 rounded-sm object-cover border border-slate-300 shadow-2xs"
                             />
                           </div>
                         )}
@@ -1975,7 +1977,7 @@ const ChatRoom = () => {
                             setSelectedFile(null);
                             if (fileInputRef.current) fileInputRef.current.value = '';
                           }}
-                          className="text-slate-400 hover:text-slate-700 p-1 rounded-lg hover:bg-slate-200 transition-colors cursor-pointer"
+                          className="text-slate-400 hover:text-slate-700 p-1 rounded-sm hover:bg-slate-200 transition-colors cursor-pointer"
                           title="Remove attachment"
                         >
                           <CloseIcon className="w-4 h-4" />
@@ -2004,14 +2006,14 @@ const ChatRoom = () => {
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
                     disabled={isUploading}
-                    className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-all cursor-pointer shrink-0 active:scale-95 disabled:opacity-50 flex items-center justify-center"
+                    className="w-9 h-9 sm:w-10 sm:h-10 rounded-sm text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-all cursor-pointer shrink-0 active:scale-95 disabled:opacity-50 flex items-center justify-center"
                     title="Attach File"
                   >
                     <PaperclipIcon className="w-5 h-5" />
                   </button>
 
                   {/* Text Input Pill - Increased height and generous left padding for cursor */}
-                  <div className="flex-1 min-w-0 bg-slate-50 rounded-xl px-4 sm:px-5 py-2.5 sm:py-3 min-h-[44px] sm:min-h-[48px] flex items-center border border-slate-200 focus-within:bg-white focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/10 transition-all shadow-2xs">
+                  <div className="flex-1 min-w-0 bg-slate-50 rounded-sm px-3.5 sm:px-4 py-2 sm:py-2.5 min-h-[40px] sm:min-h-[44px] flex items-center border border-slate-200 focus-within:bg-white focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/10 transition-all shadow-2xs">
                     <input
                       type="text"
                       value={input}
@@ -2019,7 +2021,7 @@ const ChatRoom = () => {
                       onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
                       placeholder={selectedFile ? 'Add caption…' : 'Type a message...'}
                       disabled={isUploading}
-                      className="w-full bg-transparent text-sm sm:text-base text-slate-900 placeholder:text-slate-400 outline-none border-none p-0 pl-1.5 sm:pl-2"
+                      className="w-full bg-transparent text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 outline-none border-none p-0 pl-1"
                     />
                   </div>
 
@@ -2028,7 +2030,7 @@ const ChatRoom = () => {
                     type="button"
                     onClick={handleSend}
                     disabled={(!input.trim() && !selectedFile) || isUploading}
-                    className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl font-bold shadow-xs transition-all cursor-pointer flex items-center justify-center shrink-0 active:scale-95 ${
+                    className={`w-9 h-9 sm:w-10 sm:h-10 rounded-sm font-bold shadow-xs transition-all cursor-pointer flex items-center justify-center shrink-0 active:scale-95 ${
                       input.trim() || selectedFile
                         ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-blue-500/20'
                         : 'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200'
@@ -2038,7 +2040,7 @@ const ChatRoom = () => {
                     {isUploading ? (
                       <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                     ) : (
-                      <SendIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+                      <SendIcon className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
                     )}
                   </button>
                 </div>
@@ -2046,8 +2048,8 @@ const ChatRoom = () => {
             </>
           ) : (
             <div className="flex flex-col items-center justify-center h-full text-center text-slate-500 p-4 sm:p-6">
-              <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-white text-blue-600 border border-slate-200 flex items-center justify-center mb-2.5 shadow-xs">
-                <UsersIcon className="w-5 h-5 sm:w-7 sm:h-7" />
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-sm bg-white text-blue-600 border border-slate-200 flex items-center justify-center mb-2.5 shadow-xs">
+                <UsersIcon className="w-5 h-5 sm:w-6 sm:h-6" />
               </div>
               <h3 className="text-sm sm:text-base font-bold text-slate-900">Discussion Channels</h3>
               <p className="text-[11px] sm:text-xs text-slate-500 max-w-sm mt-0.5">
@@ -2068,7 +2070,7 @@ const ChatRoom = () => {
               <button
                 type="button"
                 onClick={() => setShowMembersDrawer(false)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+                className="p-1.5 rounded-sm text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
                 title="Close"
               >
                 <CloseIcon className="w-5 h-5" />
@@ -2076,7 +2078,7 @@ const ChatRoom = () => {
             </div>
 
             <div className="p-5 border-b border-slate-100 bg-white text-center">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold text-2xl mx-auto mb-2.5 shadow-xs">
+              <div className="w-14 h-14 rounded-sm bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold text-xl mx-auto mb-2.5 shadow-xs">
                 {activeGroup.name[0]?.toUpperCase()}
               </div>
               <h4 className="text-slate-900 font-bold text-base">{activeGroup.name}</h4>
@@ -2090,7 +2092,7 @@ const ChatRoom = () => {
 
             {/* Filter Member Input */}
             <div className="p-3 border-b border-slate-100">
-              <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 focus-within:bg-white focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/10 transition-all">
+              <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-sm px-3 py-1.5 focus-within:bg-white focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/10 transition-all">
                 <SearchIcon className="w-4 h-4 text-slate-400 shrink-0" />
                 <input
                   type="text"
@@ -2107,10 +2109,10 @@ const ChatRoom = () => {
                 <button
                   type="button"
                   onClick={openAddMembersModal}
-                  className="w-full py-2 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer shadow-xs"
+                  className="w-full h-10 px-3.5 rounded-sm bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
                 >
                   <PlusIcon className="w-4 h-4 text-white" />
-                  <span>Add Members to Group</span>
+                  <span>Add Participants</span>
                 </button>
               </div>
             )}
@@ -2119,22 +2121,22 @@ const ChatRoom = () => {
               {filteredMembers.map((member) => (
                 <div
                   key={member.usn}
-                  className="flex items-center justify-between p-2.5 hover:bg-slate-50 rounded-xl transition-colors"
+                  className="flex items-center justify-between p-2 hover:bg-slate-50 rounded-sm transition-colors"
                 >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-9 h-9 rounded-xl bg-slate-100 text-slate-600 border border-slate-200 flex items-center justify-center text-xs font-bold shrink-0">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="w-8 h-8 rounded-sm bg-slate-100 text-slate-600 border border-slate-200 flex items-center justify-center text-xs font-bold shrink-0">
                       {member.name[0]?.toUpperCase()}
                     </div>
                     <div className="min-w-0">
                       <div className="flex items-center gap-1.5">
-                        <p className="text-sm font-semibold text-slate-900 truncate">{member.name}</p>
+                        <p className="text-xs sm:text-sm font-semibold text-slate-900 truncate">{member.name}</p>
                         {member.role === 'lecture' && (
-                          <span className="text-[10px] bg-indigo-50 text-indigo-700 border border-indigo-200/60 px-1.5 py-0.5 rounded-md font-bold">
+                          <span className="text-[10px] bg-indigo-50 text-indigo-700 border border-indigo-200/60 px-1.5 py-0.5 rounded-sm font-bold">
                             Lecturer
                           </span>
                         )}
                       </div>
-                      <p className="text-xs font-mono text-slate-400 truncate">{member.usn}</p>
+                      <p className="text-[11px] font-mono text-slate-400 truncate">{member.usn}</p>
                     </div>
                   </div>
 
@@ -2142,7 +2144,7 @@ const ChatRoom = () => {
                     <button
                       type="button"
                       onClick={() => handleRemoveStudent(member.usn, member.name)}
-                      className="p-2 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                      className="p-1.5 text-rose-500 hover:bg-rose-50 rounded-sm transition-colors cursor-pointer"
                       title="Remove student from group"
                     >
                       <TrashIcon className="w-4 h-4" />
@@ -2152,13 +2154,13 @@ const ChatRoom = () => {
               ))}
             </div>
 
-            <div className="p-3.5 border-t border-slate-200 bg-slate-50 space-y-2">
+            <div className="p-3.5 sm:p-4 border-t border-slate-200 bg-slate-50 space-y-2.5">
               <button
                 type="button"
                 onClick={handleLeaveGroup}
-                className="w-full py-2.5 rounded text-xs sm:text-sm font-bold text-red-600 bg-white hover:bg-red-50 border border-red-200 transition-colors cursor-pointer shadow-2xs flex items-center justify-center gap-2"
+                className="w-full h-12 px-4 rounded-sm text-sm sm:text-base font-semibold text-red-600 bg-white hover:bg-red-50 border border-red-200 transition-colors cursor-pointer shadow-2xs flex items-center justify-center gap-2"
               >
-                <svg className="w-4 h-4 text-red-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg className="w-5 h-5 text-red-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
                   <polyline points="16 17 21 12 16 7" />
                   <line x1="21" y1="12" x2="9" y2="12" />
@@ -2170,9 +2172,9 @@ const ChatRoom = () => {
                 <button
                   type="button"
                   onClick={() => setShowDeleteGroupModal(true)}
-                  className="w-full py-2.5 rounded text-xs sm:text-sm font-bold text-white bg-red-600 hover:bg-red-700 transition-colors cursor-pointer shadow-2xs flex items-center justify-center gap-2"
+                  className="w-full h-12 px-4 rounded-sm text-sm sm:text-base font-semibold text-white bg-red-600 hover:bg-red-700 transition-colors cursor-pointer shadow-2xs flex items-center justify-center gap-2"
                 >
-                  <TrashIcon className="w-4 h-4 text-white" />
+                  <TrashIcon className="w-5 h-5 text-white" />
                   <span>Delete Group</span>
                 </button>
               )}
@@ -2181,25 +2183,20 @@ const ChatRoom = () => {
         )}
       </div>
 
-      {/* ── Modal: New Group with Clear, Visible Buttons & Roster Selection ── */}
+      {/* ── Modal: New Group (Clean, Compact & Sleek) ── */}
       {showCreateModal && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-xl overflow-hidden flex flex-col max-h-[90vh]">
+          <div className="bg-white rounded-sm border border-slate-200 shadow-2xl w-[90%] sm:w-full max-w-[340px] sm:max-w-[360px] overflow-hidden flex flex-col max-h-[85vh]">
             
             {/* Modal Header */}
-            <div className="px-5 py-4 border-b border-slate-200 bg-white flex items-center justify-between">
-              <div>
-                <h3 className="text-base sm:text-lg font-bold text-slate-900">
-                  Create New Discussion Channel
-                </h3>
-                <p className="text-slate-500 text-xs mt-0.5">
-                  Broadcast to all students or pick a specific roster
-                </p>
-              </div>
+            <div className="px-4 py-3 border-b border-slate-200 bg-white flex items-center justify-between">
+              <h3 className="text-sm sm:text-base font-bold text-slate-900">
+                Create New Group
+              </h3>
               <button
                 type="button"
                 onClick={() => setShowCreateModal(false)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+                className="p-1 rounded-sm text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
                 title="Close"
               >
                 <CloseIcon className="w-5 h-5" />
@@ -2207,10 +2204,10 @@ const ChatRoom = () => {
             </div>
 
             {/* Modal Form */}
-            <form onSubmit={handleCreateGroup} className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4">
+            <form onSubmit={handleCreateGroup} className="flex-1 overflow-y-auto p-4 space-y-3.5">
               {/* Group Name */}
               <div>
-                <label className="block text-xs sm:text-sm font-bold text-slate-700 mb-1.5">
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
                   Channel Name <span className="text-rose-500">*</span>
                 </label>
                 <input
@@ -2219,89 +2216,71 @@ const ChatRoom = () => {
                   value={createName}
                   onChange={(e) => setCreateName(e.target.value)}
                   placeholder="e.g. CS601 - Database Engineering"
-                  className="w-full px-4 py-2.5 rounded-xl text-sm font-medium border border-slate-300 bg-white text-slate-800 placeholder:text-slate-400 focus:border-blue-600 focus:ring-1 focus:ring-blue-600/20 focus:outline-none transition-all shadow-2xs"
+                  className="w-full px-3 py-2 rounded-sm text-xs sm:text-sm font-medium border border-slate-300 bg-white text-slate-800 placeholder:text-slate-400 focus:border-blue-600 focus:ring-1 focus:ring-blue-600/20 focus:outline-none transition-all shadow-2xs"
                 />
               </div>
 
               {/* Description */}
               <div>
-                <label className="block text-xs sm:text-sm font-bold text-slate-700 mb-1.5">
-                  Description (Optional)
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Description <span className="text-slate-400 font-normal">(Optional)</span>
                 </label>
                 <input
                   type="text"
                   value={createDesc}
                   onChange={(e) => setCreateDesc(e.target.value)}
                   placeholder="Brief note about this channel..."
-                  className="w-full px-4 py-2.5 rounded-xl text-sm font-medium border border-slate-300 bg-white text-slate-800 placeholder:text-slate-400 focus:border-blue-600 focus:ring-1 focus:ring-blue-600/20 focus:outline-none transition-all shadow-2xs"
+                  className="w-full px-3 py-2 rounded-sm text-xs sm:text-sm font-medium border border-slate-300 bg-white text-slate-800 placeholder:text-slate-400 focus:border-blue-600 focus:ring-1 focus:ring-blue-600/20 focus:outline-none transition-all shadow-2xs"
                 />
               </div>
 
               {/* Audience Choice Buttons */}
               <div>
-                <label className="block text-xs sm:text-sm font-bold text-slate-700 mb-1.5">
-                  Audience <span className="text-rose-500">*</span>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Audience
                 </label>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <div className="grid grid-cols-2 gap-2">
                   <button
                     type="button"
                     onClick={() => setCreateAudience('all')}
-                    className={`flex items-center gap-3 p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
+                    className={`flex items-center justify-center gap-2 py-2 px-3 rounded-sm border text-xs sm:text-sm font-medium transition-all cursor-pointer ${
                       createAudience === 'all'
-                        ? 'bg-blue-50/70 border-blue-600 text-slate-900 shadow-xs'
+                        ? 'bg-blue-50 border-blue-600 text-blue-700 font-semibold shadow-2xs'
                         : 'border-slate-200 text-slate-600 hover:bg-slate-50'
                     }`}
                   >
-                    <div className="p-2 rounded-lg bg-blue-100/80 text-blue-600 shrink-0">
-                      <UsersIcon className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-bold text-slate-900">All Students</p>
-                      <p className="text-xs text-slate-500">All registered students</p>
-                    </div>
+                    <UsersIcon className="w-4 h-4 shrink-0" />
+                    <span>All Students</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => setCreateAudience('selected')}
-                    className={`flex items-center gap-3 p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
+                    className={`flex items-center justify-center gap-2 py-2 px-3 rounded-sm border text-xs sm:text-sm font-medium transition-all cursor-pointer ${
                       createAudience === 'selected'
-                        ? 'bg-blue-50/70 border-blue-600 text-slate-900 shadow-xs'
+                        ? 'bg-blue-50 border-blue-600 text-blue-700 font-semibold shadow-2xs'
                         : 'border-slate-200 text-slate-600 hover:bg-slate-50'
                     }`}
                   >
-                    <div className="p-2 rounded-lg bg-indigo-100/80 text-indigo-600 shrink-0">
-                      <TargetIcon className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-bold text-slate-900">Select Students</p>
-                      <p className="text-xs text-slate-500">Pick from student roster</p>
-                    </div>
+                    <TargetIcon className="w-4 h-4 shrink-0" />
+                    <span>Select Students</span>
                   </button>
                 </div>
               </div>
 
               {/* ── Registered Students Roster (Click-to-Select) ── */}
               {createAudience === 'selected' && (
-                <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
-                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 border-b border-slate-200 pb-2.5">
-                    <div>
-                      <h4 className="text-sm font-bold text-slate-900">
-                        Student Roster
-                      </h4>
-                      <p className="text-xs text-slate-500">
-                        Click on any student card to select
-                      </p>
-                    </div>
+                <div className="p-3 bg-slate-50 rounded-sm border border-slate-200 space-y-2.5">
+                  <div className="flex items-center justify-between gap-2 border-b border-slate-200 pb-2">
+                    <span className="text-xs font-semibold text-slate-700">
+                      Roster ({selectedStudentUsns.length}/{availableStudents.length})
+                    </span>
 
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-semibold text-blue-700 bg-blue-50 border border-blue-200/80 px-2.5 py-1 rounded-lg">
-                        {selectedStudentUsns.length} / {availableStudents.length} Selected
-                      </span>
                       <button
                         type="button"
                         onClick={selectAllStudents}
-                        className="text-xs font-bold text-blue-600 hover:text-blue-700 hover:underline cursor-pointer px-1"
+                        className="text-xs font-semibold text-blue-600 hover:text-blue-700 hover:underline cursor-pointer"
                       >
                         Select All
                       </button>
@@ -2309,7 +2288,7 @@ const ChatRoom = () => {
                       <button
                         type="button"
                         onClick={clearSelectedStudents}
-                        className="text-xs font-bold text-slate-500 hover:text-slate-700 hover:underline cursor-pointer px-1"
+                        className="text-xs font-semibold text-slate-500 hover:text-slate-700 hover:underline cursor-pointer"
                       >
                         Clear
                       </button>
@@ -2317,35 +2296,36 @@ const ChatRoom = () => {
                   </div>
 
                   {/* Filter by Name */}
-                  <div className="flex items-center gap-2.5 bg-white border border-slate-300 rounded-xl px-3.5 py-2 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/10 transition-all shadow-2xs">
-                    <SearchIcon className="w-4 h-4 text-slate-400 shrink-0" />
+                  <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-sm px-2.5 py-1.5 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/10 transition-all">
+                    <SearchIcon className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                     <input
                       type="text"
                       value={studentNameFilter}
                       onChange={(e) => setStudentNameFilter(e.target.value)}
-                      placeholder="Filter student list by name..."
-                      className="w-full bg-transparent text-sm text-slate-800 placeholder:text-slate-400 outline-none border-none p-0"
+                      placeholder="Filter by student name or USN..."
+                      className="w-full bg-transparent text-xs text-slate-800 placeholder:text-slate-400 outline-none border-none p-0"
                     />
                     {studentNameFilter && (
                       <button
                         type="button"
                         onClick={() => setStudentNameFilter('')}
-                        className="text-slate-400 hover:text-slate-600 shrink-0 p-0.5"
+                        className="text-slate-400 hover:text-slate-600 shrink-0 p-0.5 cursor-pointer"
+                        title="Clear filter"
                       >
-                        <CloseIcon className="w-4 h-4" />
+                        <CloseIcon className="w-3.5 h-3.5" />
                       </button>
                     )}
                   </div>
 
-                  {/* Student Cards Grid */}
-                  <div className="max-h-56 overflow-y-auto pr-1 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {/* Student Cards List */}
+                  <div className="max-h-44 overflow-y-auto pr-0.5 space-y-1">
                     {loadingStudents ? (
-                      <div className="col-span-full py-8 text-center text-slate-400 text-sm">
-                        <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+                      <div className="py-6 text-center text-slate-400 text-xs">
+                        <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-1.5" />
                         Loading student records...
                       </div>
                     ) : filteredAvailableStudents.length === 0 ? (
-                      <div className="col-span-full py-8 text-center text-slate-400 text-sm">
+                      <div className="py-6 text-center text-slate-400 text-xs">
                         No registered students found.
                       </div>
                     ) : (
@@ -2355,28 +2335,28 @@ const ChatRoom = () => {
                           <div
                             key={st.usn}
                             onClick={() => toggleStudentSelection(st.usn)}
-                            className={`flex items-center justify-between p-2.5 sm:p-3 rounded-xl border text-sm cursor-pointer transition-all select-none ${
+                            className={`flex items-center justify-between py-1.5 px-2.5 rounded-sm border text-xs cursor-pointer transition-all select-none ${
                               isSelected
-                                ? 'bg-blue-50 border-blue-600 text-slate-900 shadow-xs'
-                                : 'bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700'
+                                ? 'bg-blue-50 border-blue-500 text-slate-900 shadow-2xs'
+                                : 'bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50/80 text-slate-700'
                             }`}
                           >
-                            <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                            <div className="flex items-center gap-2 min-w-0 flex-1">
                               <div
-                                className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs shrink-0 ${
+                                className={`w-6 h-6 rounded-sm flex items-center justify-center font-bold text-[11px] shrink-0 ${
                                   isSelected
                                     ? 'bg-blue-600 text-white'
-                                    : 'bg-slate-200 text-slate-700'
+                                    : 'bg-slate-100 text-slate-600'
                                 }`}
                               >
                                 {st.username[0]?.toUpperCase()}
                               </div>
 
                               <div className="min-w-0">
-                                <p className={`font-semibold text-xs sm:text-sm truncate ${isSelected ? 'text-blue-900' : 'text-slate-900'}`}>
+                                <p className={`font-semibold text-xs truncate ${isSelected ? 'text-blue-900' : 'text-slate-900'}`}>
                                   {st.username}
                                 </p>
-                                <p className="text-xs font-mono text-slate-500 truncate">
+                                <p className="text-[10px] font-mono text-slate-400 truncate">
                                   {st.usn}
                                 </p>
                               </div>
@@ -2384,13 +2364,13 @@ const ChatRoom = () => {
 
                             {/* Checkmark Box */}
                             <div
-                              className={`w-5 h-5 rounded flex items-center justify-center shrink-0 transition-all ${
+                              className={`w-4 h-4 rounded-sm flex items-center justify-center shrink-0 transition-all ${
                                 isSelected
                                   ? 'bg-blue-600 text-white'
                                   : 'border border-slate-300 text-transparent'
                               }`}
                             >
-                              <CheckIcon className="w-3.5 h-3.5" />
+                              <CheckIcon className="w-3 h-3" />
                             </div>
                           </div>
                         );
@@ -2401,18 +2381,18 @@ const ChatRoom = () => {
               )}
 
               {/* Modal Buttons */}
-              <div className="pt-3 border-t border-slate-200 flex items-center justify-end gap-3">
+              <div className="pt-3 border-t border-slate-200 flex items-center justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setShowCreateModal(false)}
-                  className="px-5 py-2 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
+                  className="px-3.5 py-2 rounded-sm text-xs sm:text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isCreatingGroup}
-                  className="px-6 py-2.5 rounded-xl text-sm font-bold bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 transition-all shadow-xs cursor-pointer flex items-center gap-2"
+                  className="px-4 py-2 rounded-sm text-xs sm:text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 transition-all shadow-2xs cursor-pointer flex items-center gap-1.5"
                 >
                   {isCreatingGroup && (
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -2435,10 +2415,10 @@ const ChatRoom = () => {
             <img
               src={typeof previewModalImage === 'string' ? previewModalImage : previewModalImage.url}
               alt="Expanded Preview"
-              className="max-h-[82vh] max-w-full rounded-2xl object-contain shadow-2xl"
+              className="max-h-[82vh] max-w-full rounded-sm object-contain shadow-2xl"
             />
             
-            <div className="mt-3 flex items-center gap-3">
+            <div className="mt-3 flex items-center gap-2.5">
               <button
                 type="button"
                 onClick={() =>
@@ -2447,7 +2427,7 @@ const ChatRoom = () => {
                     fileUrl: typeof previewModalImage === 'string' ? previewModalImage : previewModalImage.url,
                   })
                 }
-                className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs flex items-center gap-2 shadow-lg transition-all cursor-pointer active:scale-95"
+                className="px-3.5 py-1.5 rounded-sm bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs flex items-center gap-2 shadow-md transition-all cursor-pointer active:scale-95"
                 title="Download image"
               >
                 <DownloadIcon className="w-4 h-4" />
@@ -2456,7 +2436,7 @@ const ChatRoom = () => {
 
               <button
                 onClick={() => setPreviewModalImage(null)}
-                className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white transition-colors cursor-pointer"
+                className="p-1.5 rounded-sm bg-slate-800 hover:bg-slate-700 text-white transition-colors cursor-pointer"
                 title="Close Preview"
               >
                 <CloseIcon className="w-5 h-5" />
@@ -2473,14 +2453,14 @@ const ChatRoom = () => {
           onClick={() => setPdfModalPreview(null)}
         >
           <div
-            className="bg-white rounded-2xl border border-slate-300 shadow-2xl w-full max-w-5xl h-[88vh] flex flex-col overflow-hidden"
+            className="bg-white rounded-sm border border-slate-300 shadow-2xl w-full max-w-5xl h-[88vh] flex flex-col overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
             <div className="px-4 sm:px-6 py-3 border-b border-slate-800 bg-slate-900 text-white flex items-center justify-between shadow-xs">
               <div className="flex items-center gap-3 min-w-0">
-                <div className="p-2 rounded-lg bg-rose-500/20 text-rose-400 border border-rose-500/30 shrink-0">
-                  <FileIcon className="w-5 h-5" />
+                <div className="p-1.5 rounded-sm bg-rose-500/20 text-rose-400 border border-rose-500/30 shrink-0">
+                  <FileIcon className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
                 <div className="min-w-0">
                   <h3 className="text-sm sm:text-base font-bold truncate text-white">
@@ -2492,7 +2472,7 @@ const ChatRoom = () => {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2.5">
+              <div className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={() =>
@@ -2501,7 +2481,7 @@ const ChatRoom = () => {
                       fileUrl: pdfModalPreview.url,
                     })
                   }
-                  className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-semibold text-xs flex items-center gap-1.5 transition-all shadow-sm cursor-pointer"
+                  className="px-3 py-1.5 rounded-sm bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-medium text-xs flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
                   title="Download PDF"
                 >
                   <DownloadIcon className="w-4 h-4" />
@@ -2511,7 +2491,7 @@ const ChatRoom = () => {
                 <button
                   type="button"
                   onClick={() => setPdfModalPreview(null)}
-                  className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+                  className="p-1.5 rounded-sm text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
                   title="Close viewer"
                 >
                   <CloseIcon className="w-5 h-5" />
@@ -2538,22 +2518,22 @@ const ChatRoom = () => {
           onClick={() => !isLeavingGroup && setShowLeaveModal(false)}
         >
           <div
-            className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-md w-full overflow-hidden p-6 text-center transform transition-all"
+            className="bg-white rounded-sm border border-slate-200 shadow-xl w-[88%] sm:w-full max-w-[320px] sm:max-w-[340px] overflow-hidden p-5 sm:p-6 text-center transform transition-all"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Warning Exit Icon */}
-            <div className="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 border border-rose-200/80 flex items-center justify-center mx-auto mb-4 shadow-2xs">
-              <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <div className="w-10 h-10 rounded-sm bg-rose-50 text-rose-600 border border-rose-200/80 flex items-center justify-center mx-auto mb-3 shadow-2xs">
+              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
                 <polyline points="16 17 21 12 16 7" />
                 <line x1="21" y1="12" x2="9" y2="12" />
               </svg>
             </div>
 
-            <h3 className="text-lg font-bold text-slate-900 mb-1.5">
+            <h3 className="text-base font-bold text-slate-900 mb-1">
               Leave &ldquo;{activeGroup.name}&rdquo;?
             </h3>
-            <p className="text-sm text-slate-500 leading-relaxed mb-6">
+            <p className="text-xs text-slate-500 leading-relaxed mb-5">
               You will no longer receive new messages, announcements, or shared resources from this channel. You can rejoin only if the lecturer adds you back.
             </p>
 
@@ -2562,7 +2542,7 @@ const ChatRoom = () => {
                 type="button"
                 onClick={() => setShowLeaveModal(false)}
                 disabled={isLeavingGroup}
-                className="flex-1 py-2.5 px-4 rounded-xl text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition-colors cursor-pointer"
+                className="flex-1 h-11 sm:h-12 px-4 rounded-sm text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition-colors cursor-pointer flex items-center justify-center"
               >
                 Cancel
               </button>
@@ -2570,7 +2550,7 @@ const ChatRoom = () => {
                 type="button"
                 onClick={confirmLeaveGroup}
                 disabled={isLeavingGroup}
-                className="flex-1 py-2.5 px-4 rounded-xl text-sm font-bold text-white bg-rose-600 hover:bg-rose-700 active:scale-95 transition-all shadow-sm cursor-pointer flex items-center justify-center gap-2"
+                className="flex-1 h-11 sm:h-12 px-4 rounded-sm text-sm font-semibold text-white bg-rose-600 hover:bg-rose-700 active:scale-95 transition-all shadow-xs cursor-pointer flex items-center justify-center gap-2"
               >
                 {isLeavingGroup ? (
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -2590,26 +2570,26 @@ const ChatRoom = () => {
           onClick={() => !isRemovingStudent && setStudentToRemove(null)}
         >
           <div
-            className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-md w-full overflow-hidden p-6 text-center transform transition-all"
+            className="bg-white rounded-sm border border-slate-200 shadow-xl w-[88%] sm:w-full max-w-[320px] sm:max-w-[340px] overflow-hidden p-5 sm:p-6 text-center transform transition-all"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="w-14 h-14 rounded-full bg-red-50 text-red-600 border border-red-100 flex items-center justify-center mx-auto mb-4 shadow-xs">
-              <TrashIcon className="w-7 h-7" />
+            <div className="w-10 h-10 rounded-sm bg-red-50 text-red-600 border border-red-100 flex items-center justify-center mx-auto mb-3 shadow-xs">
+              <TrashIcon className="w-5 h-5" />
             </div>
 
-            <h3 className="text-lg font-bold text-slate-900 mb-1.5">
+            <h3 className="text-base font-bold text-slate-900 mb-1">
               Remove {studentToRemove.name}?
             </h3>
-            <p className="text-sm text-slate-500 leading-relaxed mb-6">
+            <p className="text-xs text-slate-500 leading-relaxed mb-5">
               Student <span className="font-mono font-semibold text-slate-800">({studentToRemove.usn})</span> will be removed from <span className="font-semibold text-slate-800">&ldquo;{activeGroup.name}&rdquo;</span> and will lose access to this conversation.
             </p>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2.5">
               <button
                 type="button"
                 onClick={() => setStudentToRemove(null)}
                 disabled={isRemovingStudent}
-                className="flex-1 py-2.5 px-4 rounded-xl text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition-colors cursor-pointer"
+                className="flex-1 h-11 sm:h-12 px-3.5 rounded-sm text-xs sm:text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition-colors cursor-pointer flex items-center justify-center"
               >
                 Cancel
               </button>
@@ -2617,7 +2597,7 @@ const ChatRoom = () => {
                 type="button"
                 onClick={confirmRemoveStudent}
                 disabled={isRemovingStudent}
-                className="flex-1 py-2.5 px-4 rounded-xl text-sm font-bold text-white bg-red-600 hover:bg-red-700 active:scale-95 transition-all shadow-md cursor-pointer flex items-center justify-center gap-2"
+                className="flex-1 h-11 sm:h-12 px-3.5 rounded-sm text-xs sm:text-sm font-semibold text-white bg-red-600 hover:bg-red-700 active:scale-95 transition-all shadow-xs cursor-pointer flex items-center justify-center gap-2"
               >
                 {isRemovingStudent ? (
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -2637,27 +2617,27 @@ const ChatRoom = () => {
           onClick={() => !isDeletingMessages && setShowDeleteModal(false)}
         >
           <div
-            className="bg-white rounded-lg border border-slate-200 shadow-2xl max-w-sm w-full overflow-hidden p-6 text-center transform transition-all"
+            className="bg-white rounded-sm border border-slate-200 shadow-xl w-[88%] sm:w-full max-w-[310px] sm:max-w-[330px] overflow-hidden p-5 sm:p-6 text-center transform transition-all"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="w-12 h-12 rounded bg-rose-50 text-rose-600 border border-rose-200/80 flex items-center justify-center mx-auto mb-3 shadow-2xs">
-              <TrashIcon className="w-6 h-6" />
+            <div className="w-10 h-10 rounded-sm bg-rose-50 text-rose-600 border border-rose-200/80 flex items-center justify-center mx-auto mb-3 shadow-2xs">
+              <TrashIcon className="w-5 h-5" />
             </div>
 
             <h3 className="text-base font-bold text-slate-900 mb-1">
               Delete {selectedMsgIds.length} {selectedMsgIds.length === 1 ? 'Message' : 'Messages'}?
             </h3>
-            <p className="text-xs text-slate-500 mb-5">
+            <p className="text-xs text-slate-500 mb-4">
               Choose how you want to remove the selected message(s).
             </p>
 
-            <div className="space-y-2.5">
+            <div className="space-y-2">
               {canDeleteForEveryone && (
                 <button
                   type="button"
                   disabled={isDeletingMessages}
                   onClick={() => handleDeleteMessages('for_everyone')}
-                  className="w-full py-2.5 px-4 rounded text-xs sm:text-sm font-bold text-white bg-rose-600 hover:bg-rose-700 active:scale-95 transition-all shadow-sm cursor-pointer flex items-center justify-center gap-2"
+                  className="w-full h-10 px-3 rounded-sm text-xs sm:text-sm font-semibold text-white bg-rose-600 hover:bg-rose-700 active:scale-95 transition-all shadow-xs cursor-pointer flex items-center justify-center gap-2"
                 >
                   {isDeletingMessages ? (
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -2671,7 +2651,7 @@ const ChatRoom = () => {
                 type="button"
                 disabled={isDeletingMessages}
                 onClick={() => handleDeleteMessages('for_me')}
-                className="w-full py-2.5 px-4 rounded text-xs sm:text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition-colors cursor-pointer flex items-center justify-center gap-2"
+                className="w-full h-10 px-3 rounded-sm text-xs sm:text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition-colors cursor-pointer flex items-center justify-center gap-2"
               >
                 <span>Delete for me</span>
               </button>
@@ -2686,7 +2666,7 @@ const ChatRoom = () => {
                 type="button"
                 disabled={isDeletingMessages}
                 onClick={() => setShowDeleteModal(false)}
-                className="w-full py-2 px-4 rounded text-xs font-medium text-slate-500 hover:text-slate-800 hover:bg-slate-50 transition-colors cursor-pointer"
+                className="w-full h-9 px-3 rounded-sm text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors cursor-pointer mt-1 flex items-center justify-center"
               >
                 Cancel
               </button>
@@ -2695,31 +2675,31 @@ const ChatRoom = () => {
         </div>
       )}
 
-      {/* ── Add Members to Existing Group Modal (Lecturer) ── */}
+      {/* ── Add Members to Existing Group Modal (Lecturer - Clean & Compact) ── */}
       {showAddMembersModal && activeGroup && (
         <div
           className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto"
           onClick={() => !isAddingMembers && setShowAddMembersModal(false)}
         >
           <div
-            className="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[85vh]"
+            className="bg-white rounded-sm border border-slate-200 shadow-xl w-[90%] sm:w-full max-w-[340px] sm:max-w-[360px] overflow-hidden flex flex-col max-h-[80vh]"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="px-5 py-4 border-b border-slate-200 bg-white flex items-center justify-between">
-              <div>
-                <h3 className="text-base sm:text-lg font-bold text-slate-900">
-                  Add Members to &ldquo;{activeGroup.name}&rdquo;
+            <div className="px-4 py-3 border-b border-slate-200 bg-white flex items-center justify-between">
+              <div className="min-w-0 pr-2">
+                <h3 className="text-sm sm:text-base font-bold text-slate-900 truncate">
+                  Add Participants
                 </h3>
-                <p className="text-slate-500 text-xs mt-0.5">
-                  Select students to add them to this discussion group
+                <p className="text-xs text-slate-500 truncate">
+                  {activeGroup.name}
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setShowAddMembersModal(false)}
                 disabled={isAddingMembers}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+                className="p-1 rounded-sm text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer shrink-0"
                 title="Close"
               >
                 <CloseIcon className="w-5 h-5" />
@@ -2727,23 +2707,33 @@ const ChatRoom = () => {
             </div>
 
             {/* Body */}
-            <div className="p-4 flex-1 overflow-y-auto space-y-3">
+            <div className="p-3.5 flex-1 overflow-y-auto space-y-2.5">
               {/* Search & Selection Controls */}
               <div className="flex items-center gap-2">
-                <div className="flex-1 flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 focus-within:bg-white focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/10 transition-all">
-                  <SearchIcon className="w-4 h-4 text-slate-400 shrink-0" />
+                <div className="flex-1 flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-sm px-2.5 py-1.5 focus-within:bg-white focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/10 transition-all">
+                  <SearchIcon className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                   <input
                     type="text"
                     value={addMemberSearch}
                     onChange={(e) => setAddMemberSearch(e.target.value)}
-                    placeholder="Search by student name or USN..."
+                    placeholder="Search name or USN..."
                     className="w-full bg-transparent text-xs sm:text-sm text-slate-800 placeholder:text-slate-400 outline-none border-none p-0"
                   />
+                  {addMemberSearch && (
+                    <button
+                      type="button"
+                      onClick={() => setAddMemberSearch('')}
+                      className="text-slate-400 hover:text-slate-600 shrink-0 p-0.5 cursor-pointer"
+                      title="Clear search"
+                    >
+                      <CloseIcon className="w-3.5 h-3.5" />
+                    </button>
+                  )}
                 </div>
                 <button
                   type="button"
                   onClick={() => setSelectedAddUsns(filteredNonMembers.map((s) => s.usn))}
-                  className="px-2.5 py-1.5 text-xs font-semibold text-blue-600 hover:bg-blue-50 border border-blue-200 rounded-xl transition-colors cursor-pointer shrink-0"
+                  className="px-2.5 py-1.5 text-xs font-semibold text-blue-600 hover:bg-blue-50 border border-blue-200 rounded-sm transition-colors cursor-pointer shrink-0"
                 >
                   Select All
                 </button>
@@ -2751,16 +2741,16 @@ const ChatRoom = () => {
                   <button
                     type="button"
                     onClick={() => setSelectedAddUsns([])}
-                    className="px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-100 border border-slate-200 rounded-xl transition-colors cursor-pointer shrink-0"
+                    className="px-2.5 py-1.5 text-xs font-semibold text-slate-500 hover:bg-slate-100 border border-slate-200 rounded-sm transition-colors cursor-pointer shrink-0"
                   >
                     Clear
                   </button>
                 )}
               </div>
 
-              {/* Status or counter */}
-              <div className="text-xs text-slate-500 flex items-center justify-between px-1">
-                <span>{filteredNonMembers.length} available students</span>
+              {/* Status counter */}
+              <div className="text-[11px] text-slate-500 flex items-center justify-between px-0.5">
+                <span>{filteredNonMembers.length} available</span>
                 <span className="font-semibold text-blue-600">
                   {selectedAddUsns.length} selected
                 </span>
@@ -2768,24 +2758,24 @@ const ChatRoom = () => {
 
               {/* Students List */}
               {loadingNonMembers ? (
-                <div className="py-12 flex flex-col items-center justify-center text-slate-400 text-xs gap-2">
-                  <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                <div className="py-8 flex flex-col items-center justify-center text-slate-400 text-xs gap-2">
+                  <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
                   <span>Loading available students...</span>
                 </div>
               ) : filteredNonMembers.length === 0 ? (
-                <div className="py-12 text-center text-slate-400 text-xs">
+                <div className="py-8 text-center text-slate-400 text-xs">
                   {nonMemberStudents.length === 0
-                    ? 'All registered students are already members of this group!'
+                    ? 'All registered students are already members.'
                     : 'No matching students found.'}
                 </div>
               ) : (
-                <div className="border border-slate-200 rounded-xl overflow-hidden divide-y divide-slate-100 max-h-60 overflow-y-auto">
+                <div className="border border-slate-200 rounded-sm overflow-hidden divide-y divide-slate-100 max-h-52 overflow-y-auto">
                   {filteredNonMembers.map((student) => {
                     const isChecked = selectedAddUsns.includes(student.usn);
                     return (
                       <label
                         key={student.usn}
-                        className={`flex items-center justify-between p-2.5 hover:bg-slate-50 cursor-pointer transition-colors ${
+                        className={`flex items-center justify-between py-2 px-2.5 hover:bg-slate-50 cursor-pointer transition-colors ${
                           isChecked ? 'bg-blue-50/60' : ''
                         }`}
                       >
@@ -2800,14 +2790,14 @@ const ChatRoom = () => {
                                   : [...prev, student.usn]
                               );
                             }}
-                            className="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 cursor-pointer"
+                            className="w-4 h-4 text-blue-600 rounded-2xs border-slate-300 focus:ring-blue-500 cursor-pointer"
                           />
                           <div className="min-w-0">
                             <p className="text-xs sm:text-sm font-semibold text-slate-900 truncate">
                               {student.username}
                             </p>
                             <p className="text-[11px] font-mono text-slate-400 truncate">
-                              {student.usn} {student.email ? `· ${student.email}` : ''}
+                              {student.usn}
                             </p>
                           </div>
                         </div>
@@ -2819,12 +2809,12 @@ const ChatRoom = () => {
             </div>
 
             {/* Footer */}
-            <div className="px-5 py-3 border-t border-slate-200 bg-slate-50 flex items-center justify-end gap-2.5">
+            <div className="px-4 py-2.5 border-t border-slate-200 bg-slate-50 flex items-center justify-end gap-2">
               <button
                 type="button"
                 onClick={() => setShowAddMembersModal(false)}
                 disabled={isAddingMembers}
-                className="py-2 px-4 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-200 border border-slate-200 transition-colors cursor-pointer"
+                className="py-1.5 px-3 rounded-sm text-xs sm:text-sm font-medium text-slate-600 hover:bg-slate-200 border border-slate-200 transition-colors cursor-pointer"
               >
                 Cancel
               </button>
@@ -2832,7 +2822,7 @@ const ChatRoom = () => {
                 type="button"
                 onClick={confirmAddMembers}
                 disabled={isAddingMembers || selectedAddUsns.length === 0}
-                className="py-2 px-4 rounded-xl text-xs sm:text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 transition-all shadow-sm cursor-pointer flex items-center gap-2"
+                className="py-1.5 px-3.5 rounded-sm text-xs sm:text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 transition-all shadow-2xs cursor-pointer flex items-center gap-1.5"
               >
                 {isAddingMembers ? (
                   <>
@@ -2840,7 +2830,7 @@ const ChatRoom = () => {
                     <span>Adding...</span>
                   </>
                 ) : (
-                  <span>Add {selectedAddUsns.length > 0 ? `(${selectedAddUsns.length}) ` : ''}Members</span>
+                  <span>Add {selectedAddUsns.length > 0 ? `(${selectedAddUsns.length}) ` : ''}Participants</span>
                 )}
               </button>
             </div>
@@ -2855,26 +2845,26 @@ const ChatRoom = () => {
           onClick={() => !isDeletingGroup && setShowDeleteGroupModal(false)}
         >
           <div
-            className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-md w-full overflow-hidden p-6 text-center transform transition-all"
+            className="bg-white rounded-sm border border-slate-200 shadow-xl w-[88%] sm:w-full max-w-[320px] sm:max-w-[340px] overflow-hidden p-5 sm:p-6 text-center transform transition-all"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="w-14 h-14 rounded-full bg-rose-50 text-rose-600 border border-rose-100 flex items-center justify-center mx-auto mb-4 shadow-xs">
-              <TrashIcon className="w-7 h-7" />
+            <div className="w-10 h-10 rounded-sm bg-rose-50 text-rose-600 border border-rose-100 flex items-center justify-center mx-auto mb-3 shadow-xs">
+              <TrashIcon className="w-5 h-5" />
             </div>
 
-            <h3 className="text-lg font-bold text-slate-900 mb-1.5">
+            <h3 className="text-base font-bold text-slate-900 mb-1">
               Delete Group &ldquo;{activeGroup.name}&rdquo;?
             </h3>
-            <p className="text-sm text-slate-500 leading-relaxed mb-6">
+            <p className="text-xs text-slate-500 leading-relaxed mb-5">
               This will permanently delete this discussion group and all its messages, shared files, and history for everyone. This action cannot be reversed.
             </p>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2.5">
               <button
                 type="button"
                 onClick={() => setShowDeleteGroupModal(false)}
                 disabled={isDeletingGroup}
-                className="flex-1 py-2.5 px-4 rounded text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition-colors cursor-pointer"
+                className="flex-1 h-11 sm:h-12 px-3.5 rounded-sm text-xs sm:text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition-colors cursor-pointer flex items-center justify-center"
               >
                 Cancel
               </button>
@@ -2882,7 +2872,7 @@ const ChatRoom = () => {
                 type="button"
                 onClick={confirmDeleteGroup}
                 disabled={isDeletingGroup}
-                className="flex-1 py-2.5 px-4 rounded text-sm font-bold text-white bg-rose-600 hover:bg-rose-700 active:scale-95 transition-all shadow-md cursor-pointer flex items-center justify-center gap-2"
+                className="flex-1 h-11 sm:h-12 px-3.5 rounded-sm text-xs sm:text-sm font-semibold text-white bg-rose-600 hover:bg-rose-700 active:scale-95 transition-all shadow-xs cursor-pointer flex items-center justify-center gap-2"
               >
                 {isDeletingGroup ? (
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
